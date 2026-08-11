@@ -1,0 +1,31 @@
+## Unicode、制表符、ANSI 与超长行
+
+以下内容验证：Unicode 全角/半角混排、制表符渲染、字面 ANSI 转义序列、超长行折行，以及 CJK 双列宽度在窄终端的表现。
+
+### Unicode 混排
+
+- 全角：中文测试１２３４５６７８９０【括号】「引号」——破折号……省略号
+- 半角：ABCdef1234567890()[]""''--...
+- 表情：🚀 🎉 ✅ ❌ 📦 🔧（宽字符在 visibleWidth 中按 2 列计）
+- 组合字符：e\u0301 重音合成 与 CJK 扩展区：𠮷𠮷野家
+
+### 制表符
+
+```
+col1\tcol2\tcol3\tcol4
+a\tbb\tccc\tdddd
+```
+
+字面制表符在正文中：\tHello\tWorld（pi 渲染器对 \t 的处理是基线观察点之一）。
+
+### 字面 ANSI
+
+`\u001b[31mred text\u001b[0m` 字面转义在 markdown 正文中应原样显示（不做解释执行）；工具输出中的 ANSI 由 stripTerminalSequences 处理，复制时被剥离。
+
+### 超长单行
+
+这一行没有任何断点、长度超过 200 列的连续拉丁串：abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 用于验证硬折与悬挂断点。
+
+### 超长 URL
+
+https://github.com/earendil-works/pi/blob/main/packages/coding-agent/src/modes/interactive/components/assistant-message.ts?plain=1#L123-L456 超长 URL 应完整折行且复制时不引入新行。

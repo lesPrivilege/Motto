@@ -1,0 +1,1625 @@
+──── width=40 · md-multilevel (raw) ────
+ H1 一级标题                            
+                                        
+ 正文段落。此处演示一级标题在 pi 渲染器 
+ 中不带 # 前缀，以 bold+underline 呈现  
+ ；Motto 主题下 mdHeading 取 dim 明度分 
+ 层。                                   
+                                        
+ H2 二级标题                            
+                                        
+ 二级标题同样不带 # 前缀，仅 bold。这是 
+ 收工 review 屏最常见的一档层级。       
+                                        
+ ### H3 三级标题                        
+                                        
+ 三级及以下在 pi 渲染器中保留 # 前缀（  
+ 设计特性）；Motto 的                   
+ projectDeepHeadings 会将其投影为 ## ›  
+ 标题（display-only）。                 
+                                        
+ #### H4 四级标题                       
+                                        
+ 四级标题正文。若未启用投影，此处显示   
+ #### 四级标题 原始前缀。               
+                                        
+ ##### H5 五级标题                      
+                                        
+ 五级标题正文。                         
+                                        
+ ###### H6 六级标题                     
+                                        
+ 六级标题正文。H6 原始前缀最长（######  
+ ），是层级别辨问题最严重的一档。       
+                                        
+ 同级并列                               
+                                        
+ 另一段 H2，验证同档标题连续出现时的留  
+ 白与层级。                             
+
+──── width=40 · md-multilevel (motto-projected) ────
+ H1 一级标题                            
+                                        
+ 正文段落。此处演示一级标题在 pi 渲染器 
+ 中不带 # 前缀，以 bold+underline 呈现  
+ ；Motto 主题下 mdHeading 取 dim 明度分 
+ 层。                                   
+                                        
+ H2 二级标题                            
+                                        
+ 二级标题同样不带 # 前缀，仅 bold。这是 
+ 收工 review 屏最常见的一档层级。       
+                                        
+ › H3 三级标题                          
+                                        
+ 三级及以下在 pi 渲染器中保留 # 前缀（  
+ 设计特性）；Motto 的                   
+ projectDeepHeadings 会将其投影为 ## ›  
+ 标题（display-only）。                 
+                                        
+ › H4 四级标题                          
+                                        
+ 四级标题正文。若未启用投影，此处显示   
+ #### 四级标题 原始前缀。               
+                                        
+ › H5 五级标题                          
+                                        
+ 五级标题正文。                         
+                                        
+ › H6 六级标题                          
+                                        
+ 六级标题正文。H6 原始前缀最长（######  
+ ），是层级别辨问题最严重的一档。       
+                                        
+ 同级并列                               
+                                        
+ 另一段 H2，验证同档标题连续出现时的留  
+ 白与层级。                             
+
+──── width=40 · md-list-quote ────
+ 嵌套列表与引用                         
+                                        
+ - 顶层无序项 A                         
+     - 嵌套无序项 A1                    
+         - 嵌套无序项 A1a               
+     - 嵌套无序项 A2                    
+ - 顶层无序项 B                         
+     1. 嵌套有序项 B1                   
+     2. 嵌套有序项 B2                   
+         - 再嵌套无序 B2a               
+ - 顶层无序项 C                         
+                                        
+ │ 一级引用块。pi 渲染为 │  前缀 +      
+ │ italic。                             
+ │                                      
+ │ │ 嵌套引用。验证两层 │  前缀的对齐与 
+ │ │ 缩进。                             
+                                        
+ │ 引用内嵌代码：const x = 1 与 加粗 与 
+ │ 斜体 与 链接 (https://pi.dev)。      
+                                        
+ 任务列表                               
+                                        
+ - [ ] 未完成任务项                     
+ - [x] 已完成任务项                     
+                                        
+ 定义性列表（原始 markdown 透传）       
+                                        
+ term                                   
+ : definition line one                  
+ : definition line two                  
+
+──── width=40 · md-code ────
+ 围栏代码块                             
+                                        
+ ```ts                                  
+   export function greet(name: string): 
+ string {                               
+      // tab 缩进 + 语法高亮            
+      const message = `hello, ${name}`; 
+      if (name.length > 10) {           
+         return message.toUpperCase();  
+      }                                 
+      return message;                   
+   }                                    
+ ```                                    
+                                        
+ ```bash                                
+   $ curl -s                            
+ https://pi.dev/api/latest-version      
+   {"version":"0.84.1"}                 
+ ```                                    
+                                        
+ 行内代码 npm install -g                
+ --ignore-scripts                       
+ @earendil-works/pi-coding-agent 与     
+ visibleWidth()。                       
+                                        
+ 无语言标注围栏                         
+                                        
+ ```                                    
+   raw fence without language tag       
+   second line                          
+ ```                                    
+                                        
+ 波浪线围栏                             
+                                        
+ ```text                                
+   tilde fence content                  
+ ```                                    
+                                        
+ 分隔线                                 
+                                        
+ 上方一段。                             
+                                        
+ ────────────────────────────────────── 
+                                        
+ 下方一段。                             
+                                        
+ 转义与行内                             
+                                        
+ 删除线 与 strong 与 emphasis 与        
+ codespan。                             
+                                        
+ 公式行内 E = mc²，块级：               
+                                        
+ ∞              √π                      
+ ∫ e^(-x²) dx = ──                      
+ 0              2                       
+
+──── width=40 · unicode-tabs-ansi ────
+ Unicode、制表符、ANSI 与超长行         
+                                        
+ 以下内容验证：Unicode 全角/半角混排、  
+ 制表符渲染、字面 ANSI 转义序列、超长行 
+ 折行，以及 CJK 双列宽度在窄终端的表现  
+ 。                                     
+                                        
+ ### Unicode 混排                       
+                                        
+ - 全角：中文测试１２３４５６７８９０【 
+   括号】「引号」——破折号……省略号       
+ - 半角：ABCdef1234567890()[]""''--...  
+ - 表情：🚀 🎉 ✅ ❌ 📦 🔧（宽字符在    
+   visibleWidth 中按 2 列计）           
+ - 组合字符：e\u0301 重音合成 与 CJK 扩 
+   展区：𠮷𠮷野家                       
+                                        
+ ### 制表符                             
+                                        
+ ```                                    
+   col1\tcol2\tcol3\tcol4               
+   a\tbb\tccc\tdddd                     
+ ```                                    
+                                        
+ 字面制表符在正文中：\tHello\tWorld（pi 
+ 渲染器对 \t 的处理是基线观察点之一）。 
+                                        
+ ### 字面 ANSI                          
+                                        
+ \u001b[31mred text\u001b[0m 字面转义在 
+ markdown 正文中应原样显示（不做解释执  
+ 行）；工具输出中的 ANSI 由             
+ stripTerminalSequences 处理，复制时被  
+ 剥离。                                 
+                                        
+ ### 超长单行                           
+                                        
+ 这一行没有任何断点、长度超过 200 列的  
+ 连续拉丁串                             
+ ：abcdefghijklmnopqrstuvwxyzABCDEFGHIJ 
+ KLMNOPQRSTUVWXYZ0123456789abcdefghijkl 
+ mnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX 
+ YZ0123456789abcdefghijklmnopqrstuvwxyz 
+ ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789   
+ 用于验证硬折与悬挂断点。               
+                                        
+ ### 超长 URL                           
+                                        
+ https://github.com/earendil-works/pi/b 
+ lob/main/packages/coding-agent/src/mod 
+ es/interactive/components/assistant-me 
+ ssage.ts?plain=1#L123-L456 超长 URL 应 
+ 完整折行且复制时不引入新行。           
+
+──── width=40 · paste-long (user) ────
+ 以下是一段模拟「长文本 paste」的用户输 
+ 入。用户从外部文档粘贴长段落时，pi 将  
+ 整段作为单条 user message 渲染；重点是 
+ 验证折行、CJK 双列宽度、无换行清理，以 
+ 及后续 /copy-answer 是否按逻辑段复制（ 
+ 而不是按视觉行）。                     
+                                        
+ 这是一段非常长的英文句子，用来验证英文 
+ 在硬折行下的行为：The quick brown fox  
+ jumps over the lazy dog while the      
+ quick brown fox jumps over the lazy    
+ dog again and again until the sentence 
+ finally reaches a length that forces   
+ the terminal to wrap it across several 
+ visual rows without inserting any hard 
+ newline into the canonical text, which 
+ is exactly the fidelity boundary that  
+ canonical-copy preserves and that      
+ mouse-drag selection currently does    
+ not。                                  
+                                        
+ 然后是一段中文长句，验证 CJK 双列宽度  
+ ：目录版本之学讲究辨章学术考镜源流     
+ ，transcript 不作进程日志展示而作工作  
+ 过程的书目呈现，recap 目行是著录错误尾 
+ 部是提要朱记只落于失败，thinking 归不  
+ 著录之列，review-safe 是著录学的不滥收 
+ ，投影不入模型上下文是书目不混入正文   
+ ，scrollback 刻成不改是刻本工艺的本分  
+ ，每一行都承重。                       
+                                        
+ 接下来是刻意构造的混合宽度行：abc 中文 
+ def 中文 1234567890 中文 mixed width   
+ 混排，用于验证 visibleWidth 对 CJK 双  
+ 列与拉丁单列的混合计算是否正确，尤其在 
+ 窄终端 40 列时悬挂与断点位置。         
+                                        
+ 最后一段带内嵌代码与链接：命令         
+ ./scripts/regression.sh --live 与文档  
+ https://omp.sh/docs/tools 应当按原文复 
+ 制，中间若有软折行不得引入换行符。     
+
+──── width=40 · user-gutter (S1) ────
+│ 以下是一段模拟「长文本 paste」的用户输
+  入。用户从外部文档粘贴长段落时，pi 将 
+  整段作为单条 user message 渲染；重点是
+  验证折行、CJK 双列宽度、无换行清理，以
+  及后续 /copy-answer 是否按逻辑段复制（
+  而不是按视觉行）。                    
+                                        
+  这是一段非常长的英文句子，用来验证英文
+  在硬折行下的行为：The quick brown fox 
+  jumps over the lazy dog while the     
+  quick brown fox jumps over the lazy   
+  dog again and again until the sentence
+  finally reaches a length that forces  
+  the terminal to wrap it across several
+  visual rows without inserting any hard
+  newline into the canonical text, which
+  is exactly the fidelity boundary that 
+  canonical-copy preserves and that     
+  mouse-drag selection currently does   
+  not。                                 
+                                        
+  然后是一段中文长句，验证 CJK 双列宽度 
+  ：目录版本之学讲究辨章学术考镜源流    
+  ，transcript 不作进程日志展示而作工作 
+  过程的书目呈现，recap 目行是著录错误尾
+  部是提要朱记只落于失败，thinking 归不 
+  著录之列，review-safe 是著录学的不滥收
+  ，投影不入模型上下文是书目不混入正文  
+  ，scrollback 刻成不改是刻本工艺的本分 
+  ，每一行都承重。                      
+                                        
+  接下来是刻意构造的混合宽度行：abc 中文
+  def 中文 1234567890 中文 mixed width  
+  混排，用于验证 visibleWidth 对 CJK 双 
+  列与拉丁单列的混合计算是否正确，尤其在
+  窄终端 40 列时悬挂与断点位置。        
+                                        
+  最后一段带内嵌代码与链接：命令        
+  ./scripts/regression.sh --live 与文档 
+  https://omp.sh/docs/tools 应当按原文复
+  制，中间若有软折行不得引入换行符。    
+
+──── width=40 · assistant-body (S2) ────
+
+  H1 一级标题                           
+                                        
+  正文段落。此处演示一级标题在 pi 渲染  
+  器中不带 # 前缀，以 bold+underline    
+  呈现；Motto 主题下 mdHeading 取 dim   
+  明度分层。                            
+                                        
+  H2 二级标题                           
+                                        
+  二级标题同样不带 # 前缀，仅 bold。这  
+  是收工 review 屏最常见的一档层级。    
+                                        
+  ### H3 三级标题                       
+                                        
+  三级及以下在 pi 渲染器中保留 # 前缀   
+  （设计特性）；Motto 的                
+  projectDeepHeadings 会将其投影为 ##   
+  › 标题（display-only）。              
+                                        
+  #### H4 四级标题                      
+                                        
+  四级标题正文。若未启用投影，此处显示  
+  #### 四级标题 原始前缀。              
+                                        
+  ##### H5 五级标题                     
+                                        
+  五级标题正文。                        
+                                        
+  ###### H6 六级标题                    
+                                        
+  六级标题正文。H6 原始前缀最长         
+  （###### ），是层级别辨问题最严重的   
+  一档。                                
+                                        
+  同级并列                              
+                                        
+  另一段 H2，验证同档标题连续出现时的   
+  留白与层级。                          
+
+──── width=40 · tool-index-ok (S3) ────
+  bash ls -la                           
+
+──── width=40 · tool-index-fail (S3) ────
+
+                                        
+ $ ./process.sh                         
+                                        
+ Error: boom                            
+                                        
+
+──── width=40 · thinking-hidden (T2-1 compat) ────
+
+ Thinking...                            
+
+  正文段落。thinking 归不著录之列       
+  ,review-safe 是著录学的不滥收。       
+
+──── width=40 · thinking-collapsed (T2-2) ────
+
+ Thinking...                            
+
+  正文段落。thinking 归不著录之列       
+  ,review-safe 是著录学的不滥收。       
+
+──── width=40 · thinking-preview (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级      
+ ——collapsed 单行标签、preview 有界首尾 
+ 摘要、full 完整原…/重建同源同序,身份稳 
+ 定(I7-1)。结束标记 TAIL_END_MARKER。   
+
+  正文段落。thinking 归不著录之列       
+  ,review-safe 是著录学的不滥收。       
+
+──── width=40 · thinking-full (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级      
+ ——collapsed 单行标签、preview 有界首尾 
+ 摘要、full 完整原文。著录层纪律要求    
+ thinking 默认归不著录之列,故默认       
+ collapsed;仅当用户主动展开时才进入预览 
+ 或全文。preview 预算取 head 64 字符 +  
+ 省略号 + tail 40 字符,Text 自动折行保  
+ 证窄列零超宽;full 则是完整原文,经      
+ assistant-thinking Markdown 变换渲染   
+ ,thinkingText 色 + italic。fold 状态纯 
+ 属 UI 内存,不写 session、不入模型上下  
+ 文;entryId 由 assistant 消息序数与 run 
+ 序数推导,流式/恢复/重建同源同序,身份稳 
+ 定(I7-1)。结束标记 TAIL_END_MARKER。   
+
+  正文段落。thinking 归不著录之列       
+  ,review-safe 是著录学的不滥收。       
+
+──── width=60 · md-multilevel (raw) ────
+ H1 一级标题                                                
+                                                            
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以    
+ bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分  
+ 层。                                                       
+                                                            
+ H2 二级标题                                                
+                                                            
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见 
+ 的一档层级。                                               
+                                                            
+ ### H3 三级标题                                            
+                                                            
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的  
+ projectDeepHeadings 会将其投影为 ## › 标题（display-only） 
+ 。                                                         
+                                                            
+ #### H4 四级标题                                           
+                                                            
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前  
+ 缀。                                                       
+                                                            
+ ##### H5 五级标题                                          
+                                                            
+ 五级标题正文。                                             
+                                                            
+ ###### H6 六级标题                                         
+                                                            
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最 
+ 严重的一档。                                               
+                                                            
+ 同级并列                                                   
+                                                            
+ 另一段 H2，验证同档标题连续出现时的留白与层级。            
+
+──── width=60 · md-multilevel (motto-projected) ────
+ H1 一级标题                                                
+                                                            
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以    
+ bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分  
+ 层。                                                       
+                                                            
+ H2 二级标题                                                
+                                                            
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见 
+ 的一档层级。                                               
+                                                            
+ › H3 三级标题                                              
+                                                            
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的  
+ projectDeepHeadings 会将其投影为 ## › 标题（display-only） 
+ 。                                                         
+                                                            
+ › H4 四级标题                                              
+                                                            
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前  
+ 缀。                                                       
+                                                            
+ › H5 五级标题                                              
+                                                            
+ 五级标题正文。                                             
+                                                            
+ › H6 六级标题                                              
+                                                            
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最 
+ 严重的一档。                                               
+                                                            
+ 同级并列                                                   
+                                                            
+ 另一段 H2，验证同档标题连续出现时的留白与层级。            
+
+──── width=60 · md-list-quote ────
+ 嵌套列表与引用                                             
+                                                            
+ - 顶层无序项 A                                             
+     - 嵌套无序项 A1                                        
+         - 嵌套无序项 A1a                                   
+     - 嵌套无序项 A2                                        
+ - 顶层无序项 B                                             
+     1. 嵌套有序项 B1                                       
+     2. 嵌套有序项 B2                                       
+         - 再嵌套无序 B2a                                   
+ - 顶层无序项 C                                             
+                                                            
+ │ 一级引用块。pi 渲染为 │  前缀 + italic。                 
+ │                                                          
+ │ │ 嵌套引用。验证两层 │  前缀的对齐与缩进。               
+                                                            
+ │ 引用内嵌代码：const x = 1 与 加粗 与 斜体 与 链接        
+ │ (https://pi.dev)。                                       
+                                                            
+ 任务列表                                                   
+                                                            
+ - [ ] 未完成任务项                                         
+ - [x] 已完成任务项                                         
+                                                            
+ 定义性列表（原始 markdown 透传）                           
+                                                            
+ term                                                       
+ : definition line one                                      
+ : definition line two                                      
+
+──── width=60 · md-code ────
+ 围栏代码块                                                 
+                                                            
+ ```ts                                                      
+   export function greet(name: string): string {            
+      // tab 缩进 + 语法高亮                                
+      const message = `hello, ${name}`;                     
+      if (name.length > 10) {                               
+         return message.toUpperCase();                      
+      }                                                     
+      return message;                                       
+   }                                                        
+ ```                                                        
+                                                            
+ ```bash                                                    
+   $ curl -s https://pi.dev/api/latest-version              
+   {"version":"0.84.1"}                                     
+ ```                                                        
+                                                            
+ 行内代码 npm install -g --ignore-scripts                   
+ @earendil-works/pi-coding-agent 与 visibleWidth()。        
+                                                            
+ 无语言标注围栏                                             
+                                                            
+ ```                                                        
+   raw fence without language tag                           
+   second line                                              
+ ```                                                        
+                                                            
+ 波浪线围栏                                                 
+                                                            
+ ```text                                                    
+   tilde fence content                                      
+ ```                                                        
+                                                            
+ 分隔线                                                     
+                                                            
+ 上方一段。                                                 
+                                                            
+ ────────────────────────────────────────────────────────── 
+                                                            
+ 下方一段。                                                 
+                                                            
+ 转义与行内                                                 
+                                                            
+ 删除线 与 strong 与 emphasis 与 codespan。                 
+                                                            
+ 公式行内 E = mc²，块级：                                   
+                                                            
+ ∞              √π                                          
+ ∫ e^(-x²) dx = ──                                          
+ 0              2                                           
+
+──── width=60 · unicode-tabs-ansi ────
+ Unicode、制表符、ANSI 与超长行                             
+                                                            
+ 以下内容验证：Unicode 全角/半角混排、制表符渲染、字面 ANSI 
+ 转义序列、超长行折行，以及 CJK 双列宽度在窄终端的表现。    
+                                                            
+ ### Unicode 混排                                           
+                                                            
+ - 全角：中文测试１２３４５６７８９０【括号】「引号」——破折 
+   号……省略号                                               
+ - 半角：ABCdef1234567890()[]""''--...                      
+ - 表情：🚀 🎉 ✅ ❌ 📦 🔧（宽字符在 visibleWidth 中按 2 列 
+   计）                                                     
+ - 组合字符：e\u0301 重音合成 与 CJK 扩展区：𠮷𠮷野家       
+                                                            
+ ### 制表符                                                 
+                                                            
+ ```                                                        
+   col1\tcol2\tcol3\tcol4                                   
+   a\tbb\tccc\tdddd                                         
+ ```                                                        
+                                                            
+ 字面制表符在正文中：\tHello\tWorld（pi 渲染器对 \t 的处理  
+ 是基线观察点之一）。                                       
+                                                            
+ ### 字面 ANSI                                              
+                                                            
+ \u001b[31mred text\u001b[0m 字面转义在 markdown 正文中应原 
+ 样显示（不做解释执行）；工具输出中的 ANSI 由               
+ stripTerminalSequences 处理，复制时被剥离。                
+                                                            
+ ### 超长单行                                               
+                                                            
+ 这一行没有任何断点、长度超过 200 列的连续拉丁串            
+ ：abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123 
+ 456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 
+ 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV 
+ WXYZ0123456789 用于验证硬折与悬挂断点。                    
+                                                            
+ ### 超长 URL                                               
+                                                            
+ https://github.com/earendil-works/pi/blob/main/packages/co 
+ ding-agent/src/modes/interactive/components/assistant-mess 
+ age.ts?plain=1#L123-L456 超长 URL 应完整折行且复制时不引入 
+ 新行。                                                     
+
+──── width=60 · paste-long (user) ────
+ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘 
+ 贴长段落时，pi 将整段作为单条 user message 渲染；重点是验  
+ 证折行、CJK 双列宽度、无换行清理，以及后续 /copy-answer 是 
+ 否按逻辑段复制（而不是按视觉行）。                         
+                                                            
+ 这是一段非常长的英文句子，用来验证英文在硬折行下的行为     
+ ：The quick brown fox jumps over the lazy dog while the    
+ quick brown fox jumps over the lazy dog again and again    
+ until the sentence finally reaches a length that forces    
+ the terminal to wrap it across several visual rows without 
+ inserting any hard newline into the canonical text, which  
+ is exactly the fidelity boundary that canonical-copy       
+ preserves and that mouse-drag selection currently does not 
+ 。                                                         
+                                                            
+ 然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨  
+ 章学术考镜源流，transcript 不作进程日志展示而作工作过程的  
+ 书目呈现，recap 目行是著录错误尾部是提要朱记只落于失败     
+ ，thinking 归不著录之列，review-safe 是著录学的不滥收，投  
+ 影不入模型上下文是书目不混入正文，scrollback 刻成不改是刻  
+ 本工艺的本分，每一行都承重。                               
+                                                            
+ 接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 
+ 中文 mixed width 混排，用于验证 visibleWidth 对 CJK 双列与 
+ 拉丁单列的混合计算是否正确，尤其在窄终端 40 列时悬挂与断点 
+ 位置。                                                     
+                                                            
+ 最后一段带内嵌代码与链接：命令 ./scripts/regression.sh     
+ --live 与文档 https://omp.sh/docs/tools 应当按原文复制，中 
+ 间若有软折行不得引入换行符。                               
+
+──── width=60 · user-gutter (S1) ────
+│ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘
+  贴长段落时，pi 将整段作为单条 user message 渲染；重点是验 
+  证折行、CJK 双列宽度、无换行清理，以及后续 /copy-answer 是
+  否按逻辑段复制（而不是按视觉行）。                        
+                                                            
+  这是一段非常长的英文句子，用来验证英文在硬折行下的行为    
+  ：The quick brown fox jumps over the lazy dog while the   
+  quick brown fox jumps over the lazy dog again and again   
+  until the sentence finally reaches a length that forces   
+  the terminal to wrap it across several visual rows without
+  inserting any hard newline into the canonical text, which 
+  is exactly the fidelity boundary that canonical-copy      
+  preserves and that mouse-drag selection currently does not
+  。                                                        
+                                                            
+  然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨 
+  章学术考镜源流，transcript 不作进程日志展示而作工作过程的 
+  书目呈现，recap 目行是著录错误尾部是提要朱记只落于失败    
+  ，thinking 归不著录之列，review-safe 是著录学的不滥收，投 
+  影不入模型上下文是书目不混入正文，scrollback 刻成不改是刻 
+  本工艺的本分，每一行都承重。                              
+                                                            
+  接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890
+  中文 mixed width 混排，用于验证 visibleWidth 对 CJK 双列与
+  拉丁单列的混合计算是否正确，尤其在窄终端 40 列时悬挂与断点
+  位置。                                                    
+                                                            
+  最后一段带内嵌代码与链接：命令 ./scripts/regression.sh    
+  --live 与文档 https://omp.sh/docs/tools 应当按原文复制，中
+  间若有软折行不得引入换行符。                              
+
+──── width=60 · assistant-body (S2) ────
+
+  H1 一级标题                                               
+                                                            
+  正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以   
+  bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度   
+  分层。                                                    
+                                                            
+  H2 二级标题                                               
+                                                            
+  二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常  
+  见的一档层级。                                            
+                                                            
+  ### H3 三级标题                                           
+                                                            
+  三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto    
+  的 projectDeepHeadings 会将其投影为 ## › 标题             
+  （display-only）。                                        
+                                                            
+  #### H4 四级标题                                          
+                                                            
+  四级标题正文。若未启用投影，此处显示 #### 四级标题 原始   
+  前缀。                                                    
+                                                            
+  ##### H5 五级标题                                         
+                                                            
+  五级标题正文。                                            
+                                                            
+  ###### H6 六级标题                                        
+                                                            
+  六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题  
+  最严重的一档。                                            
+                                                            
+  同级并列                                                  
+                                                            
+  另一段 H2，验证同档标题连续出现时的留白与层级。           
+
+──── width=60 · tool-index-ok (S3) ────
+  bash ls -la                                               
+
+──── width=60 · tool-index-fail (S3) ────
+
+                                                            
+ $ ./process.sh                                             
+                                                            
+ Error: boom                                                
+                                                            
+
+──── width=60 · thinking-hidden (T2-1 compat) ────
+
+ Thinking...                                                
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不  
+  滥收。                                                    
+
+──── width=60 · thinking-collapsed (T2-2) ────
+
+ Thinking...                                                
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不  
+  滥收。                                                    
+
+──── width=60 · thinking-preview (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、    
+ preview 有界首尾摘要、full 完整原…/重建同源同序,身份稳定   
+ (I7-1)。结束标记 TAIL_END_MARKER。                         
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不  
+  滥收。                                                    
+
+──── width=60 · thinking-full (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、    
+ preview 有界首尾摘要、full 完整原文。著录层纪律要求        
+ thinking 默认归不著录之列,故默认 collapsed;仅当用户主动展  
+ 开时才进入预览或全文。preview 预算取 head 64 字符 + 省略号 
+ + tail 40 字符,Text 自动折行保证窄列零超宽;full 则是完整原 
+ 文,经 assistant-thinking Markdown 变换渲染,thinkingText 色 
+ + italic。fold 状态纯属 UI 内存,不写 session、不入模型上下 
+ 文;entryId 由 assistant 消息序数与 run 序数推导,流式/恢复/ 
+ 重建同源同序,身份稳定(I7-1)。结束标记 TAIL_END_MARKER。    
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不  
+  滥收。                                                    
+
+──── width=80 · md-multilevel (raw) ────
+ H1 一级标题                                                                    
+                                                                                
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现    
+ ；Motto 主题下 mdHeading 取 dim 明度分层。                                     
+                                                                                
+ H2 二级标题                                                                    
+                                                                                
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。         
+                                                                                
+ ### H3 三级标题                                                                
+                                                                                
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings  
+ 会将其投影为 ## › 标题（display-only）。                                       
+                                                                                
+ #### H4 四级标题                                                               
+                                                                                
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                  
+                                                                                
+ ##### H5 五级标题                                                              
+                                                                                
+ 五级标题正文。                                                                 
+                                                                                
+ ###### H6 六级标题                                                             
+                                                                                
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。         
+                                                                                
+ 同级并列                                                                       
+                                                                                
+ 另一段 H2，验证同档标题连续出现时的留白与层级。                                
+
+──── width=80 · md-multilevel (motto-projected) ────
+ H1 一级标题                                                                    
+                                                                                
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现    
+ ；Motto 主题下 mdHeading 取 dim 明度分层。                                     
+                                                                                
+ H2 二级标题                                                                    
+                                                                                
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。         
+                                                                                
+ › H3 三级标题                                                                  
+                                                                                
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings  
+ 会将其投影为 ## › 标题（display-only）。                                       
+                                                                                
+ › H4 四级标题                                                                  
+                                                                                
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                  
+                                                                                
+ › H5 五级标题                                                                  
+                                                                                
+ 五级标题正文。                                                                 
+                                                                                
+ › H6 六级标题                                                                  
+                                                                                
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。         
+                                                                                
+ 同级并列                                                                       
+                                                                                
+ 另一段 H2，验证同档标题连续出现时的留白与层级。                                
+
+──── width=80 · md-list-quote ────
+ 嵌套列表与引用                                                                 
+                                                                                
+ - 顶层无序项 A                                                                 
+     - 嵌套无序项 A1                                                            
+         - 嵌套无序项 A1a                                                       
+     - 嵌套无序项 A2                                                            
+ - 顶层无序项 B                                                                 
+     1. 嵌套有序项 B1                                                           
+     2. 嵌套有序项 B2                                                           
+         - 再嵌套无序 B2a                                                       
+ - 顶层无序项 C                                                                 
+                                                                                
+ │ 一级引用块。pi 渲染为 │  前缀 + italic。                                     
+ │                                                                              
+ │ │ 嵌套引用。验证两层 │  前缀的对齐与缩进。                                   
+                                                                                
+ │ 引用内嵌代码：const x = 1 与 加粗 与 斜体 与 链接 (https://pi.dev)。         
+                                                                                
+ 任务列表                                                                       
+                                                                                
+ - [ ] 未完成任务项                                                             
+ - [x] 已完成任务项                                                             
+                                                                                
+ 定义性列表（原始 markdown 透传）                                               
+                                                                                
+ term                                                                           
+ : definition line one                                                          
+ : definition line two                                                          
+
+──── width=80 · md-code ────
+ 围栏代码块                                                                     
+                                                                                
+ ```ts                                                                          
+   export function greet(name: string): string {                                
+      // tab 缩进 + 语法高亮                                                    
+      const message = `hello, ${name}`;                                         
+      if (name.length > 10) {                                                   
+         return message.toUpperCase();                                          
+      }                                                                         
+      return message;                                                           
+   }                                                                            
+ ```                                                                            
+                                                                                
+ ```bash                                                                        
+   $ curl -s https://pi.dev/api/latest-version                                  
+   {"version":"0.84.1"}                                                         
+ ```                                                                            
+                                                                                
+ 行内代码 npm install -g --ignore-scripts @earendil-works/pi-coding-agent 与    
+ visibleWidth()。                                                               
+                                                                                
+ 无语言标注围栏                                                                 
+                                                                                
+ ```                                                                            
+   raw fence without language tag                                               
+   second line                                                                  
+ ```                                                                            
+                                                                                
+ 波浪线围栏                                                                     
+                                                                                
+ ```text                                                                        
+   tilde fence content                                                          
+ ```                                                                            
+                                                                                
+ 分隔线                                                                         
+                                                                                
+ 上方一段。                                                                     
+                                                                                
+ ────────────────────────────────────────────────────────────────────────────── 
+                                                                                
+ 下方一段。                                                                     
+                                                                                
+ 转义与行内                                                                     
+                                                                                
+ 删除线 与 strong 与 emphasis 与 codespan。                                     
+                                                                                
+ 公式行内 E = mc²，块级：                                                       
+                                                                                
+ ∞              √π                                                              
+ ∫ e^(-x²) dx = ──                                                              
+ 0              2                                                               
+
+──── width=80 · unicode-tabs-ansi ────
+ Unicode、制表符、ANSI 与超长行                                                 
+                                                                                
+ 以下内容验证：Unicode 全角/半角混排、制表符渲染、字面 ANSI 转义序列、超长行折  
+ 行，以及 CJK 双列宽度在窄终端的表现。                                          
+                                                                                
+ ### Unicode 混排                                                               
+                                                                                
+ - 全角：中文测试１２３４５６７８９０【括号】「引号」——破折号……省略号           
+ - 半角：ABCdef1234567890()[]""''--...                                          
+ - 表情：🚀 🎉 ✅ ❌ 📦 🔧（宽字符在 visibleWidth 中按 2 列计）                 
+ - 组合字符：e\u0301 重音合成 与 CJK 扩展区：𠮷𠮷野家                           
+                                                                                
+ ### 制表符                                                                     
+                                                                                
+ ```                                                                            
+   col1\tcol2\tcol3\tcol4                                                       
+   a\tbb\tccc\tdddd                                                             
+ ```                                                                            
+                                                                                
+ 字面制表符在正文中：\tHello\tWorld（pi 渲染器对 \t 的处理是基线观察点之一）。  
+                                                                                
+ ### 字面 ANSI                                                                  
+                                                                                
+ \u001b[31mred text\u001b[0m 字面转义在 markdown 正文中应原样显示（不做解释执行 
+ ）；工具输出中的 ANSI 由 stripTerminalSequences 处理，复制时被剥离。           
+                                                                                
+ ### 超长单行                                                                   
+                                                                                
+ 这一行没有任何断点、长度超过 200 列的连续拉丁串                                
+ ：abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmn 
+ opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCD 
+ EFGHIJKLMNOPQRSTUVWXYZ0123456789 用于验证硬折与悬挂断点。                      
+                                                                                
+ ### 超长 URL                                                                   
+                                                                                
+ https://github.com/earendil-works/pi/blob/main/packages/coding-agent/src/modes 
+ /interactive/components/assistant-message.ts?plain=1#L123-L456 超长 URL 应完整 
+ 折行且复制时不引入新行。                                                       
+
+──── width=80 · paste-long (user) ────
+ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘贴长段落时，pi 将整  
+ 段作为单条 user message 渲染；重点是验证折行、CJK 双列宽度、无换行清理，以及后 
+ 续 /copy-answer 是否按逻辑段复制（而不是按视觉行）。                           
+                                                                                
+ 这是一段非常长的英文句子，用来验证英文在硬折行下的行为：The quick brown fox    
+ jumps over the lazy dog while the quick brown fox jumps over the lazy dog      
+ again and again until the sentence finally reaches a length that forces the    
+ terminal to wrap it across several visual rows without inserting any hard      
+ newline into the canonical text, which is exactly the fidelity boundary that   
+ canonical-copy preserves and that mouse-drag selection currently does not。    
+                                                                                
+ 然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨章学术考镜源流        
+ ，transcript 不作进程日志展示而作工作过程的书目呈现，recap 目行是著录错误尾部  
+ 是提要朱记只落于失败，thinking 归不著录之列，review-safe 是著录学的不滥收，投  
+ 影不入模型上下文是书目不混入正文，scrollback 刻成不改是刻本工艺的本分，每一行  
+ 都承重。                                                                       
+                                                                                
+ 接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 中文 mixed width 混 
+ 排，用于验证 visibleWidth 对 CJK 双列与拉丁单列的混合计算是否正确，尤其在窄终  
+ 端 40 列时悬挂与断点位置。                                                     
+                                                                                
+ 最后一段带内嵌代码与链接：命令 ./scripts/regression.sh --live 与文档           
+ https://omp.sh/docs/tools 应当按原文复制，中间若有软折行不得引入换行符。       
+
+──── width=80 · user-gutter (S1) ────
+│ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘贴长段落时，pi 将整 
+  段作为单条 user message 渲染；重点是验证折行、CJK 双列宽度、无换行清理，以及后
+  续 /copy-answer 是否按逻辑段复制（而不是按视觉行）。                          
+                                                                                
+  这是一段非常长的英文句子，用来验证英文在硬折行下的行为：The quick brown fox   
+  jumps over the lazy dog while the quick brown fox jumps over the lazy dog     
+  again and again until the sentence finally reaches a length that forces the   
+  terminal to wrap it across several visual rows without inserting any hard     
+  newline into the canonical text, which is exactly the fidelity boundary that  
+  canonical-copy preserves and that mouse-drag selection currently does not。   
+                                                                                
+  然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨章学术考镜源流       
+  ，transcript 不作进程日志展示而作工作过程的书目呈现，recap 目行是著录错误尾部 
+  是提要朱记只落于失败，thinking 归不著录之列，review-safe 是著录学的不滥收，投 
+  影不入模型上下文是书目不混入正文，scrollback 刻成不改是刻本工艺的本分，每一行 
+  都承重。                                                                      
+                                                                                
+  接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 中文 mixed width 混
+  排，用于验证 visibleWidth 对 CJK 双列与拉丁单列的混合计算是否正确，尤其在窄终 
+  端 40 列时悬挂与断点位置。                                                    
+                                                                                
+  最后一段带内嵌代码与链接：命令 ./scripts/regression.sh --live 与文档          
+  https://omp.sh/docs/tools 应当按原文复制，中间若有软折行不得引入换行符。      
+
+──── width=80 · assistant-body (S2) ────
+
+  H1 一级标题                                                                   
+                                                                                
+  正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现   
+  ；Motto 主题下 mdHeading 取 dim 明度分层。                                    
+                                                                                
+  H2 二级标题                                                                   
+                                                                                
+  二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。        
+                                                                                
+  ### H3 三级标题                                                               
+                                                                                
+  三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的                     
+  projectDeepHeadings 会将其投影为 ## › 标题（display-only）。                  
+                                                                                
+  #### H4 四级标题                                                              
+                                                                                
+  四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                 
+                                                                                
+  ##### H5 五级标题                                                             
+                                                                                
+  五级标题正文。                                                                
+                                                                                
+  ###### H6 六级标题                                                            
+                                                                                
+  六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。        
+                                                                                
+  同级并列                                                                      
+                                                                                
+  另一段 H2，验证同档标题连续出现时的留白与层级。                               
+
+──── width=80 · tool-index-ok (S3) ────
+  bash ls -la                                                                   
+
+──── width=80 · tool-index-fail (S3) ────
+
+                                                                                
+ $ ./process.sh                                                                 
+                                                                                
+ Error: boom                                                                    
+                                                                                
+
+──── width=80 · thinking-hidden (T2-1 compat) ────
+
+ Thinking...                                                                    
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                
+
+──── width=80 · thinking-collapsed (T2-2) ────
+
+ Thinking...                                                                    
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                
+
+──── width=80 · thinking-preview (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、preview 有界首尾摘要、  
+ full 完整原…/重建同源同序,身份稳定(I7-1)。结束标记 TAIL_END_MARKER。           
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                
+
+──── width=80 · thinking-full (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、preview 有界首尾摘要、  
+ full 完整原文。著录层纪律要求 thinking 默认归不著录之列,故默认 collapsed;仅当  
+ 用户主动展开时才进入预览或全文。preview 预算取 head 64 字符 + 省略号 + tail 40 
+ 字符,Text 自动折行保证窄列零超宽;full 则是完整原文,经 assistant-thinking       
+ Markdown 变换渲染,thinkingText 色 + italic。fold 状态纯属 UI 内存,不写 session 
+ 、不入模型上下文;entryId 由 assistant 消息序数与 run 序数推导,流式/恢复/重建同 
+ 源同序,身份稳定(I7-1)。结束标记 TAIL_END_MARKER。                              
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                
+
+──── width=120 · md-multilevel (raw) ────
+ H1 一级标题                                                                                                            
+                                                                                                                        
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分层。  
+                                                                                                                        
+ H2 二级标题                                                                                                            
+                                                                                                                        
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。                                                 
+                                                                                                                        
+ ### H3 三级标题                                                                                                        
+                                                                                                                        
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings 会将其投影为 ## › 标题（display-only）。 
+                                                                                                                        
+ #### H4 四级标题                                                                                                       
+                                                                                                                        
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                                                          
+                                                                                                                        
+ ##### H5 五级标题                                                                                                      
+                                                                                                                        
+ 五级标题正文。                                                                                                         
+                                                                                                                        
+ ###### H6 六级标题                                                                                                     
+                                                                                                                        
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。                                                 
+                                                                                                                        
+ 同级并列                                                                                                               
+                                                                                                                        
+ 另一段 H2，验证同档标题连续出现时的留白与层级。                                                                        
+
+──── width=120 · md-multilevel (motto-projected) ────
+ H1 一级标题                                                                                                            
+                                                                                                                        
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分层。  
+                                                                                                                        
+ H2 二级标题                                                                                                            
+                                                                                                                        
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。                                                 
+                                                                                                                        
+ › H3 三级标题                                                                                                          
+                                                                                                                        
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings 会将其投影为 ## › 标题（display-only）。 
+                                                                                                                        
+ › H4 四级标题                                                                                                          
+                                                                                                                        
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                                                          
+                                                                                                                        
+ › H5 五级标题                                                                                                          
+                                                                                                                        
+ 五级标题正文。                                                                                                         
+                                                                                                                        
+ › H6 六级标题                                                                                                          
+                                                                                                                        
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。                                                 
+                                                                                                                        
+ 同级并列                                                                                                               
+                                                                                                                        
+ 另一段 H2，验证同档标题连续出现时的留白与层级。                                                                        
+
+──── width=120 · md-list-quote ────
+ 嵌套列表与引用                                                                                                         
+                                                                                                                        
+ - 顶层无序项 A                                                                                                         
+     - 嵌套无序项 A1                                                                                                    
+         - 嵌套无序项 A1a                                                                                               
+     - 嵌套无序项 A2                                                                                                    
+ - 顶层无序项 B                                                                                                         
+     1. 嵌套有序项 B1                                                                                                   
+     2. 嵌套有序项 B2                                                                                                   
+         - 再嵌套无序 B2a                                                                                               
+ - 顶层无序项 C                                                                                                         
+                                                                                                                        
+ │ 一级引用块。pi 渲染为 │  前缀 + italic。                                                                             
+ │                                                                                                                      
+ │ │ 嵌套引用。验证两层 │  前缀的对齐与缩进。                                                                           
+                                                                                                                        
+ │ 引用内嵌代码：const x = 1 与 加粗 与 斜体 与 链接 (https://pi.dev)。                                                 
+                                                                                                                        
+ 任务列表                                                                                                               
+                                                                                                                        
+ - [ ] 未完成任务项                                                                                                     
+ - [x] 已完成任务项                                                                                                     
+                                                                                                                        
+ 定义性列表（原始 markdown 透传）                                                                                       
+                                                                                                                        
+ term                                                                                                                   
+ : definition line one                                                                                                  
+ : definition line two                                                                                                  
+
+──── width=120 · md-code ────
+ 围栏代码块                                                                                                             
+                                                                                                                        
+ ```ts                                                                                                                  
+   export function greet(name: string): string {                                                                        
+      // tab 缩进 + 语法高亮                                                                                            
+      const message = `hello, ${name}`;                                                                                 
+      if (name.length > 10) {                                                                                           
+         return message.toUpperCase();                                                                                  
+      }                                                                                                                 
+      return message;                                                                                                   
+   }                                                                                                                    
+ ```                                                                                                                    
+                                                                                                                        
+ ```bash                                                                                                                
+   $ curl -s https://pi.dev/api/latest-version                                                                          
+   {"version":"0.84.1"}                                                                                                 
+ ```                                                                                                                    
+                                                                                                                        
+ 行内代码 npm install -g --ignore-scripts @earendil-works/pi-coding-agent 与 visibleWidth()。                           
+                                                                                                                        
+ 无语言标注围栏                                                                                                         
+                                                                                                                        
+ ```                                                                                                                    
+   raw fence without language tag                                                                                       
+   second line                                                                                                          
+ ```                                                                                                                    
+                                                                                                                        
+ 波浪线围栏                                                                                                             
+                                                                                                                        
+ ```text                                                                                                                
+   tilde fence content                                                                                                  
+ ```                                                                                                                    
+                                                                                                                        
+ 分隔线                                                                                                                 
+                                                                                                                        
+ 上方一段。                                                                                                             
+                                                                                                                        
+ ────────────────────────────────────────────────────────────────────────────────                                       
+                                                                                                                        
+ 下方一段。                                                                                                             
+                                                                                                                        
+ 转义与行内                                                                                                             
+                                                                                                                        
+ 删除线 与 strong 与 emphasis 与 codespan。                                                                             
+                                                                                                                        
+ 公式行内 E = mc²，块级：                                                                                               
+                                                                                                                        
+ ∞              √π                                                                                                      
+ ∫ e^(-x²) dx = ──                                                                                                      
+ 0              2                                                                                                       
+
+──── width=120 · unicode-tabs-ansi ────
+ Unicode、制表符、ANSI 与超长行                                                                                         
+                                                                                                                        
+ 以下内容验证：Unicode 全角/半角混排、制表符渲染、字面 ANSI 转义序列、超长行折行，以及 CJK 双列宽度在窄终端的表现。     
+                                                                                                                        
+ ### Unicode 混排                                                                                                       
+                                                                                                                        
+ - 全角：中文测试１２３４５６７８９０【括号】「引号」——破折号……省略号                                                   
+ - 半角：ABCdef1234567890()[]""''--...                                                                                  
+ - 表情：🚀 🎉 ✅ ❌ 📦 🔧（宽字符在 visibleWidth 中按 2 列计）                                                         
+ - 组合字符：e\u0301 重音合成 与 CJK 扩展区：𠮷𠮷野家                                                                   
+                                                                                                                        
+ ### 制表符                                                                                                             
+                                                                                                                        
+ ```                                                                                                                    
+   col1\tcol2\tcol3\tcol4                                                                                               
+   a\tbb\tccc\tdddd                                                                                                     
+ ```                                                                                                                    
+                                                                                                                        
+ 字面制表符在正文中：\tHello\tWorld（pi 渲染器对 \t 的处理是基线观察点之一）。                                          
+                                                                                                                        
+ ### 字面 ANSI                                                                                                          
+                                                                                                                        
+ \u001b[31mred text\u001b[0m 字面转义在 markdown 正文中应原样显示（不做解释执行）；工具输出中的 ANSI 由                 
+ stripTerminalSequences 处理，复制时被剥离。                                                                            
+                                                                                                                        
+ ### 超长单行                                                                                                           
+                                                                                                                        
+ 这一行没有任何断点、长度超过 200 列的连续拉丁串                                                                        
+ ：abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01 
+ 23456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 用于验证硬折与悬挂断点。                        
+                                                                                                                        
+ ### 超长 URL                                                                                                           
+                                                                                                                        
+ https://github.com/earendil-works/pi/blob/main/packages/coding-agent/src/modes/interactive/components/assistant-messag 
+ e.ts?plain=1#L123-L456 超长 URL 应完整折行且复制时不引入新行。                                                         
+
+──── width=120 · paste-long (user) ────
+ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘贴长段落时，pi 将整段作为单条 user message 渲染；重点是验证  
+ 折行、CJK 双列宽度、无换行清理，以及后续 /copy-answer 是否按逻辑段复制（而不是按视觉行）。                             
+                                                                                                                        
+ 这是一段非常长的英文句子，用来验证英文在硬折行下的行为：The quick brown fox jumps over the lazy dog while the quick    
+ brown fox jumps over the lazy dog again and again until the sentence finally reaches a length that forces the terminal 
+ to wrap it across several visual rows without inserting any hard newline into the canonical text, which is exactly the 
+ fidelity boundary that canonical-copy preserves and that mouse-drag selection currently does not。                     
+                                                                                                                        
+ 然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨章学术考镜源流，transcript 不作进程日志展示而作工作过程的书目 
+ 呈现，recap 目行是著录错误尾部是提要朱记只落于失败，thinking 归不著录之列，review-safe 是著录学的不滥收，投影不入模型  
+ 上下文是书目不混入正文，scrollback 刻成不改是刻本工艺的本分，每一行都承重。                                            
+                                                                                                                        
+ 接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 中文 mixed width 混排，用于验证 visibleWidth 对 CJK 双列与  
+ 拉丁单列的混合计算是否正确，尤其在窄终端 40 列时悬挂与断点位置。                                                       
+                                                                                                                        
+ 最后一段带内嵌代码与链接：命令 ./scripts/regression.sh --live 与文档 https://omp.sh/docs/tools 应当按原文复制，中间若  
+ 有软折行不得引入换行符。                                                                                               
+
+──── width=120 · user-gutter (S1) ────
+│ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘贴长段落时，pi 将整段作为单条 user message 渲染；重点是验证 
+  折行、CJK 双列宽度、无换行清理，以及后续 /copy-answer 是否按逻辑段复制（而不是按视觉行）。                            
+                                                                                                                        
+  这是一段非常长的英文句子，用来验证英文在硬折行下的行为：The quick brown fox jumps over the lazy dog while the quick   
+  brown fox jumps over the lazy dog again and again until the sentence finally reaches a length that forces the terminal
+  to wrap it across several visual rows without inserting any hard newline into the canonical text, which is exactly the
+  fidelity boundary that canonical-copy preserves and that mouse-drag selection currently does not。                    
+                                                                                                                        
+  然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨章学术考镜源流，transcript 不作进程日志展示而作工作过程的书目
+  呈现，recap 目行是著录错误尾部是提要朱记只落于失败，thinking 归不著录之列，review-safe 是著录学的不滥收，投影不入模型 
+  上下文是书目不混入正文，scrollback 刻成不改是刻本工艺的本分，每一行都承重。                                           
+                                                                                                                        
+  接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 中文 mixed width 混排，用于验证 visibleWidth 对 CJK 双列与 
+  拉丁单列的混合计算是否正确，尤其在窄终端 40 列时悬挂与断点位置。                                                      
+                                                                                                                        
+  最后一段带内嵌代码与链接：命令 ./scripts/regression.sh --live 与文档 https://omp.sh/docs/tools 应当按原文复制，中间若 
+  有软折行不得引入换行符。                                                                                              
+
+──── width=120 · assistant-body (S2) ────
+
+  H1 一级标题                                                                                                           
+                                                                                                                        
+  正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分层   
+  。                                                                                                                    
+                                                                                                                        
+  H2 二级标题                                                                                                           
+                                                                                                                        
+  二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。                                                
+                                                                                                                        
+  ### H3 三级标题                                                                                                       
+                                                                                                                        
+  三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings 会将其投影为 ## › 标题（display-only）  
+  。                                                                                                                    
+                                                                                                                        
+  #### H4 四级标题                                                                                                      
+                                                                                                                        
+  四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                                                         
+                                                                                                                        
+  ##### H5 五级标题                                                                                                     
+                                                                                                                        
+  五级标题正文。                                                                                                        
+                                                                                                                        
+  ###### H6 六级标题                                                                                                    
+                                                                                                                        
+  六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。                                                
+                                                                                                                        
+  同级并列                                                                                                              
+                                                                                                                        
+  另一段 H2，验证同档标题连续出现时的留白与层级。                                                                       
+
+──── width=120 · tool-index-ok (S3) ────
+  bash ls -la                                                                                                           
+
+──── width=120 · tool-index-fail (S3) ────
+
+                                                                                                                        
+ $ ./process.sh                                                                                                         
+                                                                                                                        
+ Error: boom                                                                                                            
+                                                                                                                        
+
+──── width=120 · thinking-hidden (T2-1 compat) ────
+
+ Thinking...                                                                                                            
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                        
+
+──── width=120 · thinking-collapsed (T2-2) ────
+
+ Thinking...                                                                                                            
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                        
+
+──── width=120 · thinking-preview (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、preview 有界首尾摘要、full 完整原…/重建同源同序,身份稳定(I7-1)  
+ 。结束标记 TAIL_END_MARKER。                                                                                           
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                        
+
+──── width=120 · thinking-full (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、preview 有界首尾摘要、full 完整原文。著录层纪律要求 thinking 默 
+ 认归不著录之列,故默认 collapsed;仅当用户主动展开时才进入预览或全文。preview 预算取 head 64 字符 + 省略号 + tail 40 字  
+ 符,Text 自动折行保证窄列零超宽;full 则是完整原文,经 assistant-thinking Markdown 变换渲染,thinkingText 色 + italic。    
+ fold 状态纯属 UI 内存,不写 session、不入模型上下文;entryId 由 assistant 消息序数与 run 序数推导,流式/恢复/重建同源同序 
+ ,身份稳定(I7-1)。结束标记 TAIL_END_MARKER。                                                                            
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                        
+
+──── width=200 · md-multilevel (raw) ────
+ H1 一级标题                                                                                                                                                                                            
+                                                                                                                                                                                                        
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分层。                                                                                  
+                                                                                                                                                                                                        
+ H2 二级标题                                                                                                                                                                                            
+                                                                                                                                                                                                        
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。                                                                                                                                 
+                                                                                                                                                                                                        
+ ### H3 三级标题                                                                                                                                                                                        
+                                                                                                                                                                                                        
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings 会将其投影为 ## › 标题（display-only）。                                                                                 
+                                                                                                                                                                                                        
+ #### H4 四级标题                                                                                                                                                                                       
+                                                                                                                                                                                                        
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                                                                                                                                          
+                                                                                                                                                                                                        
+ ##### H5 五级标题                                                                                                                                                                                      
+                                                                                                                                                                                                        
+ 五级标题正文。                                                                                                                                                                                         
+                                                                                                                                                                                                        
+ ###### H6 六级标题                                                                                                                                                                                     
+                                                                                                                                                                                                        
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。                                                                                                                                 
+                                                                                                                                                                                                        
+ 同级并列                                                                                                                                                                                               
+                                                                                                                                                                                                        
+ 另一段 H2，验证同档标题连续出现时的留白与层级。                                                                                                                                                        
+
+──── width=200 · md-multilevel (motto-projected) ────
+ H1 一级标题                                                                                                                                                                                            
+                                                                                                                                                                                                        
+ 正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分层。                                                                                  
+                                                                                                                                                                                                        
+ H2 二级标题                                                                                                                                                                                            
+                                                                                                                                                                                                        
+ 二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。                                                                                                                                 
+                                                                                                                                                                                                        
+ › H3 三级标题                                                                                                                                                                                          
+                                                                                                                                                                                                        
+ 三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings 会将其投影为 ## › 标题（display-only）。                                                                                 
+                                                                                                                                                                                                        
+ › H4 四级标题                                                                                                                                                                                          
+                                                                                                                                                                                                        
+ 四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                                                                                                                                          
+                                                                                                                                                                                                        
+ › H5 五级标题                                                                                                                                                                                          
+                                                                                                                                                                                                        
+ 五级标题正文。                                                                                                                                                                                         
+                                                                                                                                                                                                        
+ › H6 六级标题                                                                                                                                                                                          
+                                                                                                                                                                                                        
+ 六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。                                                                                                                                 
+                                                                                                                                                                                                        
+ 同级并列                                                                                                                                                                                               
+                                                                                                                                                                                                        
+ 另一段 H2，验证同档标题连续出现时的留白与层级。                                                                                                                                                        
+
+──── width=200 · md-list-quote ────
+ 嵌套列表与引用                                                                                                                                                                                         
+                                                                                                                                                                                                        
+ - 顶层无序项 A                                                                                                                                                                                         
+     - 嵌套无序项 A1                                                                                                                                                                                    
+         - 嵌套无序项 A1a                                                                                                                                                                               
+     - 嵌套无序项 A2                                                                                                                                                                                    
+ - 顶层无序项 B                                                                                                                                                                                         
+     1. 嵌套有序项 B1                                                                                                                                                                                   
+     2. 嵌套有序项 B2                                                                                                                                                                                   
+         - 再嵌套无序 B2a                                                                                                                                                                               
+ - 顶层无序项 C                                                                                                                                                                                         
+                                                                                                                                                                                                        
+ │ 一级引用块。pi 渲染为 │  前缀 + italic。                                                                                                                                                             
+ │                                                                                                                                                                                                      
+ │ │ 嵌套引用。验证两层 │  前缀的对齐与缩进。                                                                                                                                                           
+                                                                                                                                                                                                        
+ │ 引用内嵌代码：const x = 1 与 加粗 与 斜体 与 链接 (https://pi.dev)。                                                                                                                                 
+                                                                                                                                                                                                        
+ 任务列表                                                                                                                                                                                               
+                                                                                                                                                                                                        
+ - [ ] 未完成任务项                                                                                                                                                                                     
+ - [x] 已完成任务项                                                                                                                                                                                     
+                                                                                                                                                                                                        
+ 定义性列表（原始 markdown 透传）                                                                                                                                                                       
+                                                                                                                                                                                                        
+ term                                                                                                                                                                                                   
+ : definition line one                                                                                                                                                                                  
+ : definition line two                                                                                                                                                                                  
+
+──── width=200 · md-code ────
+ 围栏代码块                                                                                                                                                                                             
+                                                                                                                                                                                                        
+ ```ts                                                                                                                                                                                                  
+   export function greet(name: string): string {                                                                                                                                                        
+      // tab 缩进 + 语法高亮                                                                                                                                                                            
+      const message = `hello, ${name}`;                                                                                                                                                                 
+      if (name.length > 10) {                                                                                                                                                                           
+         return message.toUpperCase();                                                                                                                                                                  
+      }                                                                                                                                                                                                 
+      return message;                                                                                                                                                                                   
+   }                                                                                                                                                                                                    
+ ```                                                                                                                                                                                                    
+                                                                                                                                                                                                        
+ ```bash                                                                                                                                                                                                
+   $ curl -s https://pi.dev/api/latest-version                                                                                                                                                          
+   {"version":"0.84.1"}                                                                                                                                                                                 
+ ```                                                                                                                                                                                                    
+                                                                                                                                                                                                        
+ 行内代码 npm install -g --ignore-scripts @earendil-works/pi-coding-agent 与 visibleWidth()。                                                                                                           
+                                                                                                                                                                                                        
+ 无语言标注围栏                                                                                                                                                                                         
+                                                                                                                                                                                                        
+ ```                                                                                                                                                                                                    
+   raw fence without language tag                                                                                                                                                                       
+   second line                                                                                                                                                                                          
+ ```                                                                                                                                                                                                    
+                                                                                                                                                                                                        
+ 波浪线围栏                                                                                                                                                                                             
+                                                                                                                                                                                                        
+ ```text                                                                                                                                                                                                
+   tilde fence content                                                                                                                                                                                  
+ ```                                                                                                                                                                                                    
+                                                                                                                                                                                                        
+ 分隔线                                                                                                                                                                                                 
+                                                                                                                                                                                                        
+ 上方一段。                                                                                                                                                                                             
+                                                                                                                                                                                                        
+ ────────────────────────────────────────────────────────────────────────────────                                                                                                                       
+                                                                                                                                                                                                        
+ 下方一段。                                                                                                                                                                                             
+                                                                                                                                                                                                        
+ 转义与行内                                                                                                                                                                                             
+                                                                                                                                                                                                        
+ 删除线 与 strong 与 emphasis 与 codespan。                                                                                                                                                             
+                                                                                                                                                                                                        
+ 公式行内 E = mc²，块级：                                                                                                                                                                               
+                                                                                                                                                                                                        
+ ∞              √π                                                                                                                                                                                      
+ ∫ e^(-x²) dx = ──                                                                                                                                                                                      
+ 0              2                                                                                                                                                                                       
+
+──── width=200 · unicode-tabs-ansi ────
+ Unicode、制表符、ANSI 与超长行                                                                                                                                                                         
+                                                                                                                                                                                                        
+ 以下内容验证：Unicode 全角/半角混排、制表符渲染、字面 ANSI 转义序列、超长行折行，以及 CJK 双列宽度在窄终端的表现。                                                                                     
+                                                                                                                                                                                                        
+ ### Unicode 混排                                                                                                                                                                                       
+                                                                                                                                                                                                        
+ - 全角：中文测试１２３４５６７８９０【括号】「引号」——破折号……省略号                                                                                                                                   
+ - 半角：ABCdef1234567890()[]""''--...                                                                                                                                                                  
+ - 表情：🚀 🎉 ✅ ❌ 📦 🔧（宽字符在 visibleWidth 中按 2 列计）                                                                                                                                         
+ - 组合字符：e\u0301 重音合成 与 CJK 扩展区：𠮷𠮷野家                                                                                                                                                   
+                                                                                                                                                                                                        
+ ### 制表符                                                                                                                                                                                             
+                                                                                                                                                                                                        
+ ```                                                                                                                                                                                                    
+   col1\tcol2\tcol3\tcol4                                                                                                                                                                               
+   a\tbb\tccc\tdddd                                                                                                                                                                                     
+ ```                                                                                                                                                                                                    
+                                                                                                                                                                                                        
+ 字面制表符在正文中：\tHello\tWorld（pi 渲染器对 \t 的处理是基线观察点之一）。                                                                                                                          
+                                                                                                                                                                                                        
+ ### 字面 ANSI                                                                                                                                                                                          
+                                                                                                                                                                                                        
+ \u001b[31mred text\u001b[0m 字面转义在 markdown 正文中应原样显示（不做解释执行）；工具输出中的 ANSI 由 stripTerminalSequences 处理，复制时被剥离。                                                     
+                                                                                                                                                                                                        
+ ### 超长单行                                                                                                                                                                                           
+                                                                                                                                                                                                        
+ 这一行没有任何断点、长度超过 200 列的连续拉丁串                                                                                                                                                        
+ ：abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 用于验证  
+ 硬折与悬挂断点。                                                                                                                                                                                       
+                                                                                                                                                                                                        
+ ### 超长 URL                                                                                                                                                                                           
+                                                                                                                                                                                                        
+ https://github.com/earendil-works/pi/blob/main/packages/coding-agent/src/modes/interactive/components/assistant-message.ts?plain=1#L123-L456 超长 URL 应完整折行且复制时不引入新行。                   
+
+──── width=200 · paste-long (user) ────
+ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘贴长段落时，pi 将整段作为单条 user message 渲染；重点是验证折行、CJK 双列宽度、无换行清理，以及后续 /copy-answer 是否按逻辑段复制（而不是按  
+ 视觉行）。                                                                                                                                                                                             
+                                                                                                                                                                                                        
+ 这是一段非常长的英文句子，用来验证英文在硬折行下的行为：The quick brown fox jumps over the lazy dog while the quick brown fox jumps over the lazy dog again and again until the sentence finally       
+ reaches a length that forces the terminal to wrap it across several visual rows without inserting any hard newline into the canonical text, which is exactly the fidelity boundary that canonical-copy 
+ preserves and that mouse-drag selection currently does not。                                                                                                                                           
+                                                                                                                                                                                                        
+ 然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨章学术考镜源流，transcript 不作进程日志展示而作工作过程的书目呈现，recap 目行是著录错误尾部是提要朱记只落于失败，thinking 归不著录之列        
+ ，review-safe 是著录学的不滥收，投影不入模型上下文是书目不混入正文，scrollback 刻成不改是刻本工艺的本分，每一行都承重。                                                                                
+                                                                                                                                                                                                        
+ 接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 中文 mixed width 混排，用于验证 visibleWidth 对 CJK 双列与拉丁单列的混合计算是否正确，尤其在窄终端 40 列时悬挂与断点位置。                  
+                                                                                                                                                                                                        
+ 最后一段带内嵌代码与链接：命令 ./scripts/regression.sh --live 与文档 https://omp.sh/docs/tools 应当按原文复制，中间若有软折行不得引入换行符。                                                          
+
+──── width=200 · user-gutter (S1) ────
+│ 以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘贴长段落时，pi 将整段作为单条 user message 渲染；重点是验证折行、CJK 双列宽度、无换行清理，以及后续 /copy-answer 是否按逻辑段复制（而不是按 
+  视觉行）。                                                                                                                                                                                            
+                                                                                                                                                                                                        
+  这是一段非常长的英文句子，用来验证英文在硬折行下的行为：The quick brown fox jumps over the lazy dog while the quick brown fox jumps over the lazy dog again and again until the sentence finally      
+  reaches a length that forces the terminal to wrap it across several visual rows without inserting any hard newline into the canonical text, which is exactly the fidelity boundary that canonical-copy
+  preserves and that mouse-drag selection currently does not。                                                                                                                                          
+                                                                                                                                                                                                        
+  然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨章学术考镜源流，transcript 不作进程日志展示而作工作过程的书目呈现，recap 目行是著录错误尾部是提要朱记只落于失败，thinking 归不著录之列       
+  ，review-safe 是著录学的不滥收，投影不入模型上下文是书目不混入正文，scrollback 刻成不改是刻本工艺的本分，每一行都承重。                                                                               
+                                                                                                                                                                                                        
+  接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 中文 mixed width 混排，用于验证 visibleWidth 对 CJK 双列与拉丁单列的混合计算是否正确，尤其在窄终端 40 列时悬挂与断点位置。                 
+                                                                                                                                                                                                        
+  最后一段带内嵌代码与链接：命令 ./scripts/regression.sh --live 与文档 https://omp.sh/docs/tools 应当按原文复制，中间若有软折行不得引入换行符。                                                         
+
+──── width=200 · assistant-body (S2) ────
+
+  H1 一级标题                                                                                                                                                                                           
+                                                                                                                                                                                                        
+  正文段落。此处演示一级标题在 pi 渲染器中不带 # 前缀，以 bold+underline 呈现；Motto 主题下 mdHeading 取 dim 明度分层。                                                                                 
+                                                                                                                                                                                                        
+  H2 二级标题                                                                                                                                                                                           
+                                                                                                                                                                                                        
+  二级标题同样不带 # 前缀，仅 bold。这是收工 review 屏最常见的一档层级。                                                                                                                                
+                                                                                                                                                                                                        
+  ### H3 三级标题                                                                                                                                                                                       
+                                                                                                                                                                                                        
+  三级及以下在 pi 渲染器中保留 # 前缀（设计特性）；Motto 的 projectDeepHeadings 会将其投影为 ## › 标题（display-only）。                                                                                
+                                                                                                                                                                                                        
+  #### H4 四级标题                                                                                                                                                                                      
+                                                                                                                                                                                                        
+  四级标题正文。若未启用投影，此处显示 #### 四级标题 原始前缀。                                                                                                                                         
+                                                                                                                                                                                                        
+  ##### H5 五级标题                                                                                                                                                                                     
+                                                                                                                                                                                                        
+  五级标题正文。                                                                                                                                                                                        
+                                                                                                                                                                                                        
+  ###### H6 六级标题                                                                                                                                                                                    
+                                                                                                                                                                                                        
+  六级标题正文。H6 原始前缀最长（###### ），是层级别辨问题最严重的一档。                                                                                                                                
+                                                                                                                                                                                                        
+  同级并列                                                                                                                                                                                              
+                                                                                                                                                                                                        
+  另一段 H2，验证同档标题连续出现时的留白与层级。                                                                                                                                                       
+
+──── width=200 · tool-index-ok (S3) ────
+  bash ls -la                                                                                                                                                                                           
+
+──── width=200 · tool-index-fail (S3) ────
+
+                                                                                                                                                                                                        
+ $ ./process.sh                                                                                                                                                                                         
+                                                                                                                                                                                                        
+ Error: boom                                                                                                                                                                                            
+                                                                                                                                                                                                        
+
+──── width=200 · thinking-hidden (T2-1 compat) ────
+
+ Thinking...                                                                                                                                                                                            
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                                                                                                        
+
+──── width=200 · thinking-collapsed (T2-2) ────
+
+ Thinking...                                                                                                                                                                                            
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                                                                                                        
+
+──── width=200 · thinking-preview (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、preview 有界首尾摘要、full 完整原…/重建同源同序,身份稳定(I7-1)。结束标记 TAIL_END_MARKER。                                                      
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                                                                                                        
+
+──── width=200 · thinking-full (T2-2) ────
+
+ 思考:TUI 的 thinking 披露应分三级——collapsed 单行标签、preview 有界首尾摘要、full 完整原文。著录层纪律要求 thinking 默认归不著录之列,故默认 collapsed;仅当用户主动展开时才进入预览或全文。preview 预算 
+ 取 head 64 字符 + 省略号 + tail 40 字符,Text 自动折行保证窄列零超宽;full 则是完整原文,经 assistant-thinking Markdown 变换渲染,thinkingText 色 + italic。fold 状态纯属 UI 内存,不写 session、不入模型上 
+ 下文;entryId 由 assistant 消息序数与 run 序数推导,流式/恢复/重建同源同序,身份稳定(I7-1)。结束标记 TAIL_END_MARKER。                                                                                    
+
+  正文段落。thinking 归不著录之列,review-safe 是著录学的不滥收。                                                                                                                                        

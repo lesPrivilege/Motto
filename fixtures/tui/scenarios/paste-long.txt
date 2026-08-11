@@ -1,0 +1,9 @@
+以下是一段模拟「长文本 paste」的用户输入。用户从外部文档粘贴长段落时，pi 将整段作为单条 user message 渲染；重点是验证折行、CJK 双列宽度、无换行清理，以及后续 /copy-answer 是否按逻辑段复制（而不是按视觉行）。
+
+这是一段非常长的英文句子，用来验证英文在硬折行下的行为：The quick brown fox jumps over the lazy dog while the quick brown fox jumps over the lazy dog again and again until the sentence finally reaches a length that forces the terminal to wrap it across several visual rows without inserting any hard newline into the canonical text, which is exactly the fidelity boundary that canonical-copy preserves and that mouse-drag selection currently does not。
+
+然后是一段中文长句，验证 CJK 双列宽度：目录版本之学讲究辨章学术考镜源流，transcript 不作进程日志展示而作工作过程的书目呈现，recap 目行是著录错误尾部是提要朱记只落于失败，thinking 归不著录之列，review-safe 是著录学的不滥收，投影不入模型上下文是书目不混入正文，scrollback 刻成不改是刻本工艺的本分，每一行都承重。
+
+接下来是刻意构造的混合宽度行：abc 中文 def 中文 1234567890 中文 mixed width 混排，用于验证 visibleWidth 对 CJK 双列与拉丁单列的混合计算是否正确，尤其在窄终端 40 列时悬挂与断点位置。
+
+最后一段带内嵌代码与链接：命令 `./scripts/regression.sh --live` 与文档 https://omp.sh/docs/tools 应当按原文复制，中间若有软折行不得引入换行符。

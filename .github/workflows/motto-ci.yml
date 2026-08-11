@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  deterministic-checks:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pack dev deps (typecheck)
+        run: |
+          for d in extensions/*/; do
+            if [ -f "$d/package.json" ]; then (cd "$d" && npm install --no-audit --no-fund); fi
+          done
+
+      - name: Governance checks (structure / registry / checksum metadata / binary guard / typecheck)
+        run: bash scripts/ci-checks.sh governance
+
+      - name: No-permission regression (smoke / boundary / netcheck / proctree / permcheck)
+        run: bash scripts/ci-checks.sh regression
+
+      # 明确不运行：--live、pi-drive、TCC、桌面 GUI、任何需要模型凭据的测试。

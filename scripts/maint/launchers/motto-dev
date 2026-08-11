@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# motto-dev — Motto 候选/dogfood launcher（MOTTO-DOWNSTREAM-0 立制）。
+#
+# 与 motto 同源，但：
+#   - 默认走下游根下的 candidate 构建（MOTTO_DEV_BRANCH=pi-<version> 产物）；
+#   - 用于 dogfood 门（只决定「是否晋升」，不承担 patch 迁移）。
+#
+#   motto-dev version         打印身份（含 candidate 标记）
+#   MOTTO_DEV_ROOT=<path>     候选下游根（默认 ~/Projects/pi）
+#   MOTTO_DEV_FORCE_OFFICIAL=1 等价性对照（官方 pi vs 无 patch motto-dev）
+
+set -uo pipefail
+
+# 解析真实脚本路径(支持 symlink 调用)
+SELF="$0"
+if [ -L "$SELF" ]; then
+  LINK="$(readlink "$SELF")"
+  case "$LINK" in /*) SELF="$LINK" ;; *) SELF="$(cd "$(dirname "$SELF")" && echo "$PWD/$LINK")" ;; esac
+fi
+LAUNCH_DIR="$(cd "$(dirname "$SELF")" && pwd)"
+REPO_ROOT="$(cd "$LAUNCH_DIR/../.." && pwd)"
+DEV_ROOT="${MOTTO_DEV_ROOT:-$HOME/Projects/pi}"
+OFFICIAL_PI="${OFFICIAL_PI:-/opt/homebrew/bin/pi}"
+
+if [[ "${1:-}" == "version" || "${1:-}" == "--version" || "${1:-}" == "-v" ]]; then
+  "$REPO_ROOT/scripts/launchers/motto" version
+  echo "mode: candidate (motto-dev)"
+  exit 0
+fi
+
+if [[ "${MOTTO_DEV_FORCE_OFFICIAL:-0}" == "1" || "${MOTTO_USE_OFFICIAL:-0}" == "1" ]]; then
+  exec "$OFFICIAL_PI" "$@"
+fi
+
+DEV_CLI="$DEV_ROOT/packages/coding-agent/dist/cli.js"
+if [[ -f "$DEV_CLI" ]]; then
+  exec node "$DEV_CLI" "$@"
+fi
+
+echo "motto-dev: candidate 未构建（$DEV_CLI 缺失），回退官方 pi（等价对照）。" >&2
+exec "$OFFICIAL_PI" "$@"

@@ -1,0 +1,12 @@
+processing 100 rows...
+row 0123456789abcdefghijklmnopqrstuvwxyz
+row 1123456789abcdefghijklmnopqrstuvwxyz
+row 2123456789abcdefghijklmnopqrstuvwxyz
+row 3123456789abcdefghijklmnopqrstuvwxyz
+row 4123456789abcdefghijklmnopqrstuvwxyz
+done in 0.42s
+
+---
+warning: deprecated option --fast used
+warning: /tmp/stale-cache detected, removing
+stderr line three from the tool

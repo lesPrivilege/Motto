@@ -1,0 +1,6 @@
+#!/bin/sh
+# motto — 兼容入口(历史软链 ~/bin/motto → 本文件)。委托下游 launcher。
+# 经 symlink 调用时先解析真实路径。
+SELF="$0"
+[ -L "$SELF" ] && SELF="$(readlink "$SELF")"
+exec "$(dirname "$SELF")/launchers/motto" "$@"

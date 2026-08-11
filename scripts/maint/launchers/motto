@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# motto — Motto 受控下游 launcher（MOTTO-DOWNSTREAM-0 立制）。
+#
+# 运行形态：
+#   motto version           打印 Motto Pi 身份块
+#   motto <pi args...>      运行当前已接受的 Motto downstream
+#   MOTTO_DOWNSTREAM_ROOT=<path> 覆盖下游根（默认 ~/Projects/pi）
+#   MOTTO_USE_OFFICIAL=1    强制走官方 pi（等价性对照用）
+#
+# 零 patch 阶段：motto 与官方 pi 行为等价（同一 dist）；身份只出现在版本输出。
+# 下游第一项 patch 落地前，本 launcher 不改变任何 TUI/Core 行为。
+
+set -uo pipefail
+
+# 解析真实脚本路径(支持 symlink 调用:~/bin/motto → scripts/motto → launchers/motto)
+SELF="$0"
+if [ -L "$SELF" ]; then
+  LINK="$(readlink "$SELF")"
+  case "$LINK" in /*) SELF="$LINK" ;; *) SELF="$(cd "$(dirname "$SELF")" && echo "$PWD/$LINK")" ;; esac
+fi
+LAUNCH_DIR="$(cd "$(dirname "$SELF")" && pwd)"
+REPO_ROOT="$(cd "$LAUNCH_DIR/../.." && pwd)"
+DOWNSTREAM_ROOT="${MOTTO_DOWNSTREAM_ROOT:-$HOME/Projects/pi}"
+OFFICIAL_PI="${OFFICIAL_PI:-/opt/homebrew/bin/pi}"
+BASE_JSON="$REPO_ROOT/docs/maintenance/PI-BASE.json"
+RELEASES_JSON="$REPO_ROOT/docs/maintenance/RELEASES.json"
+
+motto_version() {
+  python3 - "$BASE_JSON" "$RELEASES_JSON" <<'PY'
+import json, sys
+base = json.load(open(sys.argv[1]))
+releases = json.load(open(sys.argv[2]))["releases"]
+latest = releases[-1] if releases else {"id": "unknown"}
+print("Motto Pi")
+print(f"base: {base['upstream']['packageVersion']}")
+print(f"upstream: {base['upstream']['commit']}")
+print(f"patchset: {base['commitRange']['patchset']}")
+print(f"release: {latest['id']}")
+PY
+}
+
+# version 子命令 / --version 旗标
+if [[ "${1:-}" == "version" || "${1:-}" == "--version" || "${1:-}" == "-v" ]]; then
+  motto_version
+  exit 0
+fi
+
+# 等价性对照：强制官方
+if [[ "${MOTTO_USE_OFFICIAL:-0}" == "1" ]]; then
+  exec "$OFFICIAL_PI" "$@"
+fi
+
+# 下游构建产物优先
+DOWNSTREAM_CLI="$DOWNSTREAM_ROOT/packages/coding-agent/dist/cli.js"
+if [[ -f "$DOWNSTREAM_CLI" ]]; then
+  exec node "$DOWNSTREAM_CLI" "$@"
+fi
+
+# 未构建：零 patch 等价回退到官方 pi（同一发行组合），并在 stderr 提示
+echo "motto: downstream 未构建（$DOWNSTREAM_CLI 缺失），零 patch 等价回退官方 pi。" >&2
+exec "$OFFICIAL_PI" "$@"

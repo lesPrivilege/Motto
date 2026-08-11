@@ -1,0 +1,103 @@
+──── width=40 · review-flow collapsed (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=40 · review-flow expanded (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.m
+        [dim]d · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1
+        [dimmer]41ms
+
+──── width=60 · review-flow collapsed (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=60 · review-flow expanded (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms
+
+──── width=80 · review-flow collapsed (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=80 · review-flow expanded (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms
+
+──── width=120 · review-flow collapsed (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=120 · review-flow expanded (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms
+
+──── width=200 · review-flow collapsed (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=200 · review-flow expanded (theme motto-dark) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms
+
+──── width=40 · review-flow collapsed (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=40 · review-flow expanded (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.m
+        [dim]d · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1
+        [dimmer]41ms
+
+──── width=60 · review-flow collapsed (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=60 · review-flow expanded (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms
+
+──── width=80 · review-flow collapsed (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=80 · review-flow expanded (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms
+
+──── width=120 · review-flow collapsed (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=120 · review-flow expanded (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms
+
+──── width=200 · review-flow collapsed (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+
+──── width=200 · review-flow expanded (theme motto-light) ────
+  [dim]4 tools · [dim]explore 1 · [dim]run 3 · [dim]4.6s
+  [text]bash  [dim]ls · [dimmer]320ms
+  [text]read  [dim]fixtures/tui/scenarios/md-code.md · [dimmer]63 lines · [dimmer]180ms
+  [text]bash  [dim]./process.sh · [dimmer]exit 0 · [dimmer]902ms
+  [text]bash  [dim]node /tmp/script.mjs · [dimmer]exit 1 · [dimmer]41ms

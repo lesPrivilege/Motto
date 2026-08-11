@@ -1,0 +1,16 @@
+name: upstream-pin-verify
+
+# 固定上游 release 可用性 + 两级 checksum 验证。
+# 只读：拉取到临时目录验证后即丢弃，不改仓库、不升级固定版本。
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1" # 每周一 03:00 UTC
+
+jobs:
+  verify:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify pinned upstream releases (two-level checksums, fail closed)
+        run: bash scripts/ci-checks.sh verify-upstream

@@ -1,0 +1,80 @@
+{
+  "name": "motto",
+  "vars": {
+    "bg": "#26282b",
+    "text": "#f2f3f4",
+    "accent": "#c0453e",
+    "dim": "#a8adb2",
+    "dimmer": "#5c6166",
+    "mid": "#8a9095"
+  },
+  "colors": {
+    "accent": "accent",
+    "border": "mid",
+    "borderAccent": "accent",
+    "borderMuted": "dimmer",
+    "success": "mid",
+    "error": "accent",
+    "warning": "mid",
+    "muted": "mid",
+    "dim": "dim",
+    "text": "text",
+    "thinkingText": "mid",
+
+    "selectedBg": "bg",
+    "scrollbarThumb": "dimmer",
+    "userMessageBg": "bg",
+    "userMessageText": "text",
+    "customMessageBg": "bg",
+    "customMessageText": "text",
+    "customMessageLabel": "mid",
+    "toolPendingBg": "bg",
+    "toolSuccessBg": "bg",
+    "toolErrorBg": "bg",
+    "toolTitle": "mid",
+    "toolOutput": "mid",
+
+    "mdHeading": "dim",
+    "mdLink": "text",
+    "mdLinkUrl": "mid",
+    "mdCode": "text",
+    "mdCodeBlock": "text",
+    "mdCodeBlockBorder": "mid",
+    "mdQuote": "text",
+    "mdQuoteBorder": "mid",
+    "mdHr": "mid",
+    "mdListBullet": "mid",
+
+    "toolDiffAdded": "accent",
+    "toolDiffRemoved": "mid",
+    "toolDiffContext": "mid",
+
+    "syntaxComment": "mid",
+    "syntaxKeyword": "text",
+    "syntaxFunction": "text",
+    "syntaxVariable": "text",
+    "syntaxString": "text",
+    "syntaxNumber": "text",
+    "syntaxType": "text",
+    "syntaxOperator": "text",
+    "syntaxPunctuation": "text",
+
+    "thinkingOff": "mid",
+    "thinkingMinimal": "mid",
+    "thinkingLow": "mid",
+    "thinkingMedium": "mid",
+    "thinkingHigh": "mid",
+    "thinkingXhigh": "mid",
+    "thinkingMax": "mid",
+
+    "bashMode": "mid",
+
+    "dimmer": "dimmer",
+    "mid": "mid"
+  },
+  "export": {
+    "pageBg": "bg",
+    "cardBg": "bg",
+    "infoBg": "bg"
+  }
+}

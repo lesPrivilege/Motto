@@ -1,0 +1,9 @@
+Error: cannot open input file 'missing.txt'
+    at Object.readFileSync (node:internal/fs:readFileSync:123)
+    at main (/tmp/script.mjs:4:11)
+    at <anonymous> (/tmp/script.mjs:8:1)
+
+Node.js v22.0.0
+
+---
+Command exited with code 1

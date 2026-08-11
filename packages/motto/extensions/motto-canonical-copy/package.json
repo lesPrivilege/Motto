@@ -1,0 +1,19 @@
+{
+  "name": "motto-canonical-copy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canonical clipboard commands (/copy-answer, /copy-code) from canonical session data — never from rendered rows.",
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.1",
+    "@earendil-works/pi-tui": "0.84.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "typescript": "^5.6.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "typecheck": "tsc --noEmit"
+  }
+}

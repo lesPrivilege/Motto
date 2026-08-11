@@ -1,0 +1,95 @@
+{
+	"schemaVersion": 1,
+	"purpose": "Motto 受控下游的 Core patch registry（MOTTO-DOWNSTREAM-0 立制）。每条 patch 独立登记、可独立删除、可独立回退；未登记的任何 Core 改动禁止。",
+	"discipline": {
+		"onePatchPerCommit": "每个 Motto Core commit 只实现一项可独立删除的接缝，禁止巨型提交",
+		"scope": "只限 coding-agent interactive integration 与 pi-tui 薄接缝；不改 agent loop / provider / session schema / 内置工具语义",
+		"removal": "上游吸收等价能力即删除；删除时跑 有/无旧 patch 对照；不保留兼容层",
+		"packageIdentity": "不改 npm package 名称；内部保留 @earendil-works/pi-* identity"
+	},
+	"statuses": [
+		"candidate",
+		"applied",
+		"upstreamed",
+		"superseded",
+		"reverted"
+	],
+	"patches": [
+		{
+			"id": "tui-1-s1-user-gutter",
+			"title": "TUI-1 S1 — user message 首行界栏 + 续行悬挂缩进",
+			"scope": "coding-agent interactive 集成层薄接缝(components/user-message.ts + motto-layout.ts)",
+			"description": "UserMessageComponent 去整宽气泡卡:不再套整宽背景 Box,首行中灰左界栏 `│ `(muted 槽)标记消息边界(I6-4 显示投影),续行以 GUTTER_WIDTH 个空格悬挂缩进,正文列左锚第 3 列(与 S2 BODY_INDENT 同列),大篇幅不再逐行成 rail;OSC133 标记保留;outputPad 设置对 user 表面不再生效(界栏布局固定正文列)。共享布局常量 motto-layout.ts(GUTTER_WIDTH/GUTTER/BODY_INDENT)。细化(2026-08-11):逐行界栏 → 首行+悬挂缩进。",
+			"commit": "2daa52934, 5e94171e3",
+			"fixture": "fixtures/tui/baseline/theme-*.txt 新增 user-gutter (S1) 块(细化后重生成)",
+			"removalCondition": "上游吸收等价 user 消息渲染出口(registerMessageRenderer 扩展至 user role 或 transcript projector 覆盖内置消息)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(回落原生基线)与 coding-agent 全量测试。",
+			"status": "applied"
+		},
+		{
+			"id": "tui-1-s2-assistant-body",
+			"title": "TUI-1 S2 — assistant 正文列对齐 BODY_INDENT,间距承担分隔",
+			"scope": "coding-agent interactive 集成层薄接缝(components/assistant-message.ts)",
+			"description": "AssistantMessageComponent 正文(最终回答)Markdown 对齐正文列 BODY_INDENT(第 3 列),与 S1 user 悬挂正文同列;length/aborted/error 通知同步对齐。thinking 渲染不触碰(TUI-2 面,依 pi 原生)。无框正文不变——分隔由 Spacer 间距承担。",
+			"commit": "fd0a3e812",
+			"fixture": "fixtures/tui/baseline/theme-*.txt 新增 assistant-body (S2) 块",
+			"removalCondition": "上游吸收等价 assistant 渲染出口后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试(thinking 面不受影响)。",
+			"status": "applied"
+		},
+		{
+			"id": "tui-1-s3-tool-index-line",
+			"title": "TUI-1 S3 — 内置工具成功调用压缩为低对比目行",
+			"scope": "coding-agent interactive 集成层薄接缝(components/tool-execution.ts + motto-layout.ts truncateVisible)",
+			"description": "ToolExecutionComponent:成功的内置工具(非流式/非失败/未展开)渲染为单行低对比目行 `toolName target`(dim,正文列对齐),成功静默;计数与耗时留 review recap 著录层(I1-1)。失败/流式/展开/自定义工具保持原生卡——失败仍整卡强显(I3-2),不随著录化降权。",
+			"commit": "1cdfd5d3c",
+			"fixture": "fixtures/tui/baseline/theme-*.txt 新增 tool-index-ok / tool-index-fail (S3) 块",
+			"removalCondition": "上游吸收等价内置工具卡 projector 出口后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(失败卡回落原生基线)与 coding-agent 全量测试。",
+			"status": "applied"
+		},
+		{
+			"id": "tui-2-t1-thinking-identity",
+			"title": "TUI-2 T1 — thinking 块稳定 entryId(流式/恢复同身份)+ UI 层 fold map",
+			"scope": "coding-agent interactive 集成层薄接缝(components/assistant-message.ts + components/thinking-fold.ts + interactive-mode.ts)",
+			"description": "thinking run 获得纯 UI 侧稳定 entryId(assistant 消息序数 + run 序数,message_start 定死,流式/恢复/重建同源同序推导);fold 状态以 entryId 键存于 interactive-mode 内存 Map(thinkingFoldState,默认 collapsed),不写 session、不入模型上下文。渲染行为不变(三态属 T2-2)。",
+			"commit": "0cb127bef",
+			"fixture": "fixtures/tui/baseline/theme-*.txt 新增 thinking-collapsed 块",
+			"removalCondition": "上游吸收等价 per-entry thinking 身份接缝(registerMessageRenderer/transcript projector 提供稳定 entryId)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+			"status": "applied"
+		},
+		{
+			"id": "tui-2-t2-thinking-three-state",
+			"title": "TUI-2 T2 — thinking 三态渲染(collapsed 默认 / preview 有界摘要 / full 原文)",
+			"scope": "coding-agent interactive 集成层薄接缝(components/assistant-message.ts + components/thinking-fold.ts + interactive-mode.ts)",
+			"description": "thinking run 按 T2-1 fold map 三态渲染:collapsed(默认,每 run 单行标签,复用 hiddenThinkingLabel 样式)/ preview(buildThinkingPreview 有界首尾摘要,head 64 + 省略号 + tail 40 字符,单 Text 块自动折行零超宽)/ full(完整 thinking 原文,原非隐藏路径不变)。fold 状态以 entryId 键经 provider 注入组件(缺省回落 DEFAULT collapsed,组件独立可用);hideThinkingBlock 兼容路径保留且优先于三态;不写 session、不入模型上下文。",
+			"commit": "7b80fa727",
+			"fixture": "fixtures/tui/baseline/theme-*.txt 新增 thinking-collapsed/preview/full (T2-2) 块 + thinking-hidden (T2-1 compat) 块",
+			"removalCondition": "上游吸收等价 per-entry thinking 披露渲染(registerMessageRenderer/transcript projector 提供三态)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+			"status": "applied"
+		},
+		{
+			"id": "tui-2-t3-thinking-keys",
+			"title": "TUI-2 T3 — thinking 交互键(focus 游标 + fold 三态循环,并存 Ctrl+T 全隐)",
+			"scope": "coding-agent interactive 集成层薄接缝(components/thinking-fold.ts + core/keybindings.ts + interactive-mode.ts)",
+			"description": "per-entry thinking 交互键:app.thinking.focus(shift+ctrl+t,thinking focus 前进到下一 entry,环绕,status 提示 Thinking n/m)与 app.thinking.fold(alt+t,聚焦 entry 的 fold 三态循环 collapsed→preview→full→collapsed,status 提示状态)。thinkingEntryOrder 由 recordThinkingFoldStates 幂等追加(流式/恢复/重建不重复);fold 仍只存于纯内存 map,不写 session、不入模型上下文;hideThinkingBlock 兼容路径与 Ctrl+T 全隐并存保留。渲染输出零改动(三态已由 T2-2 基线覆盖)。",
+			"commit": "dfb898c0b",
+			"fixture": "无——T2-3 不改变渲染输出(交互态由用户驱动,三态基线已由 T2-2 覆盖)",
+			"removalCondition": "上游吸收等价 per-entry thinking 交互(focus/fold 键或等效 disclosure 交互)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+			"status": "applied"
+		},
+		{
+			"id": "motto-rebrand-1",
+			"commit": "289e5338f68d1fd4bc2d266f67cda4641d76a7b7",
+			"packages": [
+				"coding-agent"
+			],
+			"invariants": [
+				"I5-1",
+				"I0-1"
+			],
+			"upstreamable": true,
+			"upstreamStatus": "not-submitted",
+			"removalCondition": "上游将 onboarding/tmux 提示等硬编码品牌串改为 APP_NAME 驱动后删除(piConfig.name 品牌钩子为上游内建,不需要上游化)",
+			"dogfoodEvidence": [],
+			"status": "applied"
+		}
+	]
+}

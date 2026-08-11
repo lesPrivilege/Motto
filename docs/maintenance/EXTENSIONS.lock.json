@@ -1,0 +1,114 @@
+{
+	"schemaVersion": 1,
+	"purpose": "Motto 部署位（~/.pi/agent）实际生态的 extension lock（MOTTO-DOWNSTREAM-0 立制）。覆盖整个部署生态（Motto 自研 + 社区 npm/git），不只 Motto 自研 pack。",
+	"rules": {
+		"mottoPacks": "Motto commit + 源码文件聚合 SHA-256",
+		"npmExtensions": "固定精确版本 + npm integrity",
+		"gitExtensions": "固定 commit，禁止浮动 main",
+		"compatibilityBase": "每条最近一次兼容验证的 Pi base",
+		"updateMode": "manual | pinned | vendor",
+		"rollback": "每条记录回退版本"
+	},
+	"piBaseVerified": "0.84.1 / 53fa77ccd8a279eb87e92294ef3687b03ff80112 / verifiedAt 2026-08-11",
+	"motto": {
+		"repoCommit": "9a6042601c52145a474433a910516e20c2db13c2",
+		"packs": {
+			"motto": {
+				"source": "git:Motto",
+				"version": "0.1.0",
+				"hash": "d379295f4ceeb16a0d86977306d95acffb6c7f7bd83ad629492d9c83ac4af0d2",
+				"exposed": ["header", "footer(TPS)", "title", "markdown transform(headings)", "before_agent_start 注入"],
+				"overridesBuiltinTools": false,
+				"piApiSurface": ["setHeader", "setFooter", "setTitle", "notify", "registerMarkdownTransformer", "on(message_*/session_*/before_agent_start)"],
+				"compatBase": "0.84.1",
+				"updateMode": "manual",
+				"rollback": "git 回退 Motto 仓对应 commit + deploy"
+			},
+			"motto-canonical-copy": {
+				"source": "git:Motto",
+				"version": "0.1.0",
+				"hash": "9f17e7380eb817b25a8fc2c42cfeac5c70a71f123bd625c4a1ddc3bd2e71ddbd",
+				"exposed": ["/copy-answer", "/copy-code", "env-gated shortcuts"],
+				"overridesBuiltinTools": false,
+				"piApiSurface": ["registerCommand", "registerShortcut", "copyToClipboard", "sessionManager.getBranch"],
+				"compatBase": "0.84.1",
+				"updateMode": "manual",
+				"rollback": "git 回退"
+			},
+			"motto-review-flow": {
+				"source": "git:Motto",
+				"version": "0.1.0",
+				"hash": "3f3db2802e8ee76faa3bfdb9b0872884757df3e3602071af2c2942f77786e0f4",
+				"exposed": ["motto-review-flow.turn.v1 custom entry renderer"],
+				"overridesBuiltinTools": false,
+				"piApiSurface": ["appendEntry", "registerEntryRenderer", "on(turn_*/tool_execution_*)"],
+				"compatBase": "0.84.1",
+				"updateMode": "manual",
+				"rollback": "git 回退"
+			},
+			"motto-computer-use": {
+				"source": "git:Motto",
+				"version": "1.0.0 (tag)",
+				"hash": "c7fb065f577b5bc3a48c20e49ceae3db8bac7445da04678408a08912d74fe6fa",
+				"exposed": ["cu_see/cu_image/cu_click/cu_type/cu_scroll/cu_hotkey/cu_set_value/cu_perform_action", "/computer-use"],
+				"overridesBuiltinTools": false,
+				"runtime": "Peekaboo v3.10.0 (SHA-256 固定, checksums/)",
+				"piApiSurface": ["registerTool×8", "registerCommand", "on(session_shutdown)"],
+				"compatBase": "0.84.1",
+				"updateMode": "manual",
+				"rollback": "git 回退 + 二进制回退(checksums)"
+			},
+			"motto-gemini-vision": {
+				"source": "git:Motto",
+				"version": "0.1.0",
+				"hash": "cd26092a37657491e3d69198147d097c7b2bbf4b41d0069a65fd7ea2c7cc7a62",
+				"exposed": ["motto_vision"],
+				"overridesBuiltinTools": false,
+				"piApiSurface": ["registerTool", "modelRegistry.getApiKeyForProvider"],
+				"compatBase": "0.84.1",
+				"updateMode": "manual",
+				"rollback": "git 回退"
+			}
+		},
+		"themes": {
+			"motto.json": "66d673e8a5fc49b4baa8cd2c85b1a674be74efda87592cef870e5ac3e2b05888",
+			"motto-dark.json": "94eadde19067ea5b78242f3a433bb2cff61b7439e76c9ec41eecc162b0329ec3",
+			"motto-light.json": "51951908a491e726b5d10016cd97906fc7be5e70c36c824b79dfe0c5518a9f32"
+		}
+	},
+	"communityNpm": {
+		"pi-rewind": {
+			"source": "npm",
+			"version": "0.5.0",
+			"integrity": "sha512-nW6HVg3II7+DhMZAsUX7EJPT2/IgPGXWGDntppS1cyYLfNaVgeBU5bRW7e1acHk1LW18EWdMh6475CRh0PAnGQ==",
+			"exposed": ["/rewind", "Esc+Esc", "checkpoint snapshots"],
+			"overridesBuiltinTools": false,
+			"compatBase": "0.84.1",
+			"updateMode": "pinned",
+			"rollback": "settings.json 钉回旧版"
+		},
+		"@narumitw/pi-lsp": {
+			"source": "npm",
+			"version": "0.49.4",
+			"integrity": "sha512-RA0XAVAdck8W2gm2Do67C/IrCRUBJkKWPawZg1QqvlfEH9TMZbrGBYOgvGYcnGuRQ3FyxxFgJSq0fbdpMW8KAQ==",
+			"exposed": ["lsp_diagnostics", "lsp_fix", "lsp_* tools"],
+			"overridesBuiltinTools": false,
+			"compatBase": "0.84.1",
+			"updateMode": "pinned",
+			"rollback": "settings.json 钉回旧版"
+		},
+		"@tintinweb/pi-subagents": {
+			"source": "npm",
+			"version": "0.14.3",
+			"integrity": "sha512-iDqeadh6114AZvw8HYe1PEq8M0MZ9czJKTAIsklCPUbV9vUMS+g/LAV0vW3O9PiBXKNJh8hkrY8L6iIr8XNEqA==",
+			"exposed": ["task subagents", "agents/*.md", "fleet view"],
+			"overridesBuiltinTools": false,
+			"compatBase": "0.84.1",
+			"updateMode": "pinned",
+			"rollback": "settings.json 钉回旧版"
+		}
+	},
+	"communityGit": {},
+	"skillsNote": "Motto skills 属另一类别(agent 技能/调用胶水),不在 extension lock 范围;如收编另立 skills/ 区并单独定体例(REGISTRY.md 边界)。",
+	"verifiedAt": "2026-08-11"
+}

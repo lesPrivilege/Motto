@@ -1,0 +1,11 @@
+CHANGELOG.md
+dist
+docs
+examples
+node_modules
+npm-shrinkwrap.json
+package.json
+README.md
+
+---
+0.84.1

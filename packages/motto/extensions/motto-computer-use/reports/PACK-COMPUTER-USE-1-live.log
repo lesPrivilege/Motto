@@ -1,0 +1,48 @@
+setup: frontmost=Terminal, mouse=(947.5,503.4)
+env: displays=1, peekaboo-pgrep-before=""
+[motto-computer-use] spawning /Users/lesprivilege/Projects/motto-computer-use/bin/peekaboo-macos-universal/peekaboo mcp
+[motto-computer-use] connected: version=3.10.0, tools=27, screenRecording=true, accessibility=true
+PASS  #1 see returns structured AX tree — 80 element ids
+PASS  #1 see text is not an image-only render
+PASS  #1 see includes a text-area/scroll-area element
+PASS  #2 image returns an image content block — mime=image/png
+PASS  #2 image is a real PNG — 14823 bytes
+PASS  #2 image reaches the model-visible content array
+      image data len=14823 bytes
+PASS  #2 image carries coordinate_context (delivered size) — {"height":386,"width":600}
+
+#3 background target id: elem_2 (ref=1786170788034-9493, host front=Terminal)
+PASS  #3a set_value succeeded on background app (AX AXSetValue) — [ok] Set value on elem_2 textField: motto scratch doc in 0.05s
+PASS  #3a real mouse did not move (AX action) — (948,503) -> (948,503)
+PASS  #3a background target did not steal focus — frontmost Terminal -> Terminal
+PASS  #3b background click succeeded (AX hit-test) — [ok] Clicked on textField: motto scratch doc at (474, 295) in 0.06s
+PASS  #3b real mouse did not move (AX click) — (948,503) -> (948,503)
+PASS  #3b background target did not steal focus — frontmost Terminal -> Terminal
+      paths: set_value=AX AXSetValue (no mouse/focus); click=AX hit-test background (reported "[ok] Clicked on textField: motto scratch doc at (474, 295) in 0.06s")
+PASS  #4 see snapshot carries coordinate_context — {"delivered_image_size":{"height":422,"width":656},"display":{"index":0,"name":null},"logical_bounds":{"height":422,"width":656,"x":146,"y":71},"logical_space":"global_display_points","native_scale":2
+PASS  #4 coordinate_context has a reference_id
+PASS  #4 logical_bounds present — {"height":422,"width":656,"x":146,"y":71}
+PASS  #4 scaled capture respects max_dimension — delivered={"height":193,"width":300}
+PASS  #4 scaled capture reports output_scale < 1 — output_scale=0.4573170731707317
+PASS  #4 pixel/logical mapping consistent (delivered ≈ logical×scale) — delivered=300 vs 300.0
+PASS  #4 retina capture reports native_scale — native_scale=2
+PASS  #4 native pixels = logical × native_scale — 1312 vs 1312.0
+PASS  #4 scaled-screenshot positioning hits expected logical point — target=(474,295) reported=474,295
+PASS  #4 bogus snapshot reference rejected (fail closed) — Peekaboo "click" failed: Coordinate reference 'definitely-not-a-real-snapshot-id' is stale or unavai
+PASS  #4 window actually moved for stale test — {"x":146,"y":71} -> {"x":90,"y":90}
+PASS  #4 moved-window stale reference rejected (fail closed) — Peekaboo "click" failed: Coordinate reference is stale because its captured window moved or resized.
+PASS  #4 out-of-bounds image_pixels rejected (fail closed) — Peekaboo "click" failed: Image-pixel coordinates are outside the delivered image bounds.
+      NOTE foreground OOB coords accepted by server (clamped by OS): "[ok] Clicked at (999999, 999999) in 0.04s"
+SKIP  #4 multi-display coordinate test — single display (1) present: NOT TESTED
+
+#5 loop target id: elem_2
+PASS  #5 see->action->see loop: new state reflects the action
+PASS  #8 server running during session — pid=40605
+PASS  #8 peekaboo has no child processes of its own — leaf process
+PASS  #8 child holds no TCP/UDP sockets during session — clean (stdio pipes only)
+[motto-computer-use] server exited (code=null, signal=SIGTERM)
+PASS  #8 clean stop, no orphan process
+PASS  #8 client reports disconnected
+PASS  #8 no peekaboo process left after stop — before="" after=""
+
+LIVE: ALL CHECKS PASSED

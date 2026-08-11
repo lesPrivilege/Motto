@@ -1,0 +1,18 @@
+# MOTTO-TUI-0 无头渲染基线 — 清单
+生成时间(UTC): 2026-08-11T16:00:03.226Z
+pi: @earendil-works/pi-coding-agent 0.84.1 (v0.84.1 -> 53fa77ccd8a279eb87e92294ef3687b03ff80112)
+pi-tui: 0.84.1 | node: v25.9.0
+主题来源: ~/.pi/agent/themes/{motto,motto-dark,motto-light}.json + 内置 dark
+宽度: 40/60/80/120/200
+
+theme dark: per-width overflow 0
+theme motto: per-width overflow 0
+theme motto-dark: per-width overflow 0
+theme motto-light: per-width overflow 0
+review-flow: 104 lines
+
+说明: 本基线为无头渲染层记录;流式、鼠标拖选、pbpaste、Ctrl+O 全局展开、
+composer 等交互面由 fixtures/tui/ghostty-capture.sh 在真实 Ghostty 中记录(用户侧)。
+
+P0-2 OSC8 归一: canonical capability(TERM=screen),输出不随终端能力变化;
+--check 与已提交基线逐字节比对(MANIFEST 含时间戳,不计入)。

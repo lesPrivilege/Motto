@@ -42,3 +42,10 @@ plans/
 .pi/hf-sessions/
 .pi/hf-sessions-backup/
 collect.sh
+
+# Motto 产品内容（packages/motto/ 扩展与主题，随仓自足）
+packages/motto/extensions/*/bin/
+packages/motto/extensions/*/checksums/*.{tar.gz,zip,dmg,tgz}
+packages/motto/extensions/*/node_modules/
+# 反忽略：验收现场 reports/*.log 被跟踪（全局 *.log 之上放行）
+!packages/motto/extensions/*/reports/*.log
