@@ -4,6 +4,7 @@
 > 部署位(`~/.pi/agent/MOTTO.md`)只留指针;两处出现分歧一律以本正典为准,并回仓修订。
 > 各 pack 体例引用本正典对应节:`motto`(牌记/footer/TPS/标题/项目本地正文)、`motto-review-flow`(目录体例)、
 > `motto-canonical-copy`(复制体例)、`motto-themes`(颜色/主题)。
+> 「为什么」见 `docs/MOTTO-PHILOSOPHY.md`(理念与取舍宣言);「怎么验」见 `docs/TUI-THESIS.md`(可测试不变量)。
 
 ---
 
@@ -23,6 +24,7 @@
    导出文件名 `pi-session-*`、session schema、内部类型)——凡改动可能影响生态或维护处一律保留原名,
    不搞全量替换。品牌化仍只做加法:功能性 token(路径/命令/包名/API 名)不可被品牌化改写(第 5 条延续)。
    实现见 `~/Projects/pi` MOTTO-REBRAND-1(patch 登记于 PATCHES.json)。
+   理念与取舍（为什么）见 `docs/MOTTO-PHILOSOPHY.md`，与 `docs/MOTTO.md`（凡例）/ `docs/TUI-THESIS.md`（不变量）并列。
 4. 视觉语言只有排布与用色(朱墨、灰阶、两列悬挂、留白);设计推理中的谱系词汇不出现在渲染输出、代码标识符与用户可见文案中。
 5. 品牌化只做加法,不做改写:身份段拼接于提示词末尾,上游提示词原文逐字节不动。路径、命令、包名、API 名等功能性 token 不可被品牌化改写——「设计语不外泄」的对偶条款:「功能语不可侵」;extension 与 fork 的边界以功能性内容为界。
 

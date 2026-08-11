@@ -17,7 +17,8 @@
 > 本仓是 **Motto** 的受控下游（Pi fork），**单仓自足（夺舍终局，2026-08-12）**：
 > 上游历史 + 最小 patchset（登记于 `docs/maintenance/PATCHES.json`）+ Motto 产品内容
 > （`packages/motto/` 扩展与主题、`docs/`、`fixtures/`、`scripts/maint/` 维护脚本）
-> 同仓共存。Motto 宪制与开发规则见 `docs/AGENTS-MOTTO.md`。
+> 同仓共存。Motto 宪制与开发规则见 `docs/AGENTS-MOTTO.md`；理念与取舍（为什么）见
+> `docs/MOTTO-PHILOSOPHY.md`，与 `docs/MOTTO.md`（凡例）/ `docs/TUI-THESIS.md`（可测试不变量）并列。
 > **Motto 不抛弃 Pi**——产品呈现层（启动 logo / 终端标题 / help / onboarding）为 Motto
 > 品牌；平台契约层（npm 包名 `@earendil-works/pi-*`、configDir `.pi`、env 覆盖名
 > `PI_*`、导出文件名 `pi-session-*`、session schema）保留 Pi，保证生态兼容与维护连续性。

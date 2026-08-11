@@ -43,6 +43,41 @@
 				"escapeHatch": "pi-official | MOTTO_USE_OFFICIAL=1 motto",
 				"record": "docs/maintenance/USAGE.md §7"
 			}
+		},
+		{
+			"id": "2026-08-12.0",
+			"name": "motto.single-repo.0",
+			"status": "single-repo terminal (7 core patches)",
+			"piBase": {
+				"packageVersion": "0.84.1",
+				"tag": "v0.84.1",
+				"commit": "53fa77ccd8a279eb87e92294ef3687b03ff80112"
+			},
+			"corePatchset": [
+				"tui-1-s1-user-gutter",
+				"tui-1-s2-assistant-body",
+				"tui-1-s3-tool-index-line",
+				"tui-2-t1-thinking-identity",
+				"tui-2-t2-thinking-three-state",
+				"tui-2-t3-thinking-keys",
+				"motto-rebrand-1"
+			],
+			"mottoCommit": "e6f07290c793f65004d92e17d80ad39563ebda3d",
+			"extensionLock": "见 EXTENSIONS.lock.json (verifiedAt 2026-08-11; 单仓后随 fork 同仓)",
+			"themes": {
+				"motto.json": "66d673e8a5fc49b4baa8cd2c85b1a674be74efda87592cef870e5ac3e2b05888",
+				"motto-dark.json": "94eadde19067ea5b78242f3a433bb2cff61b7439e76c9ec41eecc162b0329ec3",
+				"motto-light.json": "51951908a491e726b5d10016cd97906fc7be5e70c36c824b79dfe0c5518a9f32"
+			},
+			"tuiFixture": "fixtures/tui/sessions/motto-tui-baseline.jsonl (26 entries, MOTTO-TUI-0)",
+			"acceptanceEvidence": [
+				"ci-checks governance PASS",
+				"baseline --check PASS",
+				"downstream-drill 11/11",
+				"coding-agent suite PASS",
+				"launch smoke PASS"
+			],
+			"note": "夺舍终局——单仓自足 fork; Motto 仓并入 lesPrivilege/pi"
 		}
 	]
 }

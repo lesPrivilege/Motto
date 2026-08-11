@@ -26,9 +26,9 @@
 	},
 	"commitRange": {
 		"upstreamBase": "53fa77ccd8a279eb87e92294ef3687b03ff80112",
-		"mottoMain": "53fa77ccd8a279eb87e92294ef3687b03ff80112",
-		"patchset": "motto.0 (zero patch)",
-		"range": "empty — motto/main 尚未领先上游"
+		"mottoMain": "e6f07290c793f65004d92e17d80ad39563ebda3d",
+		"patchset": "motto.single-repo (7 patches: tui-1-s1-user-gutter, tui-1-s2-assistant-body, tui-1-s3-tool-index-line, tui-2-t1-thinking-identity, tui-2-t2-thinking-three-state, tui-2-t3-thinking-keys, motto-rebrand-1)",
+		"range": "motto/main 领先上游 base 53fa77cc 至单仓终局 HEAD(见 RELEASES 2026-08-12.0); 单仓自足 fork, 上游/生态不入仓仅清单记录"
 	},
 	"terminal": {
 		"ghostty": "1.3.1"

@@ -1,6 +1,6 @@
 # AGENTS.md — Motto
 
-本仓库是 Motto 系列 PI agent 扩展的收容仓。给在此工作的 agent 与人类维护者的规则。
+本仓库是 Motto 系列 PI agent 发行（单仓自足 fork）的收容仓：扩展、主题、skill、文档与维护工具同仓。给在此工作的 agent 与人类维护者的规则。
 
 ## 与上游的关系（宪制）
 
@@ -8,10 +8,9 @@
 2. **自有域走 `.motto`，最小实现**：Motto 自有的持久状态或配置确有需要时落 `~/.motto/`（或本仓内），不得占用或改写 `.pi` 的语义；当前无此需要即不预建（不做投机式设施）。`.pi` 下属于 Motto 的只有部署位镜像，一律经 deploy.sh 产生。
 3. **同步 pipeline 即现有治理，不设第二条路径**：仓库为单一真源；上游演进经 deploy.sh（仓→部署位）+ drift-check（防手改）+ MAINTENANCE 五步省视 + Pi 升级流程 + 第三方钉版核对消化。
 4. **独立生长，上游优先**：Motto 的正典（docs/MOTTO.md 凡例、docs/ROADMAP.md 准入、本文件）自足于本仓，不从属 pi 的路线图；pi 是当前承载 harness，体例本身可迁移（见 ROADMAP「非项目化外溢」）。对上游的需求**优先以 issue/PR 提出**（upstream-first）；确需入下游的改动必须登记 PATCHES.json、有 removalCondition、可独立回退。
-5. **拓扑封闭**：Motto 的全部构成 = PI repo（harness，Motto 受控下游 `lesPrivilege/pi`，上游 `earendil-works/pi` 为其 remote）+ Motto repo（本仓，解耦定制件）。不设第三仓，不存在「全套 motto agent repo」；任何要求第三仓的方案自动落入「已裁定不做」的审查程序。
-   **终局（TUI 验收后，2026-08-11 裁定）**：`~/Projects/Motto` 并入 `lesPrivilege/pi`，单仓自足 Pi Fork——上游历史 + patchset + Motto 系列 extensions/skills/themes/docs/fixtures 同仓；上游与生态（第三方）仍不入仓，只作清单记录（EXTENSIONS.lock / PI-BASE）。见 `docs/decisions/2026-08-11-motto-fork-consolidation.md`。
+5. **单仓闭合（夺舍终局，2026-08-12 落实）**：本仓 `lesPrivilege/pi` 是 Motto 唯一产品仓——上游历史（`upstream` remote）+ patchset + Motto 系列 extensions/skills/themes/docs/fixtures 同仓，单仓即一个足量的 agent。上游 `earendil-works/pi` 与第三方生态**不入仓**，只作清单记录（EXTENSIONS.lock / PI-BASE）。不设第三仓，不存在「全套 motto agent repo」；任何要求第三仓的方案自动落入「已裁定不做」的审查程序。原双仓形态（`~/Projects/Motto` 独立仓）是到达终局的过渡形态，现已并入本仓（见 `docs/decisions/2026-08-11-motto-fork-consolidation.md`）。
 6. **项目本地域**：`.motto/` 为 Motto 在各项目内的自有目录，`agent.md` 为其正文——项目的长期维护、生态拓展、dogfooding 皆从此始。`.motto/` 内容归项目所有，本仓不收容、不同步（区别于部署位镜像）。
-7. **受控下游（宪制，MOTTO-DOWNSTREAM-0 立制，2026-08-11）**：Motto 拥有自己可发布、可升级、可回退的 Pi distribution——发行、版本、升级、回退主权归 Motto；agent loop、provider、session canonical schema、内置工具执行仍归上游，默认零修改。长期所有权划分与升级/回退机制见 `docs/decisions/2026-08-11-motto-downstream-0.md` 与 `docs/maintenance/UPSTREAM-CONTRACT.md`。**顺序铁律**：立制（发行/版本/升级/回退）先于任何 Core patch；第一项 TUI Core 修改（**MOTTO-TUI-1 Transcript Visual Composition**——纯视觉投影，不含 reducer 与折叠；per-entry thinking disclosure 后移 MOTTO-TUI-2）只能在 MOTTO-DOWNSTREAM-0 全部验收态通过后开始。不改 npm package 名称，内部保留 `@earendil-works/pi-*` identity，Motto 身份只放发行 manifest / launcher / 版本输出。**终局**：TUI 验收后并入单仓自足 fork（见第 5 条终局与 `docs/decisions/2026-08-11-motto-fork-consolidation.md`）。
+7. **受控下游（宪制，MOTTO-DOWNSTREAM-0 立制，2026-08-11）**：Motto 拥有自己可发布、可升级、可回退的 Pi distribution——发行、版本、升级、回退主权归 Motto；agent loop、provider、session canonical schema、内置工具执行仍归上游，默认零修改。长期所有权划分与升级/回退机制见 `docs/decisions/2026-08-11-motto-downstream-0.md` 与 `docs/maintenance/UPSTREAM-CONTRACT.md`。**顺序铁律**：立制（发行/版本/升级/回退）先于任何 Core patch；第一项 TUI Core 修改（**MOTTO-TUI-1 Transcript Visual Composition**——纯视觉投影，不含 reducer 与折叠；per-entry thinking disclosure 后移 MOTTO-TUI-2）只能在 MOTTO-DOWNSTREAM-0 全部验收态通过后开始。不改 npm package 名称，内部保留 `@earendil-works/pi-*` identity，Motto 身份只放发行 manifest / launcher / 版本输出。**终局（单仓，2026-08-12 落实）**：发行/版本/升级/回退主权随单仓自足 fork 归 Motto——`scripts/maint/launchers/motto` 直接跑本仓构建产物（`packages/coding-agent/dist/cli.js`），deploy.sh 退化为仓→部署位（`~/.pi/agent`）镜像；升级/回退链路由 `scripts/maint/downstream-drill.sh`（11/11 机械门，含 `MOTTO_USE_OFFICIAL=1` 原子回退）与 `scripts/maint/upstream-check.sh` 驱动；上游演进仍经 PI-BASE/UPSTREAM-CONTRACT 清单消化。见 `docs/decisions/2026-08-11-motto-fork-consolidation.md`。
 
 ## 工程原则
 
@@ -33,8 +32,11 @@
 
 ## 目录与职责
 
-- `extensions/<pack>/`：每个 pack 自包含（代码 + checksums + test + reports + usage-log）。
-- `index.ts` 薄（pi 集成），核心逻辑放 `<core>.ts`，让测试跑与 pi 完全相同的边界。
+- `packages/motto/extensions/<pack>/`：每个 pack 自包含（代码 + checksums + test + reports + usage-log）；主题正典在 `packages/motto/extensions/motto-themes/`（motto / motto-dark / motto-light 三 JSON）。
+- `docs/`：Motto 正典（`MOTTO.md` 凡例、`MOTTO-PHILOSOPHY.md` 理念、`TUI-THESIS.md` 可测试不变量、本文件宪制）+ 决策/架构/研究/评审记录 + `docs/maintenance/` 维护清单（PI-BASE / PATCHES / RELEASES / EXTENSIONS.lock）。
+- `fixtures/tui/`：TUI 渲染基线与捕获场景。
+- `scripts/maint/`：维护/构建/演练脚本（与上游根 `scripts/` 命名空间隔离，避免文件名冲突）。
+- pack 内 `index.ts` 薄（pi 集成），核心逻辑放 `<core>.ts`，让测试跑与 pi 完全相同的边界。
 - 二进制不入库，只用 checksums + fetch 脚本（见 README 体例）。
 - 所有产物（报告、日志）留在仓库内固定路径；不写入 `~/`、`~/Downloads/`。
 
