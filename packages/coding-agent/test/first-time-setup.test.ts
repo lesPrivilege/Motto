@@ -33,8 +33,13 @@ describe("shouldRunFirstTimeSetup", () => {
 		}
 	});
 
-	it("returns true when experimental, default agent dir, and no settings.json", () => {
-		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(true);
+	it("returns false for a rebranded (motto) distribution — not official pi", () => {
+		// Brand policy: the product layer is Motto (APP_NAME === "motto"), while the
+		// platform contract keeps Pi (configDir .pi, PI_* env names).
+		// isOfficialDistribution gates on appName === "pi"; a rebranded motto build is
+		// therefore NOT "official pi", so pi's first-run setup is intentionally skipped
+		// (Motto onboarding is its own 牌记, not pi's first-run selector).
+		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(false);
 	});
 
 	it("returns false when experimental features are disabled", () => {
