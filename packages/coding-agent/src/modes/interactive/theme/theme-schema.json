@@ -3,7 +3,10 @@
 	"title": "Pi Coding Agent Theme",
 	"description": "Theme schema for Pi coding agent",
 	"type": "object",
-	"required": ["name", "colors"],
+	"required": [
+		"name",
+		"colors"
+	],
 	"properties": {
 		"$schema": {
 			"type": "string",
