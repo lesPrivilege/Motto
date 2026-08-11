@@ -7,7 +7,7 @@
 # 不包含: --live / pi-drive / TCC / 桌面 GUI / 需要模型凭据的测试。
 set -uo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CMD="${1:-governance}"
 cd "$REPO_ROOT"
 
@@ -20,8 +20,8 @@ bad() { echo "   FAIL: $*"; FAIL=$((FAIL+1)); }
 if [[ "$CMD" == "governance" ]]; then
   note "pack structure + registry consistency + checksum metadata + binary guard + typecheck + drift"
 
-  REG="extensions/REGISTRY.md"
-  for packdir in extensions/*/; do
+  REG="packages/motto/extensions/REGISTRY.md"
+  for packdir in packages/motto/extensions/*/; do
     [[ -d "$packdir" ]] || continue
     name="$(basename "$packdir")"
     grep -q "| \`$name\`" "$REG" && ok "registry lists $name" || { bad "registry missing $name"; }
@@ -57,7 +57,7 @@ if [[ "$CMD" == "governance" ]]; then
   done
   # REGISTRY 里出现的包必须真实存在
   while read -r p; do
-    [[ -d "extensions/$p" ]] || bad "registry references missing pack $p"
+    [[ -d "packages/motto/extensions/$p" ]] || bad "registry references missing pack $p"
   done < <(grep -oE '^\| `[a-z0-9-]+`' "$REG" | sed -E 's/^\| `([a-z0-9-]+)`/\1/')
 
   # --- 二进制入库防线
@@ -81,7 +81,7 @@ if [[ "$CMD" == "governance" ]]; then
 
   # --- drift-check(部署位 vs 仓库;本地有部署时执行,CI 无部署位则跳过)
   if [[ -d "${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/extensions" ]]; then
-    if bash scripts/drift-check.sh >/tmp/drift-ci.log 2>&1; then
+    if bash scripts/maint/drift-check.sh >/tmp/drift-ci.log 2>&1; then
       ok "drift-check PASS"
     else
       bad "drift-check:"; cat /tmp/drift-ci.log | sed 's/^/      /'
@@ -97,16 +97,16 @@ fi
 # ---------------------------------------------------------------- regression
 if [[ "$CMD" == "regression" ]]; then
   note "fetch pinned binaries + no-permission regression"
-  for packdir in extensions/*/; do
+  for packdir in packages/motto/extensions/*/; do
     [[ -d "$packdir" ]] || continue
     name="$(basename "$packdir")"
     [[ -f "$packdir/checksums/fetch.sh" ]] || continue
-    if ! bash scripts/fetch-binaries.sh "$packdir" >/tmp/fetch-$name.log 2>&1; then
+    if ! bash scripts/maint/fetch-binaries.sh "$packdir" >/tmp/fetch-$name.log 2>&1; then
       bad "fetch binary $name"; tail -5 /tmp/fetch-$name.log; continue
     fi
     ok "binary verified $name"
   done
-  if ! ./scripts/regression.sh >/tmp/regression-ci.log 2>&1; then
+  if ! ./scripts/maint/regression.sh >/tmp/regression-ci.log 2>&1; then
     bad "no-permission regression"; tail -20 /tmp/regression-ci.log
   else
     tail -3 /tmp/regression-ci.log
@@ -119,7 +119,7 @@ fi
 if [[ "$CMD" == "verify-upstream" ]]; then
   note "fetch pinned upstream release + two-level checksum verification"
   ALLOK=1
-  for packdir in extensions/*/; do
+  for packdir in packages/motto/extensions/*/; do
     [[ -d "$packdir" ]] || continue
     name="$(basename "$packdir")"
     [[ -f "$packdir/checksums/fetch.sh" ]] || continue

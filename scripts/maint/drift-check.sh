@@ -3,11 +3,11 @@
 #
 # 只比对运行时文件(与 deploy.sh 同排除集);主题按文件比对。
 # 用法:
-#   ./scripts/drift-check.sh            # 全量
-#   ./scripts/drift-check.sh motto      # 单 pack
+#   ./scripts/maint/drift-check.sh            # 全量
+#   ./scripts/maint/drift-check.sh motto      # 单 pack
 set -uo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 TARGET="${1:-all}"
 FAIL=0
@@ -18,9 +18,9 @@ EXCLUDES=(--exclude test --exclude reports --exclude docs --exclude checksums \
 check_pack() { # $1=pack
   local pack="$1"
   [[ "$TARGET" != "all" && "$TARGET" != "$pack" ]] && return
-  local src="$REPO_ROOT/extensions/$pack" dst="$AGENT_DIR/extensions/$pack"
+  local src="$REPO_ROOT/packages/motto/extensions/$pack" dst="$AGENT_DIR/extensions/$pack"
   if [[ ! -d "$dst" ]]; then
-    echo "DRIFT $pack: 部署位缺失 $dst (先跑 ./scripts/deploy.sh)" >&2
+    echo "DRIFT $pack: 部署位缺失 $dst (先跑 ./scripts/maint/deploy.sh)" >&2
     FAIL=1
     return
   fi
@@ -38,9 +38,9 @@ check_pack() { # $1=pack
 check_themes() {
   [[ "$TARGET" != "all" && "$TARGET" != "motto-themes" && "$TARGET" != "motto" ]] && return
   for f in motto.json motto-dark.json motto-light.json; do
-    local src="$REPO_ROOT/extensions/motto-themes/$f" dst="$AGENT_DIR/themes/$f"
+    local src="$REPO_ROOT/packages/motto/extensions/motto-themes/$f" dst="$AGENT_DIR/themes/$f"
     if ! diff -q "$src" "$dst" >/dev/null 2>&1; then
-      echo "DRIFT themes/$f: 部署位与仓库不一致 (先跑 ./scripts/deploy.sh)" >&2
+      echo "DRIFT themes/$f: 部署位与仓库不一致 (先跑 ./scripts/maint/deploy.sh)" >&2
       FAIL=1
     else
       echo "ok: themes/$f 一致"
@@ -69,6 +69,6 @@ legacy_check
 if [[ "$FAIL" == 0 ]]; then
   echo "DRIFT-CHECK: PASS"
 else
-  echo "DRIFT-CHECK: FAILED — 先跑 ./scripts/deploy.sh 收敛" >&2
+  echo "DRIFT-CHECK: FAILED — 先跑 ./scripts/maint/deploy.sh 收敛" >&2
 fi
 exit $FAIL

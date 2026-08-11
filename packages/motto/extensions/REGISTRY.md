@@ -24,7 +24,7 @@
 ## 部署位与 canonical
 
 - 本仓为唯一 canonical source；部署位：扩展 → `~/.pi/agent/extensions/`，主题 → `~/.pi/agent/themes/`。
-- 部署/漂移检查：`scripts/deploy.sh`（拷贝，理由见该脚本头部）与 `scripts/drift-check.sh`（diff 非空即报警），并入 `scripts/regression.sh` 与 `scripts/ci-checks.sh governance`。
+- 部署/漂移检查：`scripts/maint/deploy.sh`（拷贝，理由见该脚本头部）与 `scripts/maint/drift-check.sh`（diff 非空即报警），并入 `scripts/maint/regression.sh` 与 `scripts/maint/ci-checks.sh governance`。
 
 ## 边界说明
 

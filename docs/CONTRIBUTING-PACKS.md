@@ -1,10 +1,13 @@
-# CONTRIBUTING.md
+# CONTRIBUTING-PACKS — 扩展 pack 贡献流程
+
+> 本文件（`docs/CONTRIBUTING-PACKS.md`）是 Motto 产品内容（pack）的贡献约定，随仓自足；
+> 仓根 `CONTRIBUTING.md` 为上游 Pi harness 的贡献指南（改动 packages/ 与上游构建脚本时适用）。
 
 加入或更新一个扩展（pack）的流程。
 
 ## 加入一个新 pack
 
-1. 在 `extensions/` 下建 `extensions/<pack-name>/`，结构遵循 README 体例：
+1. 在 `packages/motto/extensions/` 下建 `packages/motto/extensions/<pack-name>/`，结构遵循 README 体例：
    `index.ts`（薄）+ `<core>.ts`（厚）+ 依赖客户端 + `README.md` + `test/` + `checksums/`。
 2. 固定版本依赖：把官方 release 的 `checksums.txt` 放入 `checksums/`，写 fetch 脚本（可参考 `motto-computer-use/checksums/`），二进制不入库。
 3. 写测试（参考 `motto-computer-use/test/`）：
@@ -14,7 +17,7 @@
    - 动态 live（需真实权限时），覆盖：观察 / 真实内容回传 / 后台行为 / 坐标契约 / 动作闭环 / stale 拒绝
    - 真实模型闭环（`pi -e` 驱动）
 4. 在本机验证全部测试通过，把结果写入 `reports/` 验收报告（用 `docs/templates/ACCEPTANCE.md` 模板）。
-5. 更新 `extensions/REGISTRY.md`：登记 pack、状态、契约、报告路径。
+5. 更新 `packages/motto/extensions/REGISTRY.md`：登记 pack、状态、契约、报告路径。
 6. 开始 dogfooding：把首个真实使用记录写入 `docs/usage-log/`。
 
 ## 更新一个既有 pack

@@ -1,3 +1,27 @@
+Motto Product Content — Copyright Notice
+=========================================
+
+The Motto product content in this repository (lesPrivilege/pi, motto/main) is
+MIT licensed, Copyright (c) 2026 lesPrivilege and contributors.
+
+Covered areas (imported from the archived lesPrivilege/Motto repository on
+2026-08-12, 夺舍终局 single-repo consolidation):
+
+  - packages/motto/            Motto extensions and themes (6 packs + REGISTRY.md)
+  - docs/                      Motto docs (decisions, architecture, research,
+                               reviews, templates, maintenance, AGENTS-MOTTO,
+                               CONTRIBUTING-PACKS, MOTTO.md, MAINTENANCE.md,
+                               MIGRATION.md, ROADMAP.md, TUI-THESIS.md)
+  - fixtures/                  TUI baseline fixtures and render tooling
+  - scripts/maint/             Motto maintenance scripts and launchers
+  - .github/workflows/motto-ci.yml
+  - .github/workflows/upstream-pin-verify.yml
+
+The full MIT license text for the Motto product content is preserved from the
+original repository (see the historical LICENSE in the archived Motto repo and
+its git history; the text is MIT as reprinted below).
+
+=====================================================================
 MIT License
 
 Copyright (c) 2026 lesPrivilege and contributors
@@ -19,3 +43,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+=====================================================================
+
+Note: the repository-root LICENSE file is the upstream Pi harness license
+(MIT, Copyright (c) 2025 Mario Zechner) and governs the harness source under
+packages/ and the upstream build scripts. The Motto product content listed
+above is governed by the notice in this file.

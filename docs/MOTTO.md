@@ -1,6 +1,6 @@
 # MOTTO — 凡例正典(唯一权威)
 
-> 本文件为 Motto 系列的凡例正典,canonical home 在本仓 `Motto/docs/MOTTO.md`。
+> 本文件为 Motto 系列的凡例正典,canonical home 在本仓 `docs/MOTTO.md`(夺舍终局后单仓自足)。
 > 部署位(`~/.pi/agent/MOTTO.md`)只留指针;两处出现分歧一律以本正典为准,并回仓修订。
 > 各 pack 体例引用本正典对应节:`motto`(牌记/footer/TPS/标题/项目本地正文)、`motto-review-flow`(目录体例)、
 > `motto-canonical-copy`(复制体例)、`motto-themes`(颜色/主题)。

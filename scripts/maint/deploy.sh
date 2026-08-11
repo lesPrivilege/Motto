@@ -10,12 +10,12 @@
 #   3. 部署位(~/.pi/agent)本身是 git 仓,拷贝镜像已由 .gitignore 排除跟踪,drift 由脚本守。
 #
 # 用法:
-#   ./scripts/deploy.sh            # 部署全部(五个新 pack + 三主题)
-#   ./scripts/deploy.sh motto      # 只部署指定 pack(或其主题)
+#   ./scripts/maint/deploy.sh            # 部署全部(五个新 pack + 三主题)
+#   ./scripts/maint/deploy.sh motto      # 只部署指定 pack(或其主题)
 # 部署后 /reload(pi 内)或重启 pi 生效。
 set -uo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 TARGET="${1:-all}"
 
@@ -26,7 +26,7 @@ deploy_pack() { # $1=pack
   local pack="$1"
   [[ "$TARGET" != "all" && "$TARGET" != "$pack" ]] && return
   mkdir -p "$AGENT_DIR/extensions/$pack"
-  rsync -a --delete "${EXCLUDES[@]}" "$REPO_ROOT/extensions/$pack/" "$AGENT_DIR/extensions/$pack/"
+  rsync -a --delete "${EXCLUDES[@]}" "$REPO_ROOT/packages/motto/extensions/$pack/" "$AGENT_DIR/extensions/$pack/"
   echo "deployed: extensions/$pack -> $AGENT_DIR/extensions/$pack"
 }
 
@@ -34,7 +34,7 @@ deploy_themes() {
   [[ "$TARGET" != "all" && "$TARGET" != "motto-themes" && "$TARGET" != "motto" ]] && return
   mkdir -p "$AGENT_DIR/themes"
   for f in motto.json motto-dark.json motto-light.json; do
-    cp "$REPO_ROOT/extensions/motto-themes/$f" "$AGENT_DIR/themes/$f"
+    cp "$REPO_ROOT/packages/motto/extensions/motto-themes/$f" "$AGENT_DIR/themes/$f"
   done
   echo "deployed: themes/*.json -> $AGENT_DIR/themes/"
 }

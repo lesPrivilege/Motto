@@ -7,8 +7,10 @@
 
 ## 0. 锚定原则
 
-1. **上游历史与 Motto 产物严格分仓**：`lesPrivilege/pi` 只存 pi 上游历史 + 最小
-   patchset；Motto 扩展/主题/fixtures/文档永不混入 pi 历史。
+1. **单仓自足、分区共存**（夺舍终局）：`lesPrivilege/pi` 为唯一产品仓，上游历史 +
+   最小 patchset + Motto 产品内容（`packages/motto/`、`docs/`、`fixtures/`、
+   `scripts/maint/`）同仓但物理分区；harness（`packages/`）零改动，产品内容只进
+   专属目录。
 2. **不修改 node_modules**：所有补丁以源码层 patch 存在（§3），安装走正常 npm。
 3. **拉模式**：上游演进只经 fetch/range-diff/rebase 流程进入，不主动跟随 main；
    每次决策（接受/拒绝/回退）留审计记录。
@@ -87,16 +89,16 @@ API 依赖面 / 最近兼容验证的 Pi base / 更新方式（manual|pinned|ven
 Motto commit + extension lock hash + theme hash + TUI fixture hash + acceptance
 evidence。回答「这一场真实 session 当时运行的是哪套系统」。
 
-## 6. 仓库拓扑与分支
+## 6. 仓库拓扑与分支（单仓自足）
 
 ```text
 earendil-works/pi  (upstream remote)
    ↓
-lesPrivilege/pi    (受控下游:上游历史 + 独立 patchset,不存 Motto extensions)
-   ↓
-lesPrivilege/Motto (产品正典/主题/extensions/fixtures/patch registry/lock/release manifest)
+lesPrivilege/pi    (唯一产品仓:上游历史 + 独立 patchset
+                    + Motto 产品内容 packages/motto/·docs/·fixtures/·scripts/maint/)
 ```
 
+原 `lesPrivilege/Motto` 双仓已并入本仓（2026-08-12 夺舍终局），历史归档只读。
 分支约定：
 
 ```text

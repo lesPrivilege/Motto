@@ -13,4 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verify pinned upstream releases (two-level checksums, fail closed)
-        run: bash scripts/ci-checks.sh verify-upstream
+        run: bash scripts/maint/ci-checks.sh verify-upstream

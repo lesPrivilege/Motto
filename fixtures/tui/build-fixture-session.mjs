@@ -5,8 +5,8 @@
 // session JSONL(resume 渲染路径 renderSessionEntries 消费同款格式)。
 // 输出:fixtures/tui/sessions/motto-tui-baseline.jsonl
 //
-// 运行:cd ~/Projects/Motto && node fixtures/tui/build-fixture-session.mjs
-// 渲染:cd ~/Projects/Motto && node fixtures/tui/render-baseline.mjs
+// 运行:cd ~/Projects/pi && node fixtures/tui/build-fixture-session.mjs
+// 渲染:cd ~/Projects/pi && node fixtures/tui/render-baseline.mjs
 // 真终端捕获:./fixtures/tui/ghostty-capture.sh(用户侧,见 README)
 
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
@@ -17,7 +17,8 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const SCEN = join(HERE, "scenarios");
 const OUT_DIR = join(HERE, "sessions");
 const OUT = join(OUT_DIR, "motto-tui-baseline.jsonl");
-const CWD = "/Users/lesprivilege/Projects/Motto";
+// 单仓自足:仓根由脚本位置推导(fixtures/tui 上两级),不再硬编码双仓路径。
+const CWD = join(HERE, "..", "..");
 
 const read = (name) => readFileSync(join(SCEN, name), "utf8");
 

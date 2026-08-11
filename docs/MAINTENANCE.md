@@ -1,8 +1,8 @@
 # 维护模型（三层 + 收官节奏）— Motto
 
 长期维护的主引擎是 **dogfooding**，防腐剂是**契约再验收**。本仓为唯一 canonical source；
-部署位（`~/.pi/agent/extensions/`、`~/.pi/agent/themes/`）由 `scripts/deploy.sh` 拷贝并受
-`scripts/drift-check.sh` 守护。
+部署位（`~/.pi/agent/extensions/`、`~/.pi/agent/themes/`）由 `scripts/maint/deploy.sh` 拷贝并受
+`scripts/maint/drift-check.sh` 守护。
 
 ## 第 1 层 · 狗粮反馈层（主引擎）
 
@@ -14,8 +14,8 @@
 ## 第 2 层 · 契约层（防腐剂）
 
 - pack = 代码 + 安全契约（白名单 / 固定版本 + SHA-256 / fail-closed 路径）+ 验收报告。
-- 任何变更必须跑该 pack 全量回归（`scripts/regression.sh`）；行为变化直接记录，不引入兼容层。
-- 部署一致性：`scripts/drift-check.sh`（部署位 vs 仓库 diff 非空即报警）并入 `regression.sh`
+- 任何变更必须跑该 pack 全量回归（`scripts/maint/regression.sh`）；行为变化直接记录，不引入兼容层。
+- 部署一致性：`scripts/maint/drift-check.sh`（部署位 vs 仓库 diff 非空即报警）并入 `regression.sh`
   与 `ci-checks.sh governance`；部署后 `/reload` 或重启 pi 生效。
 
 ## 第 3 层 · 环境驱动层（事件触发，最容易悄悄坏）
@@ -33,12 +33,12 @@
 | 回归 + 修 bug | 每月（或每批 usage log） | 更新后的验收报告 |
 | 全量回归 | macOS 升级 / 上游发版时 | 复验报告（PASS / PARTIAL / FAIL） |
 | 契约审计 | 每季度 | 审计 checklist 勾选 |
-| 收容仓盘点 | 每季度 | `extensions/REGISTRY.md` 更新 |
+| 收容仓盘点 | 每季度 | `packages/motto/extensions/REGISTRY.md` 更新 |
 
 ### 定期省视的五项固定步骤
 
-1. **drift check**：`./scripts/drift-check.sh`，部署位与仓库不一致即收敛（deploy.sh）。
-2. **regression**：`./scripts/regression.sh` 全量单测 + typecheck + drift，FAIL 即先修。
+1. **drift check**：`./scripts/maint/drift-check.sh`，部署位与仓库不一致即收敛（deploy.sh）。
+2. **regression**：`./scripts/maint/regression.sh` 全量单测 + typecheck + drift，FAIL 即先修。
 3. **上游 dist 导出核对**：确认 review-flow 依赖的两个 custom-entry API 仍在 pi dist 导出：
    `grep -nE "registerEntryRenderer|appendEntry" node_modules/@earendil-works/pi-coding-agent/dist/core/extensions/types.d.ts`
    （任一缺失 → review-flow 按凡例「守卫静默失活」处置，登记本省视记录）。
@@ -70,9 +70,9 @@
 
 1. **核对导出**：确认 `appendEntry` / `registerEntryRenderer` 仍在上游 dist 导出（上述 grep）；
    若改名/缺失，先按凡例静默失活处理 review-flow，再评估。
-2. **部署位灰跑**：升级 pi 后，`./scripts/deploy.sh` + 真实 TUI 冒烟
+2. **部署位灰跑**：升级 pi 后，`./scripts/maint/deploy.sh` + 真实 TUI 冒烟
    （牌记 / footer 含 TPS / Ctrl+O 两态 / `/copy-answer` `/copy-code` / turn.v1 落盘）。
-3. **全量门槛**：`./scripts/regression.sh` 全绿 + 双宗真实渲染 + 列宽 40/60/66/80/200 零超宽。
+3. **全量门槛**：`./scripts/maint/regression.sh` 全绿 + 双宗真实渲染 + 列宽 40/60/66/80/200 零超宽。
 4. **仓内登记版本**：更新各 pack `package.json` 的 `@earendil-works/pi-coding-agent` 版本 +
    REGISTRY 备注 + 本省视记录；通过才登记，不通过维持固定版本并记录原因。
 

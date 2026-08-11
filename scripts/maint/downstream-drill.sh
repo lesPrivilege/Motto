@@ -5,14 +5,14 @@
 # 每阶段 PASS/FAIL；全部 PASS 即 CANDIDATE_INSTALL_VERIFIED + ROLLBACK_VERIFIED 的
 # 机械证据。本脚本不修改任何 TUI/Core 产品行为。
 #
-# 用法：./scripts/downstream-drill.sh [--skip-build] [--keep-candidate]
+# 用法：./scripts/maint/downstream-drill.sh [--skip-build] [--keep-candidate]
 #   --skip-build      跳过 build（已有 dist 时加速）
 #   --keep-candidate  演练后保留 candidate 分支（默认删除）
 
 set -uo pipefail
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 BASE_JSON="$REPO_ROOT/docs/maintenance/PI-BASE.json"
-DOWNSTREAM="${MOTTO_DOWNSTREAM_ROOT:-$HOME/Projects/pi}"
+DOWNSTREAM="${MOTTO_DOWNSTREAM_ROOT:-$REPO_ROOT}"
 SKIP_BUILD=0; KEEP_CANDIDATE=0
 for a in "$@"; do case "$a" in --skip-build) SKIP_BUILD=1;; --keep-candidate) KEEP_CANDIDATE=1;; esac; done
 
@@ -57,8 +57,8 @@ if [[ "$SKIP_BUILD" == "1" || -f "$CLI" ]]; then
 else
   # 离线构建路径：models.dev 在本环境经代理不可达，用已安装同版本 pi-ai 的
   # providers/data 水化构建输入（同版本数据，非产品改动），逐包 build:offline。
-  # 在线路径：网络可达时直接 NODE_USE_ENV_PROXY=1 npm run build（见 scripts/offline-hydrate.sh）。
-  if ( cd "$DOWNSTREAM" && bash "$REPO_ROOT/scripts/offline-hydrate.sh" >/tmp/pi-drill-build.log 2>&1 ); then
+  # 在线路径：网络可达时直接 NODE_USE_ENV_PROXY=1 npm run build（见 scripts/maint/offline-hydrate.sh）。
+  if ( cd "$DOWNSTREAM" && bash "$REPO_ROOT/scripts/maint/offline-hydrate.sh" >/tmp/pi-drill-build.log 2>&1 ); then
     [[ -f "$CLI" ]] && ok "离线构建成功, cli.js 生成" || bad "构建成功但 cli.js 缺失"
   else
     bad "构建失败(日志 /tmp/pi-drill-build.log)"
@@ -66,7 +66,7 @@ else
 fi
 
 step "5. install(launcher 指向下游产物)"
-"$REPO_ROOT/scripts/launchers/motto" version >/tmp/drill-ver.txt 2>&1
+"$REPO_ROOT/scripts/maint/launchers/motto" version >/tmp/drill-ver.txt 2>&1
 grep -q "base: $EXPECT_BASE" /tmp/drill-ver.txt && grep -q "upstream: $EXPECT_COMMIT" /tmp/drill-ver.txt \
   && ok "motto launcher 身份块正确(base/upstream 锚定)" || bad "launcher 身份块不符"
 if [[ -f "$CLI" ]]; then
@@ -75,7 +75,7 @@ if [[ -f "$CLI" ]]; then
 fi
 
 step "6. rollback(原子回退到官方)"
-if MOTTO_USE_OFFICIAL=1 "$REPO_ROOT/scripts/launchers/motto" --version >/dev/null 2>&1; then
+if MOTTO_USE_OFFICIAL=1 "$REPO_ROOT/scripts/maint/launchers/motto" --version >/dev/null 2>&1; then
   ok "MOTTO_USE_OFFICIAL=1 回退官方 pi 成功"
 else
   bad "官方回退失败"

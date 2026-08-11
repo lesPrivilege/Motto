@@ -8,12 +8,13 @@
 #   2) 逐包按依赖序 build:offline（ai 用 offline，其余用 build）。
 # 网络可达时，等价于根目录 `NODE_USE_ENV_PROXY=1 npm run build`。
 #
-# 用法：bash scripts/offline-hydrate.sh   （在下游根 ~/Projects/pi 执行）
+# 用法：bash scripts/maint/offline-hydrate.sh   （在下游根 ~/Projects/pi 执行）
 
 set -euo pipefail
-DOWNSTREAM="${MOTTO_DOWNSTREAM_ROOT:-$HOME/Projects/pi}"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+DOWNSTREAM="${MOTTO_DOWNSTREAM_ROOT:-$REPO_ROOT}"
 INSTALLED_AI="/opt/homebrew/lib/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai"
-BASE_JSON="${MOTTO_REPO_ROOT:-$HOME/Projects/Motto}/docs/maintenance/PI-BASE.json"
+BASE_JSON="$REPO_ROOT/docs/maintenance/PI-BASE.json"
 EXPECT_VER="$(python3 -c "import json;print(json.load(open('$BASE_JSON'))['upstream']['packageVersion'])" 2>/dev/null || echo 0.84.1)"
 
 echo "== offline-hydrate: 数据水化 =="

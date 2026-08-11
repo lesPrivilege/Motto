@@ -17,7 +17,7 @@ motto-dev   候选 / dogfood 版本（升级、patch 试用）
 motto version              # 身份块: base / upstream / patchset / release
 motto --help               # 跑下游产物(零 patch 期与官方逐字节一致)
 MOTTO_USE_OFFICIAL=1 motto # 原子回退官方(rollback 对照)
-MOTTO_DOWNSTREAM_ROOT=…    # 覆盖下游根(默认 ~/Projects/pi)
+MOTTO_DOWNSTREAM_ROOT=…    # 覆盖下游根(默认本仓 ~/Projects/pi,单仓自包含)
 ```
 
 ## 1. 日常使用
@@ -34,10 +34,10 @@ MOTTO_DOWNSTREAM_ROOT=…    # 覆盖下游根(默认 ~/Projects/pi)
 
 ```bash
 # 0) 锚点核对
-bash scripts/downstream-drill.sh           # 全链路演练(当前应 11/11)
+bash scripts/maint/downstream-drill.sh           # 全链路演练(当前应 11/11)
 # 0.5) 检查上游增量(只读,可随时跑;motto 会经 motto-maintenance skill 主动报)
-bash scripts/upstream-check.sh             # 完整报告(含受影响包)
-bash scripts/upstream-check.sh --state ~/.pi/agent/maintenance/last-check.json
+bash scripts/maint/upstream-check.sh             # 完整报告(含受影响包)
+bash scripts/maint/upstream-check.sh --state ~/.pi/agent/maintenance/last-check.json
 #    定期: launchd 模板 docs/maintenance/upstream-check.launchd.plist(用户侧 opt-in)
 #    状态文件 checkedAt 距会话启动 >24h 时,motto 会话内跑一次只读检查再报
 # 1) 拉上游
@@ -49,7 +49,7 @@ git range-diff v0.84.1...upstream/main                      # 逐 diff 分类
 # 4) candidate 分支重放 Motto patches
 git checkout -b candidate/pi-<新版本> <新tag>               # 重放 PATCHES.json 各 patch
 # 5) 机械门 + 回归门 + dogfood 门(见 UPSTREAM-CONTRACT §9)
-bash scripts/offline-hydrate.sh            # 重建下游产物(离线水化)
+bash scripts/maint/offline-hydrate.sh            # 重建下游产物(离线水化)
 motto-dev version && motto-dev --help      # 冒烟
 # 6) 接受 → 更新 PI-BASE.json 五元组 + RELEASES.json + PATCHES.json status
 #    拒绝 → 维持旧锚 + 记录原因
@@ -91,9 +91,9 @@ pi-official                     # 同左(命令级)
 ## 6. 演练与验证
 
 ```bash
-bash scripts/downstream-drill.sh    # fetch→candidate→range-diff→build→install→rollback(11/11)
-bash scripts/ci-checks.sh governance    # 含 TUI baseline --check + drift-check
-./scripts/regression.sh             # 全 pack 无权限回归
+bash scripts/maint/downstream-drill.sh    # fetch→candidate→range-diff→build→install→rollback(11/11)
+bash scripts/maint/ci-checks.sh governance    # 含 TUI baseline --check + drift-check
+./scripts/maint/regression.sh             # 全 pack 无权限回归
 ```
 
 ## 7. 夺舍（2026-08-11 完成）
@@ -105,3 +105,12 @@ bash scripts/ci-checks.sh governance    # 含 TUI baseline --check + drift-check
 - 移除旧 `motto() { command pi }` shell 函数（夺舍前遗留，遮蔽 launcher）。
 - 逃生口常开：删掉 ~/.zshrc 中 `pi()`/`motto()` 函数即回到官方 `pi`，产品层
   （扩展/主题）不受影响。
+
+## 8. 夺舍终局（2026-08-12 单仓自足）
+
+- `~/Projects/Motto` 产品内容已并入本仓（唯一产品仓）：扩展/主题落
+  `packages/motto/extensions/`，维护脚本落 `scripts/maint/`，docs/fixtures 同仓；
+  launcher/deploy/drift 全部自引用本仓，双仓互引消除。
+- 维护命令统一为 `bash scripts/maint/<script>`；launcher 为
+  `scripts/maint/launchers/motto` 与 `scripts/maint/launchers/motto-dev`。
+- 原 `~/Projects/Motto` 归档只读，历史可追溯（RELEASES.json 记 mottoCommit）。

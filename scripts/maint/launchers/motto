@@ -12,15 +12,15 @@
 
 set -uo pipefail
 
-# 解析真实脚本路径(支持 symlink 调用:~/bin/motto → scripts/motto → launchers/motto)
+# 解析真实脚本路径(支持 symlink 调用:~/bin/motto → scripts/maint/motto → launchers/motto)
 SELF="$0"
 if [ -L "$SELF" ]; then
   LINK="$(readlink "$SELF")"
   case "$LINK" in /*) SELF="$LINK" ;; *) SELF="$(cd "$(dirname "$SELF")" && echo "$PWD/$LINK")" ;; esac
 fi
 LAUNCH_DIR="$(cd "$(dirname "$SELF")" && pwd)"
-REPO_ROOT="$(cd "$LAUNCH_DIR/../.." && pwd)"
-DOWNSTREAM_ROOT="${MOTTO_DOWNSTREAM_ROOT:-$HOME/Projects/pi}"
+REPO_ROOT="$(cd "$LAUNCH_DIR/../../.." && pwd)"
+DOWNSTREAM_ROOT="${MOTTO_DOWNSTREAM_ROOT:-$REPO_ROOT}"
 OFFICIAL_PI="${OFFICIAL_PI:-/opt/homebrew/bin/pi}"
 BASE_JSON="$REPO_ROOT/docs/maintenance/PI-BASE.json"
 RELEASES_JSON="$REPO_ROOT/docs/maintenance/RELEASES.json"

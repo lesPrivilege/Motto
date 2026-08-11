@@ -146,8 +146,9 @@ function forkThinkingLines(thinkingText, width, themeName, { foldState, hidden =
 		() => foldState,
 	).render(width);
 }
-const { projectDeepHeadings } = await import(join(HERE, "..", "..", "extensions", "motto", "headings.ts"));
-const { buildTurnLines } = await import(join(HERE, "..", "..", "extensions", "motto-review-flow", "core.ts"));
+// 单仓自足(夺舍终局):扩展正典随仓落在 packages/motto/extensions/,不再指向双仓根的 extensions/。
+const { projectDeepHeadings } = await import(join(HERE, "..", "..", "packages", "motto", "extensions", "motto", "headings.ts"));
+const { buildTurnLines } = await import(join(HERE, "..", "..", "packages", "motto", "extensions", "motto-review-flow", "core.ts"));
 
 const WIDTHS = [40, 60, 80, 120, 200];
 const THEMES = ["dark", "motto", "motto-dark", "motto-light"];

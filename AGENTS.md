@@ -1,5 +1,9 @@
 # Development Rules
 
+Motto 宪制见 `docs/AGENTS-MOTTO.md`。
+产品内容同仓：`packages/motto/`（扩展与主题）+ `docs/` + `fixtures/` + `scripts/maint/`（维护脚本）。
+harness 开发规则（本文其余部分）照常适用。
+
 ## Conversational Style
 
 - Keep answers short and concise

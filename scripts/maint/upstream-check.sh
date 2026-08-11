@@ -5,14 +5,14 @@
 # 应用升级必须走 upstream 升级流程(USAGE.md §2),由 motto/用户在检查报告基础上决策。
 #
 # 用法:
-#   bash scripts/upstream-check.sh                 # 检查并打印报告(含包级变更概览)
-#   bash scripts/upstream-check.sh --state <file>  # 额外写状态 JSON(时间+上游HEAD)供定期判断
-#   bash scripts/upstream-check.sh --quiet         # 只输出 NO_UPDATE/UPDATE_AVAILABLE/行(供 motto 摘要)
+#   bash scripts/maint/upstream-check.sh                 # 检查并打印报告(含包级变更概览)
+#   bash scripts/maint/upstream-check.sh --state <file>  # 额外写状态 JSON(时间+上游HEAD)供定期判断
+#   bash scripts/maint/upstream-check.sh --quiet         # 只输出 NO_UPDATE/UPDATE_AVAILABLE/行(供 motto 摘要)
 # 出口码:0=检查成功(无论有无更新);2=环境问题(无下游仓/无 remote/PI-BASE 缺失)
 
 set -uo pipefail
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-source "$REPO_ROOT/scripts/maint-lib.sh"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+source "$REPO_ROOT/scripts/maint/maint-lib.sh"
 maint_load_config
 BASE_JSON="$REPO_ROOT/docs/maintenance/PI-BASE.json"
 STATE=""; QUIET=0

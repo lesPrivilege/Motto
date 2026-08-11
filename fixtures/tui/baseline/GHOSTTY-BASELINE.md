@@ -1,7 +1,7 @@
 # Ghostty TUI 基线记录(MOTTO-TUI-0,用户侧)
 
 > 环境: pi 0.84.1 · Ghostty Ghostty 1.3.1 · macOS
-> fixture: /Users/lesprivilege/Projects/Motto/fixtures/tui/sessions/motto-tui-baseline.jsonl
+> fixture: /Users/lesprivilege/Projects/pi/fixtures/tui/sessions/motto-tui-baseline.jsonl
 > 记录日期: 2026-08-11
 > 状态: DRAFT → 用户逐项填写后改 ACCEPTED / ACCEPTED WITH LIMITATIONS / REJECTED
 

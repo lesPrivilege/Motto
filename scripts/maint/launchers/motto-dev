@@ -18,12 +18,12 @@ if [ -L "$SELF" ]; then
   case "$LINK" in /*) SELF="$LINK" ;; *) SELF="$(cd "$(dirname "$SELF")" && echo "$PWD/$LINK")" ;; esac
 fi
 LAUNCH_DIR="$(cd "$(dirname "$SELF")" && pwd)"
-REPO_ROOT="$(cd "$LAUNCH_DIR/../.." && pwd)"
-DEV_ROOT="${MOTTO_DEV_ROOT:-$HOME/Projects/pi}"
+REPO_ROOT="$(cd "$LAUNCH_DIR/../../.." && pwd)"
+DEV_ROOT="${MOTTO_DEV_ROOT:-$REPO_ROOT}"
 OFFICIAL_PI="${OFFICIAL_PI:-/opt/homebrew/bin/pi}"
 
 if [[ "${1:-}" == "version" || "${1:-}" == "--version" || "${1:-}" == "-v" ]]; then
-  "$REPO_ROOT/scripts/launchers/motto" version
+  "$REPO_ROOT/scripts/maint/launchers/motto" version
   echo "mode: candidate (motto-dev)"
   exit 0
 fi

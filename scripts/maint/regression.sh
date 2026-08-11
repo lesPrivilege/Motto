@@ -4,12 +4,12 @@
 # --live : 追加动态 live + 真实模型闭环(computer-use,需权限;Motto TUI pack 的活体见各 pack reports)。
 # 结尾: drift-check(部署位 vs 仓库)。
 # 用法:
-#   ./scripts/regression.sh                 # 全 pack 无权限回归
-#   ./scripts/regression.sh --live          # 追加动态验收
-#   ./scripts/regression.sh <pack-dir>      # 只跑指定 pack
+#   ./scripts/maint/regression.sh                 # 全 pack 无权限回归
+#   ./scripts/maint/regression.sh --live          # 追加动态验收
+#   ./scripts/maint/regression.sh <pack-dir>      # 只跑指定 pack
 set -uo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIVE=0
 TARGET=""
 for a in "$@"; do
@@ -41,7 +41,7 @@ run_mts() { # $1=pack_dir, $2=test_file — computer-use 旧式 .mts(需固定�
   local bin
   bin="$(find "$pack/bin" -name peekaboo -type f 2>/dev/null | head -1)"
   if [[ -z "$bin" ]]; then
-    echo "  SKIP $name $file (binary missing — run scripts/fetch-binaries.sh $name)" >&2
+    echo "  SKIP $name $file (binary missing — run scripts/maint/fetch-binaries.sh $name)" >&2
     return
   fi
   if PEEKABOO_BIN="$bin" PEEKABOO_EXPECTED_VERSION="$(cat "$pack/checksums/VERSION" 2>/dev/null)" \
@@ -63,7 +63,7 @@ run_gate() { # $1=pack_dir — gate.mts 是纯门禁单测,不需要固定二进
   fi
 }
 
-for pack in "$REPO_ROOT"/extensions/*/; do
+for pack in "$REPO_ROOT"/packages/motto/extensions/*/; do
   [[ -d "$pack/test" ]] || continue
   name="$(basename "$pack")"
   if [[ -n "$TARGET" && "$name" != "$TARGET" ]]; then continue; fi
@@ -90,7 +90,7 @@ done
 echo
 if [[ -d "${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/extensions" ]]; then
   echo "== drift check(部署位 vs 仓库)== "
-  if ! bash "$REPO_ROOT/scripts/drift-check.sh" "$TARGET" >/tmp/drift.log 2>&1; then
+  if ! bash "$REPO_ROOT/scripts/maint/drift-check.sh" "$TARGET" >/tmp/drift.log 2>&1; then
     echo "  FAIL drift-check:"; cat /tmp/drift.log | sed 's/^/    /'; FAIL=$((FAIL+1))
   else
     echo "  PASS drift-check"; PASS=$((PASS+1))

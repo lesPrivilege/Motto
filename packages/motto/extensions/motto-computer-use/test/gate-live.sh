@@ -6,7 +6,7 @@
 #   → revoke 复禁 → 重启后回到未批准态。
 #
 # 前提:
-#   - pack 已部署到 ~/.pi/agent/extensions/motto-computer-use(./scripts/deploy.sh motto-computer-use);
+#   - pack 已部署到 ~/.pi/agent/extensions/motto-computer-use(./scripts/maint/deploy.sh motto-computer-use);
 #   - Screen Recording + Accessibility 已授予承载进程(否则 success 步真实失败,记为环境未就绪);
 #   - PEEKABOO_BIN 指向固定的 Peekaboo 二进制(默认仓库 bin)。
 #
@@ -24,11 +24,11 @@ ok()  { echo "PASS  $1"; PASS=$((PASS+1)); }
 bad() { echo "FAIL  $1"; FAIL=$((FAIL+1)); }
 
 if [[ ! -d "$DEPLOYED" ]]; then
-  echo "FAIL  pack not deployed ($DEPLOYED) — run ./scripts/deploy.sh motto-computer-use first"
+  echo "FAIL  pack not deployed ($DEPLOYED) — run ./scripts/maint/deploy.sh motto-computer-use first"
   exit 1
 fi
 if [[ ! -x "$BIN" ]]; then
-  echo "FAIL  binary missing ($BIN) — run ./scripts/fetch-binaries.sh extensions/motto-computer-use"
+  echo "FAIL  binary missing ($BIN) — run ./scripts/maint/fetch-binaries.sh extensions/motto-computer-use"
   exit 1
 fi
 

@@ -48,7 +48,7 @@ no second model call is used to repair formatting.
 Follow the repo pack flow (already deployed at `~/.pi/agent/extensions/motto-gemini-vision/`):
 
 ```bash
-./scripts/deploy.sh motto-gemini-vision
+./scripts/maint/deploy.sh motto-gemini-vision
 #    Subdirectory index.ts auto-discovery picks it up on next pi start (or /reload).
 ```
 

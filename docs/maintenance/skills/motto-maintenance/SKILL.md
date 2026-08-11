@@ -10,10 +10,10 @@ description: >
 
 # Harness 下游维护（泛化）
 
-本技能是调用胶水：工作流逻辑在维护脚本（`scripts/`，自定位），路径经配置解析——
+本技能是调用胶水：工作流逻辑在维护脚本（`scripts/maint/`，自定位），路径经配置解析——
 配置真源 `~/.pi/agent/maintenance/config.json`（harnessRepo / stateFile 等），
-由 `scripts/maint-lib.sh` 读取（env > config > 默认）。合并前（双仓）与合并后
-（harness 并产品单仓）同一套脚本与流程可用；脚本位于仓内 `scripts/`，随仓走。
+由 `scripts/maint/maint-lib.sh` 读取（env > config > 默认）。夺舍终局后 harness 与
+产品内容同仓（单仓自足），脚本位于仓内 `scripts/maint/`，随仓走。
 
 ## 0. 铁律（先于一切）
 
@@ -25,15 +25,15 @@ description: >
 
 ## 1. 定位脚本与配置
 
-- 维护脚本：仓内 `scripts/`（先找 `$HARNESS_REPO/scripts`，回退 `$MAINT_CONFIG` 的
-  scriptsRoot；合并后即同仓 `scripts/`）。
+- 维护脚本：仓内 `scripts/maint/`（`$HARNESS_REPO/scripts/maint`；夺舍终局后即同仓
+  `scripts/maint/`，Motto 仓回退已删除）。
 - 配置：`~/.pi/agent/maintenance/config.json`；读取失败用默认
   （harnessRepo=~/Projects/pi, stateFile=~/.pi/agent/maintenance/last-check.json）。
 
 ```bash
 MAINT_CONFIG=~/.pi/agent/maintenance/config.json
 HARNESS_REPO="$(python3 -c "import json,os;print(json.load(open(os.path.expanduser('$MAINT_CONFIG'))).get('harnessRepo','~/Projects/pi'))")"
-SCRIPTS="$HARNESS_REPO/scripts"; [[ -d "$SCRIPTS" ]] || SCRIPTS="$HOME/Projects/Motto/scripts"
+SCRIPTS="$HARNESS_REPO/scripts/maint"
 ```
 
 ## 2. 检查上游增量（只读）

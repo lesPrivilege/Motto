@@ -2,7 +2,7 @@
 
 Motto 系列主题文件:`motto.json`(基准单宗,dark 基底)、`motto-dark.json`、`motto-light.json`(深浅双宗)。
 
-体例正典见仓内 [`docs/MOTTO.md`](../../docs/MOTTO.md)「颜色」节与「主题」节。
+体例正典见仓内 [`docs/MOTTO.md`](../../../docs/MOTTO.md)「颜色」节与「主题」节。
 
 ## 文件
 
@@ -22,7 +22,7 @@ Motto 系列主题文件:`motto.json`(基准单宗,dark 基底)、`motto-dark.js
 ## 部署位(与扩展部署位分开)
 
 扩展部署位 = pi 扩展目录 `~/.pi/agent/extensions/`;**主题部署位 = pi 主题目录 `~/.pi/agent/themes/`**。
-本 pack 无 `index.ts`、无二进制依赖、无 `checksums/`;由 `scripts/deploy.sh` 把三个 JSON 拷贝到主题目录。
+本 pack 无 `index.ts`、无二进制依赖、无 `checksums/`;由 `scripts/maint/deploy.sh` 把三个 JSON 拷贝到主题目录。
 
 ## 测试
 

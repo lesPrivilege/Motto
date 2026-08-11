@@ -20,11 +20,11 @@ fail closed. Default-loaded, but **unarmed until the user approves**.
 
 ```bash
 # 1. Make the Peekaboo binary available (pinned release, checksum-verified):
-scripts/fetch-binaries.sh extensions/motto-computer-use
+scripts/maint/fetch-binaries.sh extensions/motto-computer-use
 #    (downloads from the official v3.10.0 release and verifies tar.gz + binary SHA-256)
 
 # 2. Deploy to the pi extension dir (default loading — no -e needed):
-./scripts/deploy.sh motto-computer-use
+./scripts/maint/deploy.sh motto-computer-use
 #    Subdirectory index.ts auto-discovery picks it up on next pi start (or /reload).
 
 # 3. Approve per session (the only way to open the gate):
@@ -112,10 +112,10 @@ snapshot's `coordinate_context` is surfaced in tool `details`.
 
 ```bash
 # From the repo root — full regression (no permissions needed):
-./scripts/regression.sh
+./scripts/maint/regression.sh
 # Add --live for the dynamic acceptance (requires granted Screen Recording +
 # Accessibility, low-risk apps only):
-./scripts/regression.sh --live
+./scripts/maint/regression.sh --live
 ```
 
 The non-live suite (gate / smoke / boundary / netcheck / proctree / permcheck)

@@ -3,7 +3,7 @@
 Motto 的 TUI 品牌扩展:启动牌记(splash)、单行 footer(含 TPS)、终端标题守护、提示词品牌化。
 纯展示层,不承载 agent 功能、不触碰模型上下文与 session 语义。
 
-体例正典见仓内 [`docs/MOTTO.md`](../../docs/MOTTO.md)(凡例);本 README 只讲本 pack 的用法与边界。
+体例正典见仓内 [`docs/MOTTO.md`](../../../docs/MOTTO.md)(凡例);本 README 只讲本 pack 的用法与边界。
 
 ## 能力
 
@@ -62,7 +62,7 @@ H2 文本,消除常见 assistant 输出中 H3–H6 前成堆的 `#`,呈现收敛
 文本块 · 2 行
 
 ```text
-cd ~/Projects/Motto
+cd ~/Projects/pi
 npm test
 ```
 ````
@@ -91,21 +91,21 @@ npm test
 
 ## 启用 / 部署
 
-部署位为 pi 扩展目录与主题目录,由仓库 `scripts/deploy.sh` 统一拷贝(见仓根 README):
+部署位为 pi 扩展目录与主题目录,由仓库 `scripts/maint/deploy.sh` 统一拷贝(见仓根 README):
 
 ```bash
-./scripts/deploy.sh          # 部署全部 pack 到 ~/.pi/agent/
-./scripts/deploy.sh motto    # 只部署本 pack + 主题
+./scripts/maint/deploy.sh          # 部署全部 pack 到 ~/.pi/agent/
+./scripts/maint/deploy.sh motto    # 只部署本 pack + 主题
 ```
 
 ## 命令位（launcher shim，可选）
 
-终端直接敲 `motto` 起会话：仓库 `scripts/motto` 是两行 launcher（`#!/bin/sh` + `exec pi "$@"`，零 fork）。
+终端直接敲 `motto` 起会话：仓库 `scripts/maint/motto` 是兼容 shim（委托同目录 `launchers/motto` 下游 launcher）。
 
 安装是**显式动作**（命令位属用户环境，deploy.sh 不自动安装——与 .motto 立域同族纪律）：
 
 ```bash
-ln -s ~/Projects/Motto/scripts/motto ~/bin/motto   # ~/bin 须在 PATH
+ln -s ~/Projects/pi/scripts/maint/motto ~/bin/motto   # ~/bin 须在 PATH
 ```
 
 选型：`~/bin`（用户级、免 sudo，与既有 taucode symlink 同先例）；`/usr/local/bin` 需 sudo，不默认。

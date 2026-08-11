@@ -8,16 +8,16 @@
 # ghostty 只在末尾打印键值与出处,绝不代写。足迹清单见 docs/MIGRATION.md。
 #
 # 用法:
-#   ./scripts/bootstrap.sh                          # 常规(部署位=~/.pi/agent, shim=~/bin/motto)
-#   HOME=/tmp/sandbox PI_CODING_AGENT_DIR=/tmp/sandbox/.pi/agent ./scripts/bootstrap.sh  # 沙盒验收
-#   MOTTO_BIN_DIR=/tmp/sandbox/bin ./scripts/bootstrap.sh                                 # 覆盖 shim 落点
+#   ./scripts/maint/bootstrap.sh                          # 常规(部署位=~/.pi/agent, shim=~/bin/motto)
+#   HOME=/tmp/sandbox PI_CODING_AGENT_DIR=/tmp/sandbox/.pi/agent ./scripts/maint/bootstrap.sh  # 沙盒验收
+#   MOTTO_BIN_DIR=/tmp/sandbox/bin ./scripts/maint/bootstrap.sh                                 # 覆盖 shim 落点
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 BIN_DIR="${MOTTO_BIN_DIR:-$HOME/bin}"
 
-PINNED_PI_VERSION="$(node -e "console.log(require('$REPO_ROOT/extensions/motto/package.json').dependencies['@earendil-works/pi-coding-agent'])")"
+PINNED_PI_VERSION="$(node -e "console.log(require('$REPO_ROOT/packages/motto/extensions/motto/package.json').dependencies['@earendil-works/pi-coding-agent'])")"
 
 echo "== 1/4 检查 pi 安装与版本(钉版 $PINNED_PI_VERSION)=="
 if ! command -v pi >/dev/null 2>&1; then
@@ -31,27 +31,27 @@ if [[ "$PI_ACTUAL" != "$PINNED_PI_VERSION" ]]; then
 fi
 
 echo "== 2/4 固定二进制(computer-use,两级校验 fail-closed)=="
-PEEKABOO_BIN="$REPO_ROOT/extensions/motto-computer-use/bin/peekaboo-macos-universal/peekaboo"
-PEEKABOO_SHA="$REPO_ROOT/extensions/motto-computer-use/checksums/binary.sha256"
+PEEKABOO_BIN="$REPO_ROOT/packages/motto/extensions/motto-computer-use/bin/peekaboo-macos-universal/peekaboo"
+PEEKABOO_SHA="$REPO_ROOT/packages/motto/extensions/motto-computer-use/checksums/binary.sha256"
 if [[ -f "$PEEKABOO_BIN" && "$(shasum -a 256 "$PEEKABOO_BIN" | awk '{print $1}')" == "$(awk '{print $1}' "$PEEKABOO_SHA")" ]]; then
   echo "  binary 已就位且校验通过(幂等跳过): $PEEKABOO_BIN"
 else
-  bash "$REPO_ROOT/scripts/fetch-binaries.sh" extensions/motto-computer-use
+  bash "$REPO_ROOT/scripts/maint/fetch-binaries.sh" packages/motto/extensions/motto-computer-use
 fi
 
 echo "== 3/4 部署全 pack + 主题(部署位 $AGENT_DIR)=="
-PI_CODING_AGENT_DIR="$AGENT_DIR" bash "$REPO_ROOT/scripts/deploy.sh"
+PI_CODING_AGENT_DIR="$AGENT_DIR" bash "$REPO_ROOT/scripts/maint/deploy.sh"
 
 echo "== 4/4 launcher shim =="
 mkdir -p "$BIN_DIR"
 SHIM_TARGET="$BIN_DIR/motto"
-if [[ -L "$SHIM_TARGET" && "$(readlink "$SHIM_TARGET")" == "$REPO_ROOT/scripts/motto" ]]; then
+if [[ -L "$SHIM_TARGET" && "$(readlink "$SHIM_TARGET")" == "$REPO_ROOT/scripts/maint/motto" ]]; then
   echo "  shim 已就位(幂等跳过): $SHIM_TARGET"
 elif [[ -e "$SHIM_TARGET" || -L "$SHIM_TARGET" ]]; then
   echo "  WARN: $SHIM_TARGET 已存在且非本仓 shim,不覆盖(显式动作纪律,请人工处置)。"
 else
-  ln -s "$REPO_ROOT/scripts/motto" "$SHIM_TARGET"
-  echo "  已安装: $SHIM_TARGET -> $REPO_ROOT/scripts/motto"
+  ln -s "$REPO_ROOT/scripts/maint/motto" "$SHIM_TARGET"
+  echo "  已安装: $SHIM_TARGET -> $REPO_ROOT/scripts/maint/motto"
 fi
 
 echo

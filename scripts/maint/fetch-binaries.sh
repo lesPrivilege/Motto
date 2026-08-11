@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # fetch-binaries.sh — 拉取并校验某个 pack 的固定版本二进制。
-# 用法: scripts/fetch-binaries.sh extensions/<pack>
+# 用法: scripts/maint/fetch-binaries.sh packages/motto/extensions/<pack>
 # 校验失败即 fail-closed（退出非 0），不静默使用未校验的二进制。
 set -euo pipefail
 
-PACK="${1:?usage: fetch-binaries.sh extensions/<pack>}"
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PACK="${1:?usage: fetch-binaries.sh packages/motto/extensions/<pack>}"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 PACK_DIR="$REPO_ROOT/$PACK"
 BIN_DIR="$PACK_DIR/bin"
 

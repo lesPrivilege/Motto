@@ -90,6 +90,6 @@ The extension depends only on stable, public Pi APIs:
 
 It uses no theme tokens at all, so `motto`, `motto-dark`, `motto-light`, and third-party themes remain unaffected.
 
-The complete mouse-selection design is documented in `../../docs/research/UPSTREAM-SELECTION-PROJECTION.md`; the transcript-disclosure projection proposal lives in `../../docs/research/UPSTREAM-PROPOSAL.md`。
+The complete mouse-selection design is documented in `../../../docs/research/UPSTREAM-SELECTION-PROJECTION.md`; the transcript-disclosure projection proposal lives in `../../../docs/research/UPSTREAM-PROPOSAL.md`。
 
-体例正典见仓内 [`docs/MOTTO.md`](../../docs/MOTTO.md)「复制体例」节。部署位为 pi 扩展目录,由 `scripts/deploy.sh` 统一拷贝。
+体例正典见仓内 [`docs/MOTTO.md`](../../../docs/MOTTO.md)「复制体例」节。部署位为 pi 扩展目录,由 `scripts/maint/deploy.sh` 统一拷贝。

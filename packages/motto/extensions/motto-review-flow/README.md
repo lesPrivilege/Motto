@@ -3,7 +3,7 @@
 对话流 turn 级 recap:每 turn 一条 `motto-review-flow.turn.v1` 投影(纯展示),经 pi 原生 custom entry
 落盘,不入模型上下文、不改工具/消息/session 语义。
 
-体例正典见仓内 [`docs/MOTTO.md`](../../docs/MOTTO.md)「目录体例」节。
+体例正典见仓内 [`docs/MOTTO.md`](../../../docs/MOTTO.md)「目录体例」节。
 
 ## 能力
 
@@ -19,7 +19,7 @@
 
 ## 启用 / 部署
 
-部署位为 pi 扩展目录,由 `scripts/deploy.sh` 统一拷贝。
+部署位为 pi 扩展目录,由 `scripts/maint/deploy.sh` 统一拷贝。
 
 ## 测试
 
