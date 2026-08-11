@@ -2,7 +2,7 @@
 
 长期维护的主引擎是 **dogfooding**，防腐剂是**契约再验收**。本仓为唯一 canonical source；
 部署位（`~/.pi/agent/extensions/`、`~/.pi/agent/themes/`）由 `scripts/maint/deploy.sh` 拷贝并受
-`scripts/maint/drift-check.sh` 守护。
+`scripts/maint/drift-check.sh` 守护。按需召回先查 `docs/INDEX.md`（主索引：正典/决策/研究/验收/计划/归档仓/会话）。
 
 ## 第 1 层 · 狗粮反馈层（主引擎）
 

@@ -320,11 +320,12 @@ function listThemeNames(): string[] {
 	}
 }
 
-/** context 文件:agent 目录 AGENTS.md 优先,否则 cwd 下 AGENTS.md;相对 cwd 显示。 */
+/** context 文件:agent 目录 AGENTS.md 优先(显示 basename,home 页收敛到 motto 身份),否则 cwd 下 AGENTS.md;相对 cwd 显示。 */
 function contextFilePath(cwd: string): string | undefined {
-	const candidates = [join(agentDir(), "AGENTS.md"), join(cwd, "AGENTS.md")];
-	const found = candidates.find((path) => existsSync(path));
-	return found ? relative(cwd, found) : undefined;
+	const agentFile = join(agentDir(), "AGENTS.md");
+	if (existsSync(agentFile)) return basename(agentFile);
+	const cwdFile = join(cwd, "AGENTS.md");
+	return existsSync(cwdFile) ? relative(cwd, cwdFile) : undefined;
 }
 
 export function collectFacts(cwd: string): SplashFacts {
