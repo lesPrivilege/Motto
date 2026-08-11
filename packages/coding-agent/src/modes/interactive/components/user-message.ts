@@ -11,9 +11,11 @@ const OSC133_ZONE_FINAL = "\x1b]133;C\x07";
 /**
  * Component that renders a user message.
  *
- * Motto 视觉构成（TUI-1 S1）：去整宽气泡卡——不再套整宽背景 Box，
- * 改为逐行中灰左界栏 `│ ` + 悬挂正文。正文列左锚于界栏之后（第 3 列），
- * 续行同列悬挂。界栏为显示投影，会随拖选进入剪贴板（I6-4）。
+ * Motto 视觉构成（TUI-1 S1）：去整宽气泡卡——不再套整宽背景 Box。
+ * 首行以中灰左界栏 `│ ` 标记消息边界（I6-4 显示投影），续行以
+ * GUTTER_WIDTH 个空格悬挂缩进,正文列仍左锚于界栏之后（第 3 列），
+ * 与 S2 assistant 正文 BODY_INDENT 同列；大篇幅正文不再逐行成 rail。
+ * 界栏为显示投影，会随拖选进入剪贴板（I6-4）。
  */
 export class UserMessageComponent extends Container {
 	private text: string;
@@ -59,14 +61,15 @@ export class UserMessageComponent extends Container {
 	}
 
 	override render(width: number): string[] {
-		// 正文在界栏后的可用宽度内折行，随后逐行前缀界栏。
+		// 正文在界栏后的可用宽度内折行；首行前缀界栏标记消息边界，
+		// 续行以 GUTTER_WIDTH 个空格悬挂缩进(正文列仍锚于第 3 列)。
 		const body = super.render(Math.max(1, width - GUTTER_WIDTH));
 		if (body.length === 0) {
 			return body;
 		}
 
 		const gutter = theme.fg("muted", GUTTER);
-		const lines = body.map((line) => gutter + line);
+		const lines = body.map((line, i) => (i === 0 ? gutter : " ".repeat(GUTTER_WIDTH)) + line);
 
 		lines[0] = OSC133_ZONE_START + lines[0];
 		lines[lines.length - 1] = lines[lines.length - 1] + OSC133_ZONE_END + OSC133_ZONE_FINAL;
