@@ -108,6 +108,10 @@ describe("AssistantMessageComponent", () => {
 			undefined,
 			"Thinking...",
 			1,
+			[],
+			"a1",
+			// T2-2:默认 collapsed,此测试验 padding 需显式 full 态渲染 thinking 原文。
+			() => "full",
 		);
 		const lines = component.render(80).map((line) => stripAnsi(line));
 
@@ -218,11 +222,20 @@ describe("AssistantMessageComponent", () => {
 			{ type: "text", text: "answer" },
 			{ type: "thinking", thinking: "reasoning" },
 		]);
-		const component = new AssistantMessageComponent(message, false, undefined, "Thinking...", 1, [
-			(markdown, { messageType }) => {
-				return `${messageType}:${markdown}`;
-			},
-		]);
+		const component = new AssistantMessageComponent(
+			message,
+			false,
+			undefined,
+			"Thinking...",
+			1,
+			[
+				(markdown, { messageType }) => {
+					return `${messageType}:${markdown}`;
+				},
+			],
+			"a1",
+			() => "full",
+		);
 
 		const rendered = stripAnsi(component.render(80).join("\n"));
 		expect(rendered).toContain("assistant:answer");
@@ -339,5 +352,110 @@ describe("AssistantMessageComponent", () => {
 		component.render(80);
 		expect(component.getThinkingEntryIds()).toEqual([entryId]);
 		expect(getThinkingFoldState(fold, entryId)).toBe("preview");
+	});
+
+	// ---- T2-2:三态渲染(默认 collapsed;provider 缺省回落 DEFAULT) ----
+
+	test("T2-2: default (no provider) renders collapsed label", () => {
+		initTheme("dark");
+
+		const component = new AssistantMessageComponent(
+			createAssistantMessage([{ type: "thinking", thinking: "long private reasoning text" }]),
+		);
+		const rendered = stripAnsi(component.render(80).join("\n"));
+
+		expect(rendered.match(/Thinking\.\.\./g)).toHaveLength(1);
+		expect(rendered).not.toContain("long private reasoning text");
+	});
+
+	test("T2-2: provider returning full renders the complete thinking text", () => {
+		initTheme("dark");
+		const thinking = "full reasoning text that should be fully visible";
+
+		const component = new AssistantMessageComponent(
+			createAssistantMessage([{ type: "thinking", thinking }]),
+			false,
+			undefined,
+			"Thinking...",
+			1,
+			[],
+			"a1",
+			() => "full",
+		);
+		const rendered = stripAnsi(component.render(80).join("\n"));
+
+		expect(rendered).toContain(thinking);
+		expect(rendered).not.toContain("Thinking...");
+	});
+
+	test("T2-2: provider returning preview renders a bounded head/tail summary", () => {
+		initTheme("dark");
+		const thinking = `${"A".repeat(200)}中间独有标记绝不会出现在摘要中。${"B".repeat(200)}结尾标记字样 TAIL_END_MARKER`;
+
+		const component = new AssistantMessageComponent(
+			createAssistantMessage([{ type: "thinking", thinking }]),
+			false,
+			undefined,
+			"Thinking...",
+			1,
+			[],
+			"a1",
+			() => "preview",
+		);
+		const rendered = stripAnsi(component.render(80).join("\n"));
+
+		// 有界:预览(去空白折叠后)短于全文。
+		expect(rendered.length).toBeLessThan(thinking.length);
+		// 含省略号与尾部内容;头部标记在省略号之前;中部独有内容不出现。
+		expect(rendered).toContain("…");
+		expect(rendered).toContain("TAIL_END_MARKER");
+		expect(rendered.indexOf("…")).toBeLessThan(rendered.indexOf("TAIL_END_MARKER"));
+		expect(rendered).not.toContain("中间独有标记");
+	});
+
+	test("T2-2: hideThinkingBlock=true keeps the compat label path (takes precedence over fold state)", () => {
+		initTheme("dark");
+
+		const component = new AssistantMessageComponent(
+			createAssistantMessage([{ type: "thinking", thinking: "secret reasoning" }]),
+			true,
+			undefined,
+			"Thinking...",
+			1,
+			[],
+			"a1",
+			// 即使 provider 返回 full,兼容路径优先 → 仍只出标签。
+			() => "full",
+		);
+		const rendered = stripAnsi(component.render(80).join("\n"));
+
+		expect(rendered.match(/Thinking\.\.\./g)).toHaveLength(1);
+		expect(rendered).not.toContain("secret reasoning");
+	});
+
+	test("T2-2: three states are frame-stable across updateContent re-renders", () => {
+		initTheme("dark");
+		const message = createAssistantMessage([
+			{ type: "thinking", thinking: "frame stable reasoning content ".repeat(8) },
+		]);
+
+		for (const state of ["collapsed", "preview", "full"] as const) {
+			const component = new AssistantMessageComponent(
+				message,
+				false,
+				undefined,
+				"Thinking...",
+				1,
+				[],
+				"a1",
+				() => state,
+			);
+			const first = stripAnsi(component.render(80).join("\n"));
+			// 同 provider 同 message 重复 update(流式帧重建)→ 输出逐字节一致(I7-1)。
+			component.updateContent(message, true);
+			const second = stripAnsi(component.render(80).join("\n"));
+			expect(second).toBe(first);
+			expect(component.getThinkingEntryIds()).toEqual(["a1:1"]);
+		}
 	});
 });

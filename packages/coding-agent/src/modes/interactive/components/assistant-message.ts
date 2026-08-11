@@ -4,7 +4,12 @@ import type { MarkdownTransformer } from "../../../core/extensions/types.ts";
 import { getMarkdownTheme, theme } from "../theme/theme.ts";
 import { createMarkdownTransform } from "./markdown-transform.ts";
 import { BODY_INDENT } from "./motto-layout.ts";
-import { thinkingEntryId } from "./thinking-fold.ts";
+import {
+	buildThinkingPreview,
+	DEFAULT_THINKING_FOLD_STATE,
+	type ThinkingFoldState,
+	thinkingEntryId,
+} from "./thinking-fold.ts";
 
 const OSC133_ZONE_START = "\x1b]133;A\x07";
 const OSC133_ZONE_END = "\x1b]133;B\x07";
@@ -28,6 +33,9 @@ export class AssistantMessageComponent extends Container {
 	private thinkingMessageKey?: string;
 	// 当前消息各 thinking run 的 entryId(按 run 序数 1-based 对齐),供 fold map 查表(T2-1 管道)。
 	private thinkingEntryIds: string[] = [];
+	// T2-2:per-entry fold 状态提供者(interactive-mode 的 getThinkingEntryFoldState 绑定)。
+	// 缺省 undefined → 每条 entry 回落 DEFAULT(collapsed),组件可独立使用(测试/基线)。
+	private thinkingFoldProvider?: (entryId: string) => ThinkingFoldState;
 
 	constructor(
 		message?: AssistantMessage,
@@ -37,6 +45,7 @@ export class AssistantMessageComponent extends Container {
 		outputPad = 1,
 		markdownTransformers: readonly MarkdownTransformer[] = [],
 		thinkingMessageKey?: string,
+		thinkingFoldProvider?: (entryId: string) => ThinkingFoldState,
 	) {
 		super();
 
@@ -46,6 +55,7 @@ export class AssistantMessageComponent extends Container {
 		this.outputPad = outputPad;
 		this.markdownTransformers = markdownTransformers;
 		this.thinkingMessageKey = thinkingMessageKey;
+		this.thinkingFoldProvider = thinkingFoldProvider;
 
 		// Container for text/thinking content
 		this.contentContainer = new Container();
@@ -147,10 +157,13 @@ export class AssistantMessageComponent extends Container {
 					continue;
 				}
 
-				// T2-1:按 run 合并序数取稳定 entryId 并暴露(渲染行为不变,三态属 T2-2)。
+				// T2-1:按 run 合并序数取稳定 entryId 并暴露。T2-2:hideThinkingBlock 兼容路径优先
+				// (全隐不变);否则按 fold 状态三态渲染(collapsed 默认 / preview 有界摘要 / full 原文)。
 				thinkingRunIndex++;
+				let entryId: string | undefined;
 				if (this.thinkingMessageKey !== undefined) {
-					this.thinkingEntryIds.push(thinkingEntryId(this.thinkingMessageKey, thinkingRunIndex));
+					entryId = thinkingEntryId(this.thinkingMessageKey, thinkingRunIndex);
+					this.thinkingEntryIds.push(entryId);
 				}
 
 				// Add spacing only when another visible assistant content block follows.
@@ -165,26 +178,53 @@ export class AssistantMessageComponent extends Container {
 						new Text(theme.italic(theme.fg("thinkingText", this.hiddenThinkingLabel)), this.outputPad, 0),
 					);
 				} else {
-					// Render each run of thinking blocks as one Markdown section.
-					this.contentContainer.addChild(
-						new Markdown(
-							thinkingBlocks.join("\n\n"),
-							this.outputPad,
-							0,
-							this.markdownTheme,
-							{
-								color: (text: string) => theme.fg("thinkingText", text),
-								italic: true,
-							},
-							{
-								transform: createMarkdownTransform(
-									"assistant-thinking",
-									this.isStreaming,
-									this.markdownTransformers,
+					// T2-2:per-entry 三态。provider 缺省(无 entryId 或未注入)→ DEFAULT(collapsed),
+					// 与 hideThinkingBlock 全隐同款单行标签;fold 状态只属 UI,不写 session。
+					const foldState =
+						entryId !== undefined && this.thinkingFoldProvider
+							? this.thinkingFoldProvider(entryId)
+							: DEFAULT_THINKING_FOLD_STATE;
+					switch (foldState) {
+						case "full":
+							// full = 完整 thinking 原文(原非隐藏路径不变)。
+							this.contentContainer.addChild(
+								new Markdown(
+									thinkingBlocks.join("\n\n"),
+									this.outputPad,
+									0,
+									this.markdownTheme,
+									{
+										color: (text: string) => theme.fg("thinkingText", text),
+										italic: true,
+									},
+									{
+										transform: createMarkdownTransform(
+											"assistant-thinking",
+											this.isStreaming,
+											this.markdownTransformers,
+										),
+									},
 								),
-							},
-						),
-					);
+							);
+							break;
+						case "preview":
+							// preview = 有界首尾摘要(单 Text 块,thinkingText 色 + italic;Text 自动折行,
+							// 预算 64+…+40 → 40 列下 ~3 行、其余宽度 ≤ 2 行,零超宽)。
+							this.contentContainer.addChild(
+								new Text(
+									theme.italic(theme.fg("thinkingText", buildThinkingPreview(thinkingBlocks.join("\n\n")))),
+									this.outputPad,
+									0,
+								),
+							);
+							break;
+						default:
+							// collapsed(默认)= 每 run 单行静态标签,复用 hiddenThinkingLabel 样式。
+							this.contentContainer.addChild(
+								new Text(theme.italic(theme.fg("thinkingText", this.hiddenThinkingLabel)), this.outputPad, 0),
+							);
+							break;
+					}
 				}
 				if (hasVisibleContentAfter) {
 					this.contentContainer.addChild(new Spacer(1));

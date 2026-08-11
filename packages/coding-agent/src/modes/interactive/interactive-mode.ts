@@ -3155,6 +3155,8 @@ export class InteractiveMode {
 						this.outputPad,
 						this.getMarkdownTransformers(),
 						messageKey,
+						// T2-2:per-entry fold 状态提供者(缺省 collapsed;三态渲染消费)。
+						this.getThinkingEntryFoldState.bind(this),
 					);
 					this.streamingMessage = event.message;
 					this.chatContainer.addChild(this.streamingComponent);
@@ -3567,6 +3569,8 @@ export class InteractiveMode {
 					this.outputPad,
 					this.getMarkdownTransformers(),
 					messageKey,
+					// T2-2:per-entry fold 状态提供者(缺省 collapsed;三态渲染消费)。
+					this.getThinkingEntryFoldState.bind(this),
 				);
 				this.chatContainer.addChild(assistantComponent);
 				// T2-1:登记已渲染 thinking 条的 fold 状态(缺省 collapsed;map 纯内存,跨重建保持)。

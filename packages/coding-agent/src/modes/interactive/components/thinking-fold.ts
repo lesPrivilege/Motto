@@ -56,3 +56,40 @@ export function setThinkingFoldState(
 ): void {
 	map.set(entryId, state);
 }
+
+// ============================================================================
+// T2-2:preview 三态 — 有界首尾摘要预算(命名常量,文档化)。
+//
+// 预算设计约束:preview 渲染为单个 Text 块(padX=outputPad),Text 组件自动折行并
+// 右侧补白到整列 → 折行只增行数、绝不超列(零超宽 I9-1)。行数预算 ~3-4 display
+// lines(按单宽字符计):窄列 40 下 contentWidth = 40 - 2*outputPad(1) = 38,
+// head+ellipsis+tail = 64+2(省略号双宽)+40 = 106 列 → ceil(106/38) = 3 行;
+// 60/80/120/200 列下 ≤ 2 行。双宽 CJK 内容折行行数会更高,但 Text 折行+补白仍保证
+// 零列超宽(软行数目标,硬门禁是逐宽度零超宽)。
+
+/** preview 摘要的头部字符预算。 */
+export const THINKING_PREVIEW_HEAD_CHARS = 64;
+/** preview 摘要的尾部字符预算。 */
+export const THINKING_PREVIEW_TAIL_CHARS = 40;
+/** preview 摘要中连接 head/tail 的省略号。 */
+export const THINKING_PREVIEW_ELLIPSIS = "…";
+
+/**
+ * 有界首尾摘要纯 helper:折叠空白为单段,取前 headChars 字 + 省略号 + 后 tailChars
+ * 字。若折叠后长度 ≤ head+tail+省略号,直接原样返回(无需截断)。返回空串当且仅当
+ * 输入折叠后为空。
+ */
+export function buildThinkingPreview(
+	text: string,
+	headChars: number = THINKING_PREVIEW_HEAD_CHARS,
+	tailChars: number = THINKING_PREVIEW_TAIL_CHARS,
+): string {
+	const flat = text.replace(/\s+/g, " ").trim();
+	const budget = headChars + tailChars + THINKING_PREVIEW_ELLIPSIS.length;
+	if (flat.length <= budget) {
+		return flat;
+	}
+	const head = flat.slice(0, headChars);
+	const tail = flat.slice(flat.length - tailChars);
+	return `${head}${THINKING_PREVIEW_ELLIPSIS}${tail}`;
+}
