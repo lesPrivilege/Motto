@@ -4,6 +4,7 @@ import type { MarkdownTransformer } from "../../../core/extensions/types.ts";
 import { getMarkdownTheme, theme } from "../theme/theme.ts";
 import { createMarkdownTransform } from "./markdown-transform.ts";
 import { BODY_INDENT } from "./motto-layout.ts";
+import { thinkingEntryId } from "./thinking-fold.ts";
 
 const OSC133_ZONE_START = "\x1b]133;A\x07";
 const OSC133_ZONE_END = "\x1b]133;B\x07";
@@ -22,6 +23,11 @@ export class AssistantMessageComponent extends Container {
 	private lastMessage?: AssistantMessage;
 	private hasToolCalls = false;
 	private isStreaming = false;
+	// T2-1:thinking 块稳定身份。messageKey 于 message_start 定死(I7-1),run 序数
+	// 与 run 合并逻辑对齐;entryId = `${messageKey}:${runIndex}`(纯 UI 推导,不落 session)。
+	private thinkingMessageKey?: string;
+	// 当前消息各 thinking run 的 entryId(按 run 序数 1-based 对齐),供 fold map 查表(T2-1 管道)。
+	private thinkingEntryIds: string[] = [];
 
 	constructor(
 		message?: AssistantMessage,
@@ -30,6 +36,7 @@ export class AssistantMessageComponent extends Container {
 		hiddenThinkingLabel = "Thinking...",
 		outputPad = 1,
 		markdownTransformers: readonly MarkdownTransformer[] = [],
+		thinkingMessageKey?: string,
 	) {
 		super();
 
@@ -38,6 +45,7 @@ export class AssistantMessageComponent extends Container {
 		this.hiddenThinkingLabel = hiddenThinkingLabel;
 		this.outputPad = outputPad;
 		this.markdownTransformers = markdownTransformers;
+		this.thinkingMessageKey = thinkingMessageKey;
 
 		// Container for text/thinking content
 		this.contentContainer = new Container();
@@ -76,6 +84,11 @@ export class AssistantMessageComponent extends Container {
 		}
 	}
 
+	/** T2-1:当前消息各 thinking run 的稳定 entryId(与 run 合并序数对齐)。 */
+	getThinkingEntryIds(): readonly string[] {
+		return this.thinkingEntryIds;
+	}
+
 	override render(width: number): string[] {
 		const lines = super.render(width);
 		if (this.hasToolCalls || lines.length === 0) {
@@ -93,6 +106,7 @@ export class AssistantMessageComponent extends Container {
 
 		// Clear content container
 		this.contentContainer.clear();
+		this.thinkingEntryIds = [];
 
 		const hasVisibleContent = message.content.some(
 			(c) => (c.type === "text" && c.text.trim()) || (c.type === "thinking" && c.thinking.trim()),
@@ -103,6 +117,7 @@ export class AssistantMessageComponent extends Container {
 		}
 
 		// Render content in order
+		let thinkingRunIndex = 0;
 		for (let i = 0; i < message.content.length; i++) {
 			const content = message.content[i];
 			if (content.type === "text" && content.text.trim()) {
@@ -130,6 +145,12 @@ export class AssistantMessageComponent extends Container {
 
 				if (thinkingBlocks.length === 0) {
 					continue;
+				}
+
+				// T2-1:按 run 合并序数取稳定 entryId 并暴露(渲染行为不变,三态属 T2-2)。
+				thinkingRunIndex++;
+				if (this.thinkingMessageKey !== undefined) {
+					this.thinkingEntryIds.push(thinkingEntryId(this.thinkingMessageKey, thinkingRunIndex));
 				}
 
 				// Add spacing only when another visible assistant content block follows.

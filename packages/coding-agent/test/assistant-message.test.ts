@@ -1,6 +1,11 @@
 import type { AssistantMessage } from "@earendil-works/pi-ai";
 import { describe, expect, test } from "vitest";
 import { AssistantMessageComponent } from "../src/modes/interactive/components/assistant-message.ts";
+import {
+	getThinkingFoldState,
+	setThinkingFoldState,
+	type ThinkingFoldState,
+} from "../src/modes/interactive/components/thinking-fold.ts";
 import { UserMessageComponent } from "../src/modes/interactive/components/user-message.ts";
 import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
@@ -237,5 +242,102 @@ describe("AssistantMessageComponent", () => {
 			const lines = component.render(40).map((line) => stripAnsi(line));
 			expect(lines.some((line) => line.trimEnd() === "│ hello")).toBe(true);
 		}
+	});
+
+	test("T2-1: assigns one entryId per merged thinking run, skipping empty blocks", () => {
+		initTheme("dark");
+
+		const component = new AssistantMessageComponent(
+			createAssistantMessage([
+				{ type: "thinking", thinking: "first thought" },
+				{ type: "thinking", thinking: "" },
+				{ type: "thinking", thinking: "second thought" },
+				{ type: "text", text: "answer" },
+			]),
+			false,
+			undefined,
+			"Thinking...",
+			1,
+			[],
+			"a1",
+		);
+
+		component.render(80);
+		expect(component.getThinkingEntryIds()).toEqual(["a1:1"]);
+	});
+
+	test("T2-1: entryIds align with multiple thinking runs in run order", () => {
+		initTheme("dark");
+
+		const component = new AssistantMessageComponent(
+			createAssistantMessage([
+				{ type: "thinking", thinking: "run one" },
+				{ type: "text", text: "body" },
+				{ type: "thinking", thinking: "run two" },
+			]),
+			false,
+			undefined,
+			"Thinking...",
+			1,
+			[],
+			"a3",
+		);
+
+		component.render(80);
+		expect(component.getThinkingEntryIds()).toEqual(["a3:1", "a3:2"]);
+	});
+
+	test("T2-1: entryId is stable across updateContent frames (I7-1)", () => {
+		initTheme("dark");
+
+		const component = new AssistantMessageComponent(undefined, false, undefined, "Thinking...", 1, [], "a2");
+		component.updateContent(createAssistantMessage([{ type: "thinking", thinking: "first" }]), true);
+		expect(component.getThinkingEntryIds()).toEqual(["a2:1"]);
+
+		// 相邻 thinking 块合并为一 run;追加正文后才出现第二 run,既有 entryId 不变。
+		component.updateContent(
+			createAssistantMessage([
+				{ type: "thinking", thinking: "first" },
+				{ type: "text", text: "interim" },
+				{ type: "thinking", thinking: "second" },
+			]),
+			true,
+		);
+		expect(component.getThinkingEntryIds()).toEqual(["a2:1", "a2:2"]);
+
+		// 同消息重复 update → 同一 id(帧间一致)。
+		component.updateContent(
+			createAssistantMessage([
+				{ type: "thinking", thinking: "first" },
+				{ type: "text", text: "interim" },
+				{ type: "thinking", thinking: "second" },
+			]),
+			true,
+		);
+		expect(component.getThinkingEntryIds()).toEqual(["a2:1", "a2:2"]);
+	});
+
+	test("T2-1: fold map defaults collapsed and persists across rebuild", () => {
+		initTheme("dark");
+
+		const fold = new Map<string, ThinkingFoldState>();
+		const entryId = "a1:1";
+		expect(getThinkingFoldState(fold, entryId)).toBe("collapsed");
+
+		setThinkingFoldState(fold, entryId, "preview");
+
+		// 重建 = 以同一 messageKey 新建组件(同源同序 → 同 entryId),fold 选择保持。
+		const component = new AssistantMessageComponent(
+			createAssistantMessage([{ type: "thinking", thinking: "reasoning" }]),
+			false,
+			undefined,
+			"Thinking...",
+			1,
+			[],
+			"a1",
+		);
+		component.render(80);
+		expect(component.getThinkingEntryIds()).toEqual([entryId]);
+		expect(getThinkingFoldState(fold, entryId)).toBe("preview");
 	});
 });

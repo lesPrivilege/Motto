@@ -146,6 +146,13 @@ import {
 	type StatusIndicator,
 	WorkingStatusIndicator,
 } from "./components/status-indicator.ts";
+import {
+	countAssistantMessageEntries,
+	DEFAULT_THINKING_FOLD_STATE,
+	getThinkingFoldState,
+	messageKeyForAssistantOrdinal,
+	type ThinkingFoldState,
+} from "./components/thinking-fold.ts";
 import { ToolExecutionComponent } from "./components/tool-execution.ts";
 import { TreeSelectorComponent } from "./components/tree-selector.ts";
 import { TrustSelectorComponent } from "./components/trust-selector.ts";
@@ -440,6 +447,10 @@ export class InteractiveMode {
 
 	// Tool output expansion state
 	private toolOutputExpanded = false;
+
+	// Thinking fold state: entryId -> fold state (T2-1 plumbing, T2-2 consumes).
+	// Pure UI memory only: never written to session or model context (I10).
+	private thinkingFoldState = new Map<string, ThinkingFoldState>();
 
 	// Thinking block visibility state
 	private hideThinkingBlock = false;
@@ -3131,6 +3142,11 @@ export class InteractiveMode {
 					this.updatePendingMessagesDisplay();
 					this.ui.requestRender();
 				} else if (event.message.role === "assistant") {
+					// T2-1:于 message_start(内容到达前)定死 messageKey(I7-1)。in-flight 消息
+					// 尚未持久化,其序数 = 已持久化 assistant 消息条数 + 1;恢复/重建同源同序。
+					const messageKey = messageKeyForAssistantOrdinal(
+						countAssistantMessageEntries(this.sessionManager.buildContextEntries()) + 1,
+					);
 					this.streamingComponent = new AssistantMessageComponent(
 						undefined,
 						this.hideThinkingBlock,
@@ -3138,6 +3154,7 @@ export class InteractiveMode {
 						this.hiddenThinkingLabel,
 						this.outputPad,
 						this.getMarkdownTransformers(),
+						messageKey,
 					);
 					this.streamingMessage = event.message;
 					this.chatContainer.addChild(this.streamingComponent);
@@ -3150,6 +3167,8 @@ export class InteractiveMode {
 				if (this.streamingComponent && event.message.role === "assistant") {
 					this.streamingMessage = event.message;
 					this.streamingComponent.updateContent(this.streamingMessage, true);
+					// T2-1:登记流式期已到达 thinking 条的 fold 状态(entryId 于 message_start 定死,跨帧一致)。
+					this.recordThinkingFoldStates(this.streamingComponent.getThinkingEntryIds());
 
 					for (const content of this.streamingMessage.content) {
 						if (content.type === "toolCall") {
@@ -3454,7 +3473,7 @@ export class InteractiveMode {
 		this.chatContainer.addChild(component);
 	}
 
-	private addMessageToChat(message: AgentMessage, options?: { populateHistory?: boolean }): void {
+	private addMessageToChat(message: AgentMessage, options?: { populateHistory?: boolean }, messageKey?: string): void {
 		switch (message.role) {
 			case "bashExecution": {
 				const component = new BashExecutionComponent(message.command, this.ui, message.excludeFromContext);
@@ -3547,8 +3566,11 @@ export class InteractiveMode {
 					this.hiddenThinkingLabel,
 					this.outputPad,
 					this.getMarkdownTransformers(),
+					messageKey,
 				);
 				this.chatContainer.addChild(assistantComponent);
+				// T2-1:登记已渲染 thinking 条的 fold 状态(缺省 collapsed;map 纯内存,跨重建保持)。
+				this.recordThinkingFoldStates(assistantComponent.getThinkingEntryIds());
 				break;
 			}
 			case "toolResult": {
@@ -3559,6 +3581,26 @@ export class InteractiveMode {
 				const _exhaustive: never = message;
 			}
 		}
+	}
+
+	/**
+	 * T2-1:登记已渲染 thinking 条的 fold 状态(缺省 collapsed)。map 纯内存、跨重建
+	 * 持续(buildContextEntries 同源同序 → 同 entryId),T2-2 三态渲染读取。
+	 */
+	private recordThinkingFoldStates(entryIds: readonly string[]): void {
+		for (const entryId of entryIds) {
+			if (!this.thinkingFoldState.has(entryId)) {
+				this.thinkingFoldState.set(entryId, DEFAULT_THINKING_FOLD_STATE);
+			}
+		}
+	}
+
+	/**
+	 * T2-1:读 thinking entry 的 fold 状态(缺省 collapsed)。T2-2 三态渲染消费;
+	 * 纯内存,不写 session、不入模型上下文(I10)。
+	 */
+	getThinkingEntryFoldState(entryId: string): ThinkingFoldState {
+		return getThinkingFoldState(this.thinkingFoldState, entryId);
 	}
 
 	private renderSessionItems(
@@ -3578,6 +3620,7 @@ export class InteractiveMode {
 			this.updateEditorBorderColor();
 		}
 
+		let assistantOrdinal = 0;
 		for (const item of items) {
 			if (isCustomSessionEntry(item)) {
 				this.addCustomEntryToChat(item);
@@ -3587,7 +3630,10 @@ export class InteractiveMode {
 			const message = item;
 			// Assistant messages need special handling for tool calls
 			if (message.role === "assistant") {
-				this.addMessageToChat(message);
+				// T2-1:按 buildContextEntries() 同源顺序计 assistant 序数(与流式/重建同推导)。
+				assistantOrdinal++;
+				const messageKey = messageKeyForAssistantOrdinal(assistantOrdinal);
+				this.addMessageToChat(message, undefined, messageKey);
 				// Render tool call components
 				for (const content of message.content) {
 					if (content.type === "toolCall") {
