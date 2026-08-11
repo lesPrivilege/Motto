@@ -9,23 +9,23 @@ const OSC133_ZONE_END = "\x1b]133;B\x07";
 const OSC133_ZONE_FINAL = "\x1b]133;C\x07";
 
 describe("UserMessageComponent", () => {
-	test("renders per-line muted gutter with hanging body and OSC markers", () => {
+	test("renders first-line muted gutter with hanging body and OSC markers", () => {
 		initTheme("dark");
 
 		const component = new UserMessageComponent("hello world, this is a longer user message to force wrapping");
 		const lines = component.render(20);
 
 		expect(lines).toHaveLength(4);
-		// OSC 起始标记在首行行首；界栏随行保留。
+		// OSC 起始标记在首行行首；界栏只落首行。
 		expect(lines[0].startsWith(OSC133_ZONE_START)).toBe(true);
-		// 正文在界栏后可用宽度（width − 2）内折行，续行同列悬挂。
+		// 正文在界栏后可用宽度（width − 2）内折行，续行以两空格悬挂缩进同列对齐。
 		expect(stripAnsi(lines[0]).trimEnd()).toBe(`${GUTTER}hello world, this`);
-		expect(stripAnsi(lines[1]).trimEnd()).toBe(`${GUTTER}is a longer user`);
-		expect(stripAnsi(lines[2]).trimEnd()).toBe(`${GUTTER}message to force`);
-		expect(stripAnsi(lines[3]).trimEnd()).toBe(`${GUTTER}wrapping`);
+		expect(stripAnsi(lines[1]).trimEnd()).toBe(`  is a longer user`);
+		expect(stripAnsi(lines[2]).trimEnd()).toBe(`  message to force`);
+		expect(stripAnsi(lines[3]).trimEnd()).toBe(`  wrapping`);
 		// 末行以 OSC 结束标记收尾。
 		expect(lines[lines.length - 1].endsWith(OSC133_ZONE_END + OSC133_ZONE_FINAL)).toBe(true);
-		// 界栏使用 muted 槽（中灰），与正文不同色。
+		// 首行界栏使用 muted 槽（中灰），与正文不同色。
 		expect(lines[0]).toContain(theme.fg("muted", GUTTER));
 	});
 
