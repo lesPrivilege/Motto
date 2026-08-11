@@ -109,9 +109,10 @@ describe("AssistantMessageComponent", () => {
 		expect(lines.some((line) => line.includes(" hello"))).toBe(true);
 		expect(lines.some((line) => line.includes(" reasoning"))).toBe(true);
 
+		// S2: assistant 正文列固定 BODY_INDENT,不随 outputPad 平移;thinking 仍随 outputPad。
 		component.setOutputPad(0);
 		const updatedLines = component.render(80).map((line) => stripAnsi(line));
-		expect(updatedLines.some((line) => line.startsWith("hello"))).toBe(true);
+		expect(updatedLines.some((line) => line.startsWith("  hello"))).toBe(true);
 		expect(updatedLines.some((line) => line.startsWith("reasoning"))).toBe(true);
 	});
 
@@ -171,10 +172,10 @@ describe("AssistantMessageComponent", () => {
 			],
 		);
 
-		expect(stripAnsi(component.render(80).join("\n"))).toContain("answer (78)");
+		expect(stripAnsi(component.render(80).join("\n"))).toContain("answer (76)");
 		component.render(80);
-		expect(stripAnsi(component.render(60).join("\n"))).toContain("answer (58)");
-		expect(availableWidths).toEqual([78, 58]);
+		expect(stripAnsi(component.render(60).join("\n"))).toContain("answer (56)");
+		expect(availableWidths).toEqual([76, 56]);
 	});
 
 	test("continues the Markdown transformer chain when a transformer throws", () => {
