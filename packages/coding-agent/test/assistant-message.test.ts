@@ -227,15 +227,14 @@ describe("AssistantMessageComponent", () => {
 		]);
 	});
 
-	test("uses configured output padding for user messages", () => {
+	test("user messages ignore outputPad: body stays left-anchored after gutter", () => {
 		initTheme("dark");
 
-		const paddedComponent = new UserMessageComponent("hello", undefined, 1);
-		const paddedLines = paddedComponent.render(40).map((line) => stripAnsi(line));
-		expect(paddedLines.some((line) => line.startsWith(" hello"))).toBe(true);
-
-		const unpaddedComponent = new UserMessageComponent("hello", undefined, 0);
-		const unpaddedLines = unpaddedComponent.render(40).map((line) => stripAnsi(line));
-		expect(unpaddedLines.some((line) => line.startsWith("hello"))).toBe(true);
+		// S1 界栏布局：user 正文固定左锚于界栏后第 3 列，不随 outputPad 平移。
+		for (const pad of [0, 1, 3]) {
+			const component = new UserMessageComponent("hello", undefined, pad);
+			const lines = component.render(40).map((line) => stripAnsi(line));
+			expect(lines.some((line) => line.trimEnd() === "│ hello")).toBe(true);
+		}
 	});
 });

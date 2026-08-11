@@ -1,27 +1,44 @@
 import { describe, expect, test } from "vitest";
+import { GUTTER } from "../src/modes/interactive/components/motto-layout.ts";
 import { UserMessageComponent } from "../src/modes/interactive/components/user-message.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { initTheme, theme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 const OSC133_ZONE_START = "\x1b]133;A\x07";
 const OSC133_ZONE_END = "\x1b]133;B\x07";
 const OSC133_ZONE_FINAL = "\x1b]133;C\x07";
-const BG_RESET = "\x1b[49m";
 
 describe("UserMessageComponent", () => {
-	test("keeps user message height stable while moving closing OSC markers off line end", () => {
+	test("renders per-line muted gutter with hanging body and OSC markers", () => {
+		initTheme("dark");
+
+		const component = new UserMessageComponent("hello world, this is a longer user message to force wrapping");
+		const lines = component.render(20);
+
+		expect(lines).toHaveLength(4);
+		// OSC 起始标记在首行行首；界栏随行保留。
+		expect(lines[0].startsWith(OSC133_ZONE_START)).toBe(true);
+		// 正文在界栏后可用宽度（width − 2）内折行，续行同列悬挂。
+		expect(stripAnsi(lines[0]).trimEnd()).toBe(`${GUTTER}hello world, this`);
+		expect(stripAnsi(lines[1]).trimEnd()).toBe(`${GUTTER}is a longer user`);
+		expect(stripAnsi(lines[2]).trimEnd()).toBe(`${GUTTER}message to force`);
+		expect(stripAnsi(lines[3]).trimEnd()).toBe(`${GUTTER}wrapping`);
+		// 末行以 OSC 结束标记收尾。
+		expect(lines[lines.length - 1].endsWith(OSC133_ZONE_END + OSC133_ZONE_FINAL)).toBe(true);
+		// 界栏使用 muted 槽（中灰），与正文不同色。
+		expect(lines[0]).toContain(theme.fg("muted", GUTTER));
+	});
+
+	test("single short message keeps one line with gutter and OSC markers", () => {
 		initTheme("dark");
 
 		const component = new UserMessageComponent("hello");
 		const lines = component.render(20);
 
-		expect(lines).toHaveLength(3);
-		expect(lines[0]).toContain(OSC133_ZONE_START);
-		expect(lines[0].endsWith(BG_RESET)).toBe(true);
-		expect(lines[0]).not.toContain(OSC133_ZONE_END);
-		expect(lines[1]).toContain("hello");
-		expect(lines[2].startsWith(OSC133_ZONE_END + OSC133_ZONE_FINAL)).toBe(true);
-		expect(lines[2].endsWith(BG_RESET)).toBe(true);
+		expect(lines).toHaveLength(1);
+		expect(lines[0].startsWith(OSC133_ZONE_START + theme.fg("muted", GUTTER))).toBe(true);
+		expect(stripAnsi(lines[0]).trimEnd()).toBe(`${GUTTER}hello`);
+		expect(lines[0].endsWith(OSC133_ZONE_END + OSC133_ZONE_FINAL)).toBe(true);
 	});
 
 	test("chains Markdown transformers with user message context", () => {
