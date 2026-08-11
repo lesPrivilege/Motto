@@ -1,11 +1,15 @@
 import { describe, expect, test } from "vitest";
 import type { SessionEntry } from "../src/core/session-manager.ts";
 import {
+	buildThinkingPreview,
 	countAssistantMessageEntries,
 	DEFAULT_THINKING_FOLD_STATE,
 	getThinkingFoldState,
 	messageKeyForAssistantOrdinal,
 	setThinkingFoldState,
+	THINKING_PREVIEW_ELLIPSIS,
+	THINKING_PREVIEW_HEAD_CHARS,
+	THINKING_PREVIEW_TAIL_CHARS,
 	type ThinkingFoldState,
 	thinkingEntryId,
 } from "../src/modes/interactive/components/thinking-fold.ts";
@@ -90,5 +94,42 @@ describe("thinking-fold helpers (T2-1)", () => {
 		// 未触碰的 entryId 仍回落缺省;同一 map 跨重建保持(重建不重建 map)。
 		expect(getThinkingFoldState(fold, "a1:2")).toBe("collapsed");
 		expect(fold.size).toBe(1);
+	});
+
+	// ---- T2-2:preview 有界首尾摘要纯 helper ----
+
+	test("T2-2: buildThinkingPreview returns short text unchanged when within budget", () => {
+		expect(buildThinkingPreview("short thinking")).toBe("short thinking");
+	});
+
+	test("T2-2: buildThinkingPreview collapses whitespace to a single paragraph", () => {
+		expect(buildThinkingPreview("  line1\n\n  line2  ")).toBe("line1 line2");
+	});
+
+	test("T2-2: buildThinkingPreview bounds long text to head + ellipsis + tail", () => {
+		const head = "H".repeat(THINKING_PREVIEW_HEAD_CHARS);
+		const mid = "M".repeat(500);
+		const tail = "T".repeat(THINKING_PREVIEW_TAIL_CHARS);
+		const preview = buildThinkingPreview(head + mid + tail);
+
+		expect(preview).toBe(`${head}${THINKING_PREVIEW_ELLIPSIS}${tail}`);
+		expect(preview.length).toBe(
+			THINKING_PREVIEW_HEAD_CHARS + THINKING_PREVIEW_TAIL_CHARS + THINKING_PREVIEW_ELLIPSIS.length,
+		);
+	});
+
+	test("T2-2: buildThinkingPreview returns empty string for blank input", () => {
+		expect(buildThinkingPreview("   \n  ")).toBe("");
+	});
+
+	test("T2-2: preview budget stays within ~3 display lines at 40 columns", () => {
+		// 窄列 40,padX=1 → contentWidth=38;head+tail+省略号共 105 单宽字符 → ≤ 3 行,零超宽。
+		// (预算按字符计;双宽 CJK 内容折行行数会更高,但 Text 自动折行+补白仍保证零列超宽。)
+		const preview = buildThinkingPreview("A".repeat(THINKING_PREVIEW_HEAD_CHARS + THINKING_PREVIEW_TAIL_CHARS + 100));
+		expect(preview.length).toBe(
+			THINKING_PREVIEW_HEAD_CHARS + THINKING_PREVIEW_TAIL_CHARS + THINKING_PREVIEW_ELLIPSIS.length,
+		);
+		const contentWidth = 38;
+		expect(Math.ceil(preview.length / contentWidth)).toBeLessThanOrEqual(3);
 	});
 });
