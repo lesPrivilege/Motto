@@ -2,8 +2,9 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 
 // motto-layout.ts — Motto transcript 视觉构成（TUI-1）共享布局常量。
 //
-// 布局文法（MOTTO_TUI_CORE）：界栏非装饰框——user 消息逐行左界栏 `│ `，
-// 正文列左锚于界栏之后；assistant / tool 目行 / review recap 对齐同一正文列。
+// 布局文法（MOTTO_TUI_CORE）：界栏非装饰框——user 消息首行左界栏 `│ `，
+// 续行以 GUTTER_WIDTH 空格悬挂缩进对齐正文列；assistant / tool 目行 /
+// review recap 对齐同一正文列。
 // 标识符与文案使用现代 CS 用语（不引入仿古词）。
 //
 // 用色槽位：界栏 = muted（Motto 主题映射 mid 中灰；默认主题映射 gray）。
