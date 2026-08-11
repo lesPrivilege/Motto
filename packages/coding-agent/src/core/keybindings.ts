@@ -21,6 +21,8 @@ export interface AppKeybindings {
 	"app.model.select": true;
 	"app.tools.expand": true;
 	"app.thinking.toggle": true;
+	"app.thinking.focus": true;
+	"app.thinking.fold": true;
 	"app.session.toggleNamedFilter": true;
 	"app.editor.external": true;
 	"app.message.copy": true;
@@ -87,6 +89,14 @@ export const KEYBINDINGS = {
 	"app.thinking.toggle": {
 		defaultKeys: "ctrl+t",
 		description: "Toggle thinking blocks",
+	},
+	"app.thinking.focus": {
+		defaultKeys: "shift+ctrl+t",
+		description: "Focus next thinking block",
+	},
+	"app.thinking.fold": {
+		defaultKeys: "alt+t",
+		description: "Cycle focused thinking block",
 	},
 	"app.session.toggleNamedFilter": {
 		defaultKeys: "ctrl+n",
@@ -248,6 +258,8 @@ const KEYBINDING_NAME_MIGRATIONS = {
 	selectModel: "app.model.select",
 	expandTools: "app.tools.expand",
 	toggleThinking: "app.thinking.toggle",
+	focusThinking: "app.thinking.focus",
+	foldThinking: "app.thinking.fold",
 	toggleSessionNamedFilter: "app.session.toggleNamedFilter",
 	externalEditor: "app.editor.external",
 	followUp: "app.message.followUp",

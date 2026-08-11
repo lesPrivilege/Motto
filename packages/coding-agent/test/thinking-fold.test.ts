@@ -1,8 +1,10 @@
 import { describe, expect, test } from "vitest";
 import type { SessionEntry } from "../src/core/session-manager.ts";
 import {
+	advanceThinkingFocus,
 	buildThinkingPreview,
 	countAssistantMessageEntries,
+	cycleThinkingFoldState,
 	DEFAULT_THINKING_FOLD_STATE,
 	getThinkingFoldState,
 	messageKeyForAssistantOrdinal,
@@ -12,6 +14,7 @@ import {
 	THINKING_PREVIEW_TAIL_CHARS,
 	type ThinkingFoldState,
 	thinkingEntryId,
+	thinkingFocusLabel,
 } from "../src/modes/interactive/components/thinking-fold.ts";
 
 // T2-1 纯 helper 单测:序数推导 / entryId 组合 / fold map 读写。不实例化
@@ -131,5 +134,46 @@ describe("thinking-fold helpers (T2-1)", () => {
 		);
 		const contentWidth = 38;
 		expect(Math.ceil(preview.length / contentWidth)).toBeLessThanOrEqual(3);
+	});
+
+	// ---- T2-3:交互键纯 helper(focus 游标 + fold 三态循环) ----
+
+	test("T2-3: cycleThinkingFoldState advances collapsed→preview→full→collapsed", () => {
+		expect(cycleThinkingFoldState("collapsed")).toBe("preview");
+		expect(cycleThinkingFoldState("preview")).toBe("full");
+		expect(cycleThinkingFoldState("full")).toBe("collapsed");
+	});
+
+	test("T2-3: cycleThinkingFoldState returns to start after a full three-step cycle", () => {
+		for (const start of ["collapsed", "preview", "full"] as const) {
+			let state: ThinkingFoldState = start;
+			for (let i = 0; i < 3; i++) state = cycleThinkingFoldState(state);
+			expect(state).toBe(start);
+		}
+	});
+
+	test("T2-3: advanceThinkingFocus wraps modulo count", () => {
+		expect(advanceThinkingFocus(0, 3)).toBe(1);
+		expect(advanceThinkingFocus(1, 3)).toBe(2);
+		expect(advanceThinkingFocus(2, 3)).toBe(0);
+	});
+
+	test("T2-3: advanceThinkingFocus handles empty and single entry", () => {
+		// count 0 → -1 哨兵(无条目;调用方须先短路)。
+		expect(advanceThinkingFocus(0, 0)).toBe(-1);
+		expect(advanceThinkingFocus(2, 0)).toBe(-1);
+		// count 1 → 恒回 0(单条目环绕)。
+		expect(advanceThinkingFocus(0, 1)).toBe(0);
+		expect(advanceThinkingFocus(5, 1)).toBe(0);
+	});
+
+	test("T2-3: thinkingFocusLabel renders 1-based position and empty placeholder", () => {
+		expect(thinkingFocusLabel(0, 3)).toBe("Thinking 1/3");
+		expect(thinkingFocusLabel(1, 3)).toBe("Thinking 2/3");
+		expect(thinkingFocusLabel(2, 3)).toBe("Thinking 3/3");
+		// 无条目/越界 → 占位。
+		expect(thinkingFocusLabel(0, 0)).toBe("Thinking –");
+		expect(thinkingFocusLabel(-1, 3)).toBe("Thinking –");
+		expect(thinkingFocusLabel(3, 3)).toBe("Thinking –");
 	});
 });

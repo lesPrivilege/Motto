@@ -147,11 +147,15 @@ import {
 	WorkingStatusIndicator,
 } from "./components/status-indicator.ts";
 import {
+	advanceThinkingFocus,
 	countAssistantMessageEntries,
+	cycleThinkingFoldState,
 	DEFAULT_THINKING_FOLD_STATE,
 	getThinkingFoldState,
 	messageKeyForAssistantOrdinal,
+	setThinkingFoldState,
 	type ThinkingFoldState,
+	thinkingFocusLabel,
 } from "./components/thinking-fold.ts";
 import { ToolExecutionComponent } from "./components/tool-execution.ts";
 import { TreeSelectorComponent } from "./components/tree-selector.ts";
@@ -454,6 +458,11 @@ export class InteractiveMode {
 	// Thinking fold state: entryId -> fold state (T2-1 plumbing, T2-2 consumes).
 	// Pure UI memory only: never written to session or model context (I10).
 	private thinkingFoldState = new Map<string, ThinkingFoldState>();
+
+	// T2-3:已知 thinking entry 的出现顺序(focus 游标遍历)与当前 focus 索引。
+	// 由 recordThinkingFoldStates 幂等追加(流式/恢复/重建不重复);纯内存,不落 session。
+	private thinkingEntryOrder: string[] = [];
+	private thinkingFocusIndex = 0;
 
 	// Thinking block visibility state
 	private hideThinkingBlock = false;
@@ -938,6 +947,8 @@ export class InteractiveMode {
 				hint("app.model.select", "to select model"),
 				hint("app.tools.expand", "to expand tools"),
 				hint("app.thinking.toggle", "to expand thinking"),
+				hint("app.thinking.focus", "to focus next thinking"),
+				hint("app.thinking.fold", "to cycle focused thinking"),
 				hint("app.editor.external", "for external editor"),
 				rawKeyHint("/", "for commands"),
 				rawKeyHint("!", "to run bash"),
@@ -2822,6 +2833,8 @@ export class InteractiveMode {
 		this.defaultEditor.onAction("app.model.select", () => this.showModelSelector());
 		this.defaultEditor.onAction("app.tools.expand", () => this.toggleToolOutputExpansion());
 		this.defaultEditor.onAction("app.thinking.toggle", () => this.toggleThinkingBlockVisibility());
+		this.defaultEditor.onAction("app.thinking.focus", () => this.handleThinkingFocus());
+		this.defaultEditor.onAction("app.thinking.fold", () => this.handleThinkingFold());
 		this.defaultEditor.onAction("app.editor.external", () => void this.handleOpenExternalEditor());
 		this.defaultEditor.onAction("app.message.copy", () => void this.handleCopyCommand({ flashConfirmation: true }));
 		this.defaultEditor.onAction("app.message.followUp", () => this.handleFollowUp());
@@ -3598,6 +3611,8 @@ export class InteractiveMode {
 		for (const entryId of entryIds) {
 			if (!this.thinkingFoldState.has(entryId)) {
 				this.thinkingFoldState.set(entryId, DEFAULT_THINKING_FOLD_STATE);
+				// T2-3:首次见到才入序(流式/恢复/重建幂等,不重复追加)。
+				this.thinkingEntryOrder.push(entryId);
 			}
 		}
 	}
@@ -4120,6 +4135,34 @@ export class InteractiveMode {
 		}
 
 		this.showStatus(`Thinking blocks: ${this.hideThinkingBlock ? "hidden" : "visible"}`);
+	}
+
+	/**
+	 * T2-3:app.thinking.focus — thinking focus 前进到下一个 thinking entry(环绕)。
+	 * 无 thinking entry 时 no-op。focus 仅经 status 提示表达(最小设计,转录无可视标记)。
+	 */
+	private handleThinkingFocus(): void {
+		const count = this.thinkingEntryOrder.length;
+		if (count === 0) return;
+		this.thinkingFocusIndex = advanceThinkingFocus(this.thinkingFocusIndex, count);
+		this.showStatus(thinkingFocusLabel(this.thinkingFocusIndex, count));
+		this.ui.requestRender();
+	}
+
+	/**
+	 * T2-3:app.thinking.fold — 聚焦 thinking entry 的 fold 三态循环
+	 * (collapsed → preview → full → collapsed)。无 thinking entry 时 no-op;
+	 * focus 未移动过时默认第 0 条。折叠态只属 UI(fold map 纯内存),经
+	 * setThinkingFoldState 写入后 requestRender 由 T2-2 三态 provider 消费。
+	 */
+	private handleThinkingFold(): void {
+		const count = this.thinkingEntryOrder.length;
+		if (count === 0) return;
+		const entryId = this.thinkingEntryOrder[this.thinkingFocusIndex];
+		const next = cycleThinkingFoldState(getThinkingFoldState(this.thinkingFoldState, entryId));
+		setThinkingFoldState(this.thinkingFoldState, entryId, next);
+		this.showStatus(`${thinkingFocusLabel(this.thinkingFocusIndex, count)} · ${next}`);
+		this.ui.requestRender();
 	}
 
 	private async handleOpenExternalEditor(): Promise<void> {

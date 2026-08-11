@@ -93,3 +93,40 @@ export function buildThinkingPreview(
 	const tail = flat.slice(flat.length - tailChars);
 	return `${head}${THINKING_PREVIEW_ELLIPSIS}${tail}`;
 }
+
+// ============================================================================
+// T2-3:交互键纯 helper(focus 游标 + fold 三态循环)。无组件依赖,单测直连;
+// interactive-mode 的 app.thinking.focus / app.thinking.fold 处理器消费。
+
+/**
+ * fold 状态的三态循环序:collapsed → preview → full → collapsed。单次调用推进
+ * 一档;连续三次回到原态(纯函数,逐步幂等)。
+ */
+const THINKING_FOLD_CYCLE: Record<ThinkingFoldState, ThinkingFoldState> = {
+	collapsed: "preview",
+	preview: "full",
+	full: "collapsed",
+};
+
+/** 推进一档 fold 状态(collapsed → preview → full → collapsed)。 */
+export function cycleThinkingFoldState(state: ThinkingFoldState): ThinkingFoldState {
+	return THINKING_FOLD_CYCLE[state];
+}
+
+/**
+ * thinking focus 游标前进:返回下一个索引,按 count 取模环绕(0→1→…→count-1→0)。
+ * count <= 0 时返回 -1 哨兵(无条目;调用方须先短路,勿直接作下标使用)。
+ */
+export function advanceThinkingFocus(current: number, count: number): number {
+	if (count <= 0) return -1;
+	return (current + 1) % count;
+}
+
+/**
+ * focus 状态行文案:`Thinking 2/3`(1-based 位置 / 总数)。count <= 0 或 index
+ * 越界时返回 `Thinking –` 占位(无条目;调用方通常已短路,此处仅防御)。
+ */
+export function thinkingFocusLabel(index: number, count: number): string {
+	if (count <= 0 || index < 0 || index >= count) return "Thinking –";
+	return `Thinking ${index + 1}/${count}`;
+}
