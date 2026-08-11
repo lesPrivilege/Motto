@@ -37,10 +37,10 @@ git remote | grep -q "^upstream$" || { echo "FAIL: 无 upstream remote" >&2; exi
 
 # ---- fetch(拉模式:只取增量,不 merge) ----
 git fetch upstream --tags --quiet 2>/dev/null || { echo "FAIL: git fetch upstream 失败" >&2; exit 2; }
-UPSTREAM_HEAD="$(git rev-parse upstream/main 2>/dev/null)"
+UPSTREAM_HEAD="$(git rev-parse refs/remotes/upstream/main 2>/dev/null)"
 
 # ---- 增量统计 ----
-COUNT="$(git rev-list --left-right --count "v$BASE_VER...upstream/main" 2>/dev/null)"
+COUNT="$(git rev-list --left-right --count "v$BASE_VER...refs/remotes/upstream/main" 2>/dev/null)"
 LEFT="$(echo "$COUNT" | awk '{print $1}')"
 NEW="$(echo "$COUNT" | awk '{print $2}')"
 NEW="${NEW:-0}"
@@ -48,7 +48,7 @@ NEW="${NEW:-0}"
 # ---- 包级变更概览(仅影响 packages/ 的 diff,粗分类) ----
 PKG_SUMMARY=""
 if [[ "$NEW" -gt 0 ]]; then
-  PKG_SUMMARY="$(git diff --name-only "v$BASE_VER..upstream/main" -- packages/ 2>/dev/null \
+  PKG_SUMMARY="$(git diff --name-only "v$BASE_VER..refs/remotes/upstream/main" -- packages/ 2>/dev/null \
     | awk -F/ 'NF>1{print $2}' | sort -u | tr '\n' ',' | sed 's/,$//')"
 fi
 

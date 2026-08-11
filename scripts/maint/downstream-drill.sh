@@ -57,9 +57,9 @@ else
 fi
 
 step "3. range-diff(基线与上游 main)"
-RANGE_OUT="$(git -C "$DOWNSTREAM" rev-list --left-right --count "v$EXPECT_BASE...upstream/main" 2>/dev/null)"
+RANGE_OUT="$(git -C "$DOWNSTREAM" rev-list --left-right --count "v$EXPECT_BASE...refs/remotes/upstream/main" 2>/dev/null)"
 ok "上游自基线以来的提交数: $RANGE_OUT (left=基线独有, right=上游新增)"
-git -C "$DOWNSTREAM" range-diff "v$EXPECT_BASE" "v$EXPECT_BASE" "upstream/main" >/dev/null 2>&1 \
+git -C "$DOWNSTREAM" range-diff "v$EXPECT_BASE" "v$EXPECT_BASE" "refs/remotes/upstream/main" >/dev/null 2>&1 \
   && ok "range-diff 可执行(差异见 git rev-list 计数)" || ok "range-diff 无冲突(零 patch 期)"
 
 step "4. build(candidate worktree)"
