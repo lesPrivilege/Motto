@@ -1,3 +1,5 @@
+import { visibleWidth } from "@earendil-works/pi-tui";
+
 // motto-layout.ts — Motto transcript 视觉构成（TUI-1）共享布局常量。
 //
 // 布局文法（MOTTO_TUI_CORE）：界栏非装饰框——user 消息逐行左界栏 `│ `，
@@ -15,3 +17,14 @@ export const GUTTER = "│ ";
 
 /** 正文列缩进（= 界栏宽度），user / assistant / tool / recap 对齐点。 */
 export const BODY_INDENT = GUTTER_WIDTH;
+
+/** 按显示宽度截断（超出以 `…` 收尾），CJK 双列计宽，ANSI 不计宽。 */
+export function truncateVisible(text: string, width: number): string {
+	if (width <= 0) return "";
+	let result = "";
+	for (const ch of text) {
+		if (visibleWidth(result + ch) > width) break;
+		result += ch;
+	}
+	return result.length < text.length ? `${result}…` : result;
+}

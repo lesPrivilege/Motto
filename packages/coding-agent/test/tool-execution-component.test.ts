@@ -535,3 +535,130 @@ describe("ToolExecutionComponent parity", () => {
 		});
 	}
 });
+
+describe("ToolExecutionComponent success index line (TUI-1 S3)", () => {
+	test("successful builtin tool collapses to a single low-contrast index line", () => {
+		const component = new ToolExecutionComponent(
+			"bash",
+			"tool-bash",
+			{ command: "ls -la" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "file1\nfile2" }],
+				details: {},
+				isError: false,
+			},
+			false,
+		);
+
+		const lines = component.render(80).map((line) => stripAnsi(line).trimEnd());
+		expect(lines).toEqual(["  bash ls -la"]);
+	});
+
+	test("failed builtin tool keeps the full card with error styling", () => {
+		const component = new ToolExecutionComponent(
+			"bash",
+			"tool-fail",
+			{ command: "./process.sh" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "Error: boom" }],
+				details: {},
+				isError: true,
+			},
+			false,
+		);
+
+		const rendered = stripAnsi(component.render(80).join("\n"));
+		expect(rendered).toContain("$ ./process.sh");
+		expect(rendered).toContain("Error: boom");
+	});
+
+	test("expanded successful builtin tool keeps the full card", () => {
+		const component = new ToolExecutionComponent(
+			"bash",
+			"tool-exp",
+			{ command: "ls" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.setExpanded(true);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "x" }],
+				details: {},
+				isError: false,
+			},
+			false,
+		);
+
+		const rendered = stripAnsi(component.render(80).join("\n"));
+		expect(rendered).toContain("$ ls");
+		expect(rendered).toContain("x");
+	});
+
+	test("streaming (partial) builtin tool keeps the pending card", () => {
+		const component = new ToolExecutionComponent(
+			"bash",
+			"tool-pending",
+			{ command: "sleep 1" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "running" }],
+				details: {},
+				isError: false,
+			},
+			true,
+		);
+
+		const rendered = stripAnsi(component.render(80).join("\n"));
+		expect(rendered).toContain("$ sleep 1");
+		expect(rendered).toContain("running");
+	});
+
+	test("successful custom tool keeps its own renderer (not compressed)", () => {
+		const toolDefinition: ToolDefinition = {
+			...createBaseToolDefinition(),
+			renderCall: () => new Text("custom call", 0, 0),
+			renderResult: () => new Text("custom result", 0, 0),
+		};
+		const component = new ToolExecutionComponent(
+			"custom_tool",
+			"tool-custom",
+			{},
+			{},
+			toolDefinition,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "done" }],
+				details: {},
+				isError: false,
+			},
+			false,
+		);
+
+		const rendered = stripAnsi(component.render(120).join("\n"));
+		expect(rendered).toContain("custom call");
+		expect(rendered).toContain("custom result");
+	});
+});
