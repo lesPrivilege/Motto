@@ -12,6 +12,15 @@
 
 # Pi Agent Harness
 
+> ## Motto 受控下游（lesPrivilege/pi）
+>
+> 本仓是 **Motto** 的受控下游（Pi fork）：上游历史 + 最小 patchset（登记于
+> `~/Projects/Motto/docs/maintenance/PATCHES.json`）。**Motto 不抛弃 Pi**——
+> 产品呈现层（启动 logo / 终端标题 / help / onboarding）为 Motto 品牌；平台契约层
+> （npm 包名 `@earendil-works/pi-*`、configDir `.pi`、env 覆盖名 `PI_*`、导出文件名
+> `pi-session-*`、session schema）保留 Pi，保证生态兼容与维护连续性。
+> 上游更新走拉模式（fetch → range-diff → candidate → dogfood → 接受/拒绝），禁止自动跟随 main。
+
 This is the home of the Pi agent harness project including our self extensible coding agent.
 
 * **[@earendil-works/pi-coding-agent](packages/coding-agent)**: Interactive coding agent CLI
@@ -112,3 +121,4 @@ MIT
   <br /><br />
   <a href="https://exe.dev"><img src="packages/coding-agent/docs/images/exy.png" alt="Exy mascot" width="48" /><br />exe.dev</a>
 </p>
+
