@@ -3,6 +3,7 @@ import { Container, isViewportTUI, Text } from "@earendil-works/pi-tui";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
 import type { TuiMode } from "../src/core/settings-manager.ts";
+import type { ThinkingFoldState } from "../src/modes/interactive/components/thinking-fold.ts";
 import {
 	createInteractiveTui,
 	createInteractiveTuiReference,
@@ -259,5 +260,91 @@ describe("clear-on-shrink status spacing", () => {
 			expect(dispose).toHaveBeenCalledOnce();
 			expect(context.statusContainer.children).toHaveLength(expectedChildren);
 		}
+	});
+});
+
+// ---- T2-3:app.thinking.focus / app.thinking.fold 处理器(prototype-call 轻量集成) ----
+
+// 自未设置(缺省 collapsed)出发,连续 fold 的期望态序:preview → full → collapsed → preview。
+const stateKeys = ["preview", "full", "collapsed", "preview"] as const;
+
+type ThinkingKeysContext = {
+	thinkingEntryOrder: string[];
+	thinkingFocusIndex: number;
+	thinkingFoldState: Map<string, ThinkingFoldState>;
+	showStatus: (message: string) => void;
+	ui: { requestRender: () => void };
+};
+
+type ThinkingKeysPrototype = {
+	handleThinkingFocus(this: ThinkingKeysContext): void;
+	handleThinkingFold(this: ThinkingKeysContext): void;
+};
+
+const thinkingKeysPrototype = InteractiveMode.prototype as unknown as ThinkingKeysPrototype;
+
+function thinkingContext(overrides: Partial<ThinkingKeysContext> = {}): ThinkingKeysContext {
+	return {
+		thinkingEntryOrder: [],
+		thinkingFocusIndex: 0,
+		thinkingFoldState: new Map<string, ThinkingFoldState>(),
+		showStatus: vi.fn(),
+		ui: { requestRender: vi.fn() },
+		...overrides,
+	};
+}
+
+describe("InteractiveMode T2-3 thinking interaction keys", () => {
+	it("focus advances the cursor with a 1-based status hint and wraps around", () => {
+		const ctx = thinkingContext({ thinkingEntryOrder: ["a1:1", "a1:2", "a2:1"] });
+
+		thinkingKeysPrototype.handleThinkingFocus.call(ctx); // → 1
+		expect(ctx.thinkingFocusIndex).toBe(1);
+		expect(ctx.showStatus).toHaveBeenLastCalledWith("Thinking 2/3");
+		expect(ctx.ui.requestRender).toHaveBeenCalled();
+
+		thinkingKeysPrototype.handleThinkingFocus.call(ctx); // → 2
+		expect(ctx.thinkingFocusIndex).toBe(2);
+		expect(ctx.showStatus).toHaveBeenLastCalledWith("Thinking 3/3");
+
+		thinkingKeysPrototype.handleThinkingFocus.call(ctx); // → 0 (环绕)
+		expect(ctx.thinkingFocusIndex).toBe(0);
+		expect(ctx.showStatus).toHaveBeenLastCalledWith("Thinking 1/3");
+	});
+
+	it("fold cycles the focused entry collapsed→preview→full→collapsed", () => {
+		const fold = new Map<string, ThinkingFoldState>();
+		const ctx = thinkingContext({ thinkingEntryOrder: ["a1:1", "a1:2"], thinkingFoldState: fold });
+
+		for (const expected of stateKeys) {
+			thinkingKeysPrototype.handleThinkingFold.call(ctx);
+			expect(fold.get("a1:1")).toBe(expected);
+		}
+		expect(ctx.showStatus).toHaveBeenLastCalledWith("Thinking 1/2 · preview");
+	});
+
+	it("fold acts on the focused entry after the focus moved", () => {
+		const fold = new Map<string, ThinkingFoldState>();
+		const ctx = thinkingContext({
+			thinkingEntryOrder: ["a1:1", "a1:2"],
+			thinkingFocusIndex: 1,
+			thinkingFoldState: fold,
+		});
+
+		thinkingKeysPrototype.handleThinkingFold.call(ctx);
+		expect(fold.get("a1:2")).toBe("preview");
+		expect(fold.get("a1:1")).toBeUndefined();
+		expect(ctx.showStatus).toHaveBeenLastCalledWith("Thinking 2/2 · preview");
+	});
+
+	it("focus and fold no-op without thinking entries", () => {
+		const ctx = thinkingContext();
+
+		thinkingKeysPrototype.handleThinkingFocus.call(ctx);
+		thinkingKeysPrototype.handleThinkingFold.call(ctx);
+
+		expect(ctx.thinkingFocusIndex).toBe(0);
+		expect(ctx.showStatus).not.toHaveBeenCalled();
+		expect(ctx.ui.requestRender).not.toHaveBeenCalled();
 	});
 });
