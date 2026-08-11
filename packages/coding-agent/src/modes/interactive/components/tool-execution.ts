@@ -4,6 +4,7 @@ import { createAllToolDefinitions, type ToolName } from "../../../core/tools/ind
 import { getTextOutput as getRenderedTextOutput } from "../../../core/tools/render-utils.ts";
 import { convertToPng } from "../../../utils/image-convert.ts";
 import { theme } from "../theme/theme.ts";
+import { BODY_INDENT, truncateVisible } from "./motto-layout.ts";
 
 export interface ToolExecutionOptions {
 	showImages?: boolean;
@@ -223,6 +224,12 @@ export class ToolExecutionComponent extends Container {
 			return [];
 		}
 
+		// S3:成功的内置工具压缩为低对比目行(成功静默;计数与耗时留 review recap)。
+		// 流式/失败/展开/自定义工具保持原生卡。
+		if (this.isSuccessIndexLine()) {
+			return this.renderSuccessIndexLine(width);
+		}
+
 		if (this.hasRendererDefinition() && this.getRenderShell() === "self") {
 			const contentLines = this.selfRenderContainer.render(width);
 			if (contentLines.length === 0 && this.imageComponents.length === 0) {
@@ -248,6 +255,38 @@ export class ToolExecutionComponent extends Container {
 		}
 
 		return super.render(width);
+	}
+
+	private isSuccessIndexLine(): boolean {
+		return (
+			this.builtInToolDefinition !== undefined &&
+			this.toolDefinition === undefined &&
+			!this.expanded &&
+			this.result !== undefined &&
+			!this.result.isError &&
+			!this.isPartial
+		);
+	}
+
+	private toolIndexTarget(): string {
+		const args = this.args as Record<string, unknown> | undefined;
+		if (!args) return "";
+		for (const key of ["command", "file_path", "path", "pattern"]) {
+			const value = args[key];
+			if (typeof value === "string" && value.trim()) {
+				// bash 命令取首行,其余取原值(机械投影,不做摘要)。
+				return value.trim().split("\n")[0].trim();
+			}
+		}
+		return "";
+	}
+
+	private renderSuccessIndexLine(width: number): string[] {
+		const contentWidth = Math.max(1, width - BODY_INDENT * 2);
+		const target = this.toolIndexTarget();
+		const plain = target ? `${this.toolName} ${target}` : this.toolName;
+		const truncated = truncateVisible(plain, contentWidth);
+		return new Text(theme.fg("dim", truncated), BODY_INDENT, 0).render(width);
 	}
 
 	private updateDisplay(): void {
