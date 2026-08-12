@@ -101,6 +101,16 @@
    "fixture": "无——TUI-4 不改变基线 scenario(现有 scenario 无卡片 marker,render-baseline.mjs --check 通过)",
    "removalCondition": "上游吸收等价「带标注内容卡片帧 / 表格行分隔可配置」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
    "status": "applied"
+  },
+  {
+   "id": "review-flow-a1-tool-index-all",
+   "title": "review-flow A1 — 成功目行推广到自定义工具 + `!!` bash 流式有界尾部预览",
+   "scope": "coding-agent interactive 集成层薄接缝(components/tool-execution.ts + components/bash-execution.ts)",
+   "description": "ToolExecutionComponent 成功目行判定(S3)扩展到自定义工具(非内置、带 toolDefinition、成功、非流式、未展开):toolIndexTarget 对自定义工具退化参数摘要(已知摘要键 → 首个非空字符串值 → JSON 单行,renderSuccessIndexLine 统一截宽);失败/流式/展开/内置工具自定义覆盖保持整卡(失败强显 I3-2,不随收敛降权)。`!!` bash 属用户主动操作,按宣言取舍(失败/审批/用户主动操作不随正常轨迹隐藏;Grok Build 对用户 `!` bash 收尾强制 Expanded)不收敛为目行、保持整卡;bash-execution.ts 未展开预览行数 20→5,流式/收尾只露有界尾部预览(3–5 行 tail,Codex 5 行 / Reasonix tail 同源),展开态(Ctrl+O / app.tools.expand)看全量,transcript 兜底。",
+   "commit": "e6af3794d, 943e67312",
+   "fixture": "无——基线 scenario 未覆盖自定义工具/`!!` bash(render-baseline.mjs 仅用 S3 tool-index-ok/fail 块,S3 行为不变,--check 逐字节通过);新行为由单元测试锁定(tool-execution-component.test.ts / bash-execution-width.test.ts)",
+   "removalCondition": "上游吸收等价内置/自定义工具卡 projector 出口与用户 shell 有界预览后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "status": "applied"
   }
  ],
  "supportCommits": {
