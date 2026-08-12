@@ -1,8 +1,19 @@
 // motto —— TUI 品牌层(index.ts 薄:pi 集成接线;纯逻辑见 core.ts)。
 // 牌记(splash)/ footer(含 TPS)/ 终端标题守护 / 提示词品牌化。
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
 import { visibleWidth } from "@earendil-works/pi-tui";
+import { projectDunhaoCards } from "./cards.ts";
 import { projectDeepHeadings } from "./headings.ts";
+
+/**
+ * 组合展示投影:多级标题 + 三顿号卡片。pi 的 registerMarkdownTransformer 每扩展只存一个
+ * transformer,后注册覆盖先注册 → 两个 display-only 投影必须组合为单函数再注册(曾分两次
+ * 注册,第二个静默覆盖第一个、headings 投影被禁用——真实 TUI 目验发现,见 README 撤销边界)。
+ * 两者处理不相交语法(ATX 标题 vs `、、、` 围栏),顺序无关;先 headings 后 cards。
+ */
+function projectDisplay(markdown: string, context: MarkdownTransformContext): string {
+	return projectDunhaoCards(projectDeepHeadings(markdown, context), context);
+}
 import {
 	buildFooterLine,
 	buildSplash,
@@ -27,11 +38,13 @@ let projectDocTruncationNotified = false;
 export default function motto(pi: ExtensionAPI): void {
 	const tps = createTpsTracker();
 
-	// 多级标题展示投影:display-only,把 H3–H6 投影为 H2 文本 `## › 原标题`,三层视觉
-	// (H1/H2/H3–H6 统一 `› 标题`,不显示标题井号)。只改 TUI 渲染输入(pi 的 markdown
+	// 展示投影(单一 transformer 槽位):display-only,只改 TUI 渲染输入(pi 的 markdown
 	// transformer 仅作用于 interactive 组件的 Markdown 投影,session / 模型上下文 /
-	// print / json 输出均不经过)。纯逻辑见 headings.ts。
-	pi.registerMarkdownTransformer(projectDeepHeadings);
+	// print / json 输出均不经过)。
+	// - 多级标题:把 H3–H6 投影为 H2 文本 `## › 原标题`,三层视觉(纯逻辑见 headings.ts)。
+	// - 三顿号卡片:把 `、、、` 围栏卡片投影为单列表格,TUI 原生渲染 box-drawing 卡片
+	//   (纯逻辑见 cards.ts)。
+	pi.registerMarkdownTransformer(projectDisplay);
 
 	// TPS 事件接线:assistant 回答窗口的流式/结算。
 	pi.on("message_start", (event) => {

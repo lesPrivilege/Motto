@@ -15,6 +15,7 @@ Motto 的 TUI 品牌扩展:启动牌记(splash)、单行 footer(含 TPS)、终�
 | 标题守护 | TUI 下固定终端标题为 `Motto`;启动退避覆盖 + 周期守护(5s 自停) |
 | 提示词品牌化 | `before_agent_start` 只注入 identity 段(纯加法,上游提示词原文零改写;曾用全文正则把 `pi`→`Motto` 越界改写路径导致 ENOENT,已废弃替换路径) |
 | 多级标题视觉投影 | display-only:把 H3–H6(`###`~`######`)投影为 H2 文本 `## › 原标题`,TUI 呈现收敛为三层视觉(H1 bold+underline / H2 bold / H3–H6 统一 `› 标题`,无标题井号);仅 assistant 完成态;fenced 代码块内与缩进代码原样;canonical/session/模型上下文/print·json 零改动 |
+| 顿号卡片投影 | display-only:把 `、、、` 三顿号围栏卡片投影为单列 Markdown 表格,TUI 原生渲染出 box-drawing 卡片(标题粗体头 + 内容折行);仅 assistant 完成态;fenced 代码块内 `、、、` 原样;canonical/session/模型上下文/print·json 零改动(见下) |
 | 项目本地正文 | cwd `.motto/agent.md` 存在时,作为独立段追加在身份段之后(纯加法,项目原文逐字节保留,段标明来源);缺失/为空静默跳过,不建目录不写文件;超 32KB 截断+截断点标注+每会话 notify 一次;牌记 `context` 行与 AGENTS.md 并列列出。体例见 docs/MOTTO.md「六、项目本地正文」 |
 | ~~fenced 块牌记~~（**已回退**，见下） | 完成态、顶层、带 allowlist 语言标记(text/txt/plaintext → 文本块,log → 日志,bash/sh/shell/zsh → 命令片段)的 fenced block,在 opening fence 上方投影一行轻量 caption(如 `文本块 · 2 行`)+ 空行;display-only(只改 TUI 渲染输入),原始正文/session/模型上下文/print·json 输出零改动;未闭合/嵌套/非 allowlist/无 language/流式中一律原样 |
 
@@ -44,6 +45,41 @@ H2 文本,消除常见 assistant 输出中 H3–H6 前成堆的 `#`,呈现收敛
 - 验收:2026-08-09 用户于真实 Motto/Ghostty TUI 目验通过(见 reports/PACK-MOTTO-3-acceptance.md)。
 - 无用户配置:加载本扩展即生效。
 - 撤销边界:回退仅限移除本 display-only 投影(注册 + headings.ts),不得连带回退基线能力。
+
+## 顿号卡片投影(display-only)
+
+经 `pi.registerMarkdownTransformer` 接入(纯逻辑见 `cards.ts`),把 `、、、` 三顿号围栏卡片
+投影为单列 Markdown 表格,TUI 原生渲染出 box-drawing 卡片:
+
+```text
+、、、
+验收结论
+基线逐字节、tui 909/909 全绿
+、、、
+```
+
+```text
+┌────────────────────────────────────────────┐
+│ 验收结论                                    │   ← 粗体标题头
+├────────────────────────────────────────────┤
+│ 基线逐字节、tui 909/909 全绿                │
+└────────────────────────────────────────────┘
+```
+
+- 格式:`、、、` 独占一行(前导空格 ≤3)为开/闭围栏;开栏后首个非空行 = 标题(表格头行),
+  其后至闭栏的非空行 = 内容(单空格连接,保留行内 Markdown);内容为空则仅标题头。
+- 纯展示投影:只改 interactive 组件的 Markdown 渲染输入(仅 assistant 完成态);原始消息正文、
+  session、模型上下文、resume/fork 数据、print/json 等非交互输出均不经过、零改动
+  (见 `docs/MOTTO.md` 总纲五「功能语不可侵」)。user / thinking / 流式期一律原样。
+- 解析纪律:小逐行 scanner(不用跨全文宽泛正则);fenced 代码块(``` / ~~~)内一律跳过;
+  `、、、` 行须独占(带其他文本的顿号行不是围栏);内容/标题中的 `|` 转义为 `\|`;
+  未闭合 / 空卡片 / 缺标题 fail-open 原样;CRLF 不破坏正文;幂等;fail-open。
+- 目标构造选表格:TUI `Markdown` 组件中表格是唯一能原生渲染出完整边框盒的构造
+  (blockquote 仅左 rail、code fence 仅 ``` 行),与仓库文档表格(如 `.motto/agent.md` 验收表)
+  视觉同源。调研见 `docs/decisions/2026-08-12-motto-tui-4-dunhao-cards.md`(opencode /
+  grok-build / Codex CLI 三家卡片渲染结论)。
+- 无用户配置:加载本扩展即生效。
+- 撤销边界:回退仅限移除本 display-only 投影(注册 + cards.ts),不得连带回退基线能力。
 
 ## fenced 块牌记(display-only)——【已回退】
 

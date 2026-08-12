@@ -12,13 +12,13 @@
 import type { MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
 
 /** 一行的内容与行尾;行尾原样保留(\n 或 \r\n),最后一行可能无行尾。 */
-interface Line {
+export interface Line {
 	content: string;
 	ending: string;
 }
 
 /** 逐行切分,行尾原样保留;不 trim、不重排任何正文。 */
-function splitLines(source: string): Line[] {
+export function splitLines(source: string): Line[] {
 	const lines: Line[] = [];
 	let start = 0;
 	while (start <= source.length) {
@@ -39,7 +39,7 @@ function splitLines(source: string): Line[] {
 	return lines;
 }
 
-function joinLines(lines: readonly Line[]): string {
+export function joinLines(lines: readonly Line[]): string {
 	return lines.map((l) => l.content + l.ending).join("");
 }
 
@@ -54,7 +54,7 @@ interface FenceInfo {
  * 解析 fence 行:前导空格 ≤3,可选 blockquote 前缀(可嵌套),marker 为 ≥3 个 ` 或 ~。
  * 非 fence 行返回 undefined。顶层与 blockquote 前缀形式都认,以跳过代码块正文。
  */
-function parseFence(content: string): FenceInfo | undefined {
+export function parseFence(content: string): FenceInfo | undefined {
 	const m = /^( {0,3})((?:>[ \t]?)*)(`{3,}|~{3,})(.*)$/.exec(content);
 	if (!m) return undefined;
 	return { quote: m[2], marker: m[3][0], run: m[3].length, rest: m[4] };
