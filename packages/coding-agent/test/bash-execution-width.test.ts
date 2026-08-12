@@ -6,6 +6,7 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 import { beforeAll, describe, expect, it } from "vitest";
 import { BashExecutionComponent } from "../src/modes/interactive/components/bash-execution.ts";
 import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { stripAnsi } from "../src/utils/ansi.ts";
 
 /** Minimal TUI stub that only exposes terminal.columns */
 function createTuiStub(columns: number): { columns: number; stub: any } {
@@ -76,5 +77,47 @@ describe("BashExecutionComponent width handling (#2569)", () => {
 			const w = visibleWidth(lines60[i]);
 			expect(w, `Line ${i} visibleWidth=${w} > 60`).toBeLessThanOrEqual(60);
 		}
+	});
+
+	// review-flow A1:未展开时输出只露有界尾部预览(3–5 行 tail,借鉴 Codex 5 行 / Reasonix tail),
+	// 不全量铺屏;展开态(Ctrl+O / app.tools.expand)看全量。`!!` 属用户主动操作,不收敛为目行。
+	it("keeps a bounded tail preview of 5 lines when not expanded", () => {
+		const { stub } = createTuiStub(80);
+		const component = new BashExecutionComponent("git status --short", stub, true);
+		const lines = Array.from({ length: 30 }, (_, i) => `output-${i + 1}`);
+		component.appendOutput(lines.join("\n"));
+		component.setComplete(0, false);
+
+		const out = stripAnsi(component.render(80).join("\n"));
+		expect(out).toContain("output-26");
+		expect(out).toContain("output-30");
+		expect(out).not.toContain("output-25");
+		expect(out).not.toContain("output-1");
+		expect(out).toContain("25 more lines");
+	});
+
+	it("shows a bounded tail preview while streaming (running)", () => {
+		const { stub } = createTuiStub(80);
+		const component = new BashExecutionComponent("git status --short", stub, true);
+		const lines = Array.from({ length: 30 }, (_, i) => `output-${i + 1}`);
+		component.appendOutput(lines.join("\n"));
+
+		const out = stripAnsi(component.render(80).join("\n"));
+		expect(out).toContain("output-30");
+		expect(out).not.toContain("output-1");
+		expect(out).not.toContain("output-25");
+	});
+
+	it("expanded view shows the full output", () => {
+		const { stub } = createTuiStub(80);
+		const component = new BashExecutionComponent("git status --short", stub, true);
+		const lines = Array.from({ length: 30 }, (_, i) => `output-${i + 1}`);
+		component.appendOutput(lines.join("\n"));
+		component.setComplete(0, false);
+		component.setExpanded(true);
+
+		const out = stripAnsi(component.render(80).join("\n"));
+		expect(out).toContain("output-1");
+		expect(out).toContain("output-30");
 	});
 });

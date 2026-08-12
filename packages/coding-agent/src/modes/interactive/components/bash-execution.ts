@@ -15,8 +15,11 @@ import { DynamicBorder } from "./dynamic-border.ts";
 import { keyHint, keyText } from "./keybinding-hints.ts";
 import { truncateToVisualLines } from "./visual-truncate.ts";
 
-// Preview line limit when not expanded (matches tool execution behavior)
-const PREVIEW_LINES = 20;
+// 未展开时的有界尾部预览行数(review-flow A1:流式/收尾均只露 3–5 行 tail,
+// 借鉴 Codex 5 行 / Reasonix tail;展开态(Ctrl+O / app.tools.expand)看全量)。
+// 注:`!!` bash 属用户主动操作,不随正常轨迹收敛为目行(宣言取舍:失败/审批/用户主动
+// 操作不随正常轨迹隐藏;Grok Build 亦对用户 `!` bash 收尾强制 Expanded),故保持整卡。
+const PREVIEW_LINES = 5;
 
 export class BashExecutionComponent extends Container {
 	private command: string;
