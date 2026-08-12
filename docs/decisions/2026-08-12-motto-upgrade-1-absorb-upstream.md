@@ -64,11 +64,25 @@
 ## 6. 验收态
 
 ```
-T3_1_DOCK_ASSERT        ⏳ dock 结构集成断言(最小测试)
-RANGE_DIFF_CLASSIFIED   ⏳ 108 commits 分类 + alt-screen 4 增量定位
-PATCH_REPLAY            ⏳ 7 patch + 3 support 重放
-UPGRADE_GATES           ⏳ baseline/全量/regression/drill/launch smoke
-ACCEPT_DECISION         ⏳ 用户终裁(证据已备,不自动并入)
+T3_1_DOCK_ASSERT        ✅ 2026-08-12 commit 9e94f75e5(已 push origin motto/main)
+                        dock 结构集成断言 2 条:transcriptScrollView+dock VStack+root VStack,
+                        真实 mountInteractiveTui + 渲染冒烟(editor/footer 固定底栏,transcript 滚动);
+                        coding-agent 全量 217 files/1943 tests 0 fail,tsgo/biome 全绿
+RANGE_DIFF_CLASSIFIED   ✅ 108 commits 分类完成:接缝/修复 14(含 4 个 alt-screen 增量定位:
+                        00121ed99/#7913、1279952de/#7903、4a879dd75/#7892、18dee5f0a),
+                        无关/基础 ~84,破坏/注意 ~10(4 类);上游已漂移 +1(534bcbffb,LaTeX 修复)
+                        → 证据 /tmp/upgrade-evidence.md
+PATCH_REPLAY            ✅ 7 patch + 3 support 重放:10 CLEAN + 1 CONFLICT(T2-3 仅测试导入块,
+                        两条 import 并存即解,语义零冲突);candidate: /tmp/upgrade-candidate
+                        (branch candidate/pi-upgrade,基 2a9b4ebc6)
+UPGRADE_GATES           ✅(candidate)npm install 成功(openai 6.40)、build:offline ALL_BUILD_OK、
+                        npm run check PASS、coding-agent 218 files/1946 tests 0 fail、
+                        tui 908/0、dist launch smoke PASS(motto 品牌);
+                        NOT TESTED: baseline --check/drill/regression(需 motto 侧 harness,
+                        candidate 无 scripts/maint,按预期跳过)、GHOSTTY 人工交互与真实 dogfood
+ACCEPT_DECISION         ⏳ 用户终裁(证据 /tmp/upgrade-evidence.md 已备,不自动并入;
+                        RECOMMENDATION: PROCEED,有条件——随带 94a2d111d、全新 npm install、
+                        建议并纳入 534bcbffb 与 registry B/C 修正)
 ```
 
 终态只允许 ACCEPTED / ACCEPTED WITH LIMITATIONS / REJECTED；未覆盖项标 NOT TESTED。
@@ -76,3 +90,5 @@ ACCEPT_DECISION         ⏳ 用户终裁(证据已备,不自动并入)
 ## 7. 修订
 
 - 2026-08-12：工单登记（受控升级 + TUI-3 T3-1/T3-2 排程；消费开源调研结果）。
+- 2026-08-12：S1（T3-1）落账 commit 9e94f75e5；S2–S4 施工完成——candidate 重放/门禁/alt-screen 验证
+  全过，证据 /tmp/upgrade-evidence.md；待用户 accept 终裁（未并入 motto/main）。
