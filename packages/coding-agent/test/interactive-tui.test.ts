@@ -1,6 +1,12 @@
 import type { Component, Terminal, TUI } from "@earendil-works/pi-tui";
-import { Container, isViewportTUI, Text } from "@earendil-works/pi-tui";
+import { Container, isViewportTUI, ScrollView, Text, VStack } from "@earendil-works/pi-tui";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	getLayoutNode,
+	type LayoutNode,
+	type ScrollLayoutNode,
+	type StackLayoutNode,
+} from "../../tui/src/layout-node.ts";
 import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
 import type { TuiMode } from "../src/core/settings-manager.ts";
 import type { ThinkingFoldState } from "../src/modes/interactive/components/thinking-fold.ts";
@@ -293,6 +299,183 @@ function thinkingContext(overrides: Partial<ThinkingKeysContext> = {}): Thinking
 		...overrides,
 	};
 }
+
+// ---- T3-1:fullscreen dock 结构集成断言(composer/editor/footer 固定底栏,transcript 滚动) ----
+
+type MountDockContext = {
+	fullscreenLayoutRoot: Component | undefined;
+};
+
+type MountPrototype = {
+	mountInteractiveTui(this: MountDockContext, tui: TUI, components: readonly Component[]): void;
+};
+
+const mountPrototype = InteractiveMode.prototype as unknown as MountPrototype;
+
+function expectVStack(node: LayoutNode | undefined): StackLayoutNode {
+	expect(node?.type).toBe("vstack");
+	return node as StackLayoutNode;
+}
+
+function expectScroll(node: LayoutNode | undefined): ScrollLayoutNode {
+	expect(node?.type).toBe("scroll");
+	return node as ScrollLayoutNode;
+}
+
+// 与 InteractiveMode.init() 相同的 dock 组合:transcriptScrollView 包 documentContainer,
+// dock VStack 固定 pending/status/widgetsAbove/editor/widgetsBelow/footer。
+function buildFullscreenDock() {
+	const documentContainer = new Container();
+	const pendingMessagesContainer = new Container();
+	const statusContainer = new Container();
+	const widgetContainerAbove = new Container();
+	const widgetContainerBelow = new Container();
+	const editorContainer = new Container();
+	const footerContainer = new Container();
+	const transcriptScrollView = new ScrollView(documentContainer, {
+		follow: "end",
+		primary: true,
+		overscroll: "chain",
+	});
+	const dock = new VStack([
+		{ component: pendingMessagesContainer, shrink: 1, minSize: 0 },
+		{ component: statusContainer, shrink: 1, minSize: 0 },
+		{ component: widgetContainerAbove, shrink: 1, minSize: 0 },
+		{ component: editorContainer, shrink: 1, minSize: 3 },
+		{ component: widgetContainerBelow, shrink: 1, minSize: 0 },
+		{ component: footerContainer, shrink: 1, minSize: 1 },
+	]);
+	const fullscreenLayoutRoot = new VStack([
+		{ component: transcriptScrollView, basis: 0, grow: 1, shrink: 1, minSize: 1 },
+		{ component: dock, basis: "auto", grow: 0, shrink: 1, minSize: 1 },
+	]);
+	return {
+		documentContainer,
+		pendingMessagesContainer,
+		statusContainer,
+		widgetContainerAbove,
+		widgetContainerBelow,
+		editorContainer,
+		footerContainer,
+		transcriptScrollView,
+		dock,
+		fullscreenLayoutRoot,
+	};
+}
+
+describe("InteractiveMode fullscreen dock composition (T3-1)", () => {
+	it("mounts the dock as the alt-screen layout root: transcript scrolls, composer/editor/footer stay fixed", async () => {
+		const terminal = new RecordingTerminal(40, 8);
+		const tui = createInteractiveTui({
+			tuiMode: "fullscreen",
+			showHardwareCursor: false,
+			logDirectory: "/tmp",
+			terminal,
+		});
+		const {
+			documentContainer,
+			pendingMessagesContainer,
+			statusContainer,
+			widgetContainerAbove,
+			widgetContainerBelow,
+			editorContainer,
+			footerContainer,
+			transcriptScrollView,
+			dock,
+			fullscreenLayoutRoot,
+		} = buildFullscreenDock();
+
+		// 挂载路径 = 真实 mountInteractiveTui:fullscreen TUI 上 setLayoutRoot(dock)。
+		const setLayoutRoot = vi.spyOn(
+			tui as unknown as { setLayoutRoot(component: Component | undefined): void },
+			"setLayoutRoot",
+		);
+		const context = Object.assign(Object.create(InteractiveMode.prototype), { fullscreenLayoutRoot });
+		mountPrototype.mountInteractiveTui.call(context, tui, [
+			documentContainer,
+			pendingMessagesContainer,
+			statusContainer,
+			widgetContainerAbove,
+			editorContainer,
+			widgetContainerBelow,
+			footerContainer,
+		]);
+
+		expect(isViewportTUI(tui)).toBe(true);
+		expect(tui.children).toEqual([
+			documentContainer,
+			pendingMessagesContainer,
+			statusContainer,
+			widgetContainerAbove,
+			editorContainer,
+			widgetContainerBelow,
+			footerContainer,
+		]);
+		expect(setLayoutRoot).toHaveBeenCalledWith(fullscreenLayoutRoot);
+
+		// 根 VStack:transcript grow + dock basis auto(transcript 滚动, dock 固定)。
+		const rootNode = expectVStack(getLayoutNode(fullscreenLayoutRoot));
+		expect(rootNode.entries).toHaveLength(2);
+		expect(rootNode.entries[0]).toMatchObject({ component: transcriptScrollView, basis: 0, grow: 1 });
+		expect(rootNode.entries[1]).toMatchObject({ component: dock, basis: "auto", grow: 0 });
+
+		// transcriptScrollView 是包住 documentContainer 的滚动视图(primary + chain overscroll)。
+		const scrollNode = expectScroll(getLayoutNode(transcriptScrollView));
+		expect(scrollNode.component).toBe(documentContainer);
+		expect(scrollNode.state.primary).toBe(true);
+		expect(scrollNode.state.overscroll).toBe("chain");
+
+		// dock VStack 依次固定 pending/status/widgetsAbove/editor/widgetsBelow/footer,
+		// composer(editorContainer) 与 footerContainer 都在 dock 内。
+		const dockNode = expectVStack(getLayoutNode(dock));
+		expect(dockNode.entries.map((entry) => entry.component)).toEqual([
+			pendingMessagesContainer,
+			statusContainer,
+			widgetContainerAbove,
+			editorContainer,
+			widgetContainerBelow,
+			footerContainer,
+		]);
+		expect(dockNode.entries.map((entry) => entry.minSize)).toEqual([0, 0, 0, 3, 0, 1]);
+	});
+
+	it("renders the dock fixed at the bottom while the transcript scrolls", async () => {
+		const terminal = new RecordingTerminal(40, 8);
+		const tui = createInteractiveTui({
+			tuiMode: "fullscreen",
+			showHardwareCursor: false,
+			logDirectory: "/tmp",
+			terminal,
+		});
+		const { documentContainer, editorContainer, footerContainer, fullscreenLayoutRoot } = buildFullscreenDock();
+
+		// composer(editorContainer) 与 footer 各占 dock 一行可辨识内容。
+		const transcript = new Text(Array.from({ length: 8 }, (_, index) => `line ${index + 1}`).join("\n"), 0, 0);
+		documentContainer.addChild(transcript);
+		editorContainer.addChild(new Text("editor", 0, 0));
+		footerContainer.addChild(new Text("footer", 0, 0));
+
+		const context = Object.assign(Object.create(InteractiveMode.prototype), { fullscreenLayoutRoot });
+		mountPrototype.mountInteractiveTui.call(context, tui, [documentContainer, editorContainer, footerContainer]);
+
+		tui.start();
+		try {
+			await terminal.waitForRender();
+			const viewport = () => terminal.getViewport().map((line) => line.trimEnd());
+
+			// 底部固定 dock:composer(editor, 高 3) 之上 4 行 transcript,footer 贴底。
+			expect(viewport()).toEqual(["line 5", "line 6", "line 7", "line 8", "editor", "", "", "footer"]);
+
+			// transcript 追加内容后滚动, dock(editor/footer) 仍固定贴底。
+			transcript.setText(Array.from({ length: 12 }, (_, index) => `line ${index + 1}`).join("\n"));
+			tui.requestRender(true);
+			await terminal.waitForRender();
+			expect(viewport()).toEqual(["line 9", "line 10", "line 11", "line 12", "editor", "", "", "footer"]);
+		} finally {
+			tui.stop();
+		}
+	});
+});
 
 describe("InteractiveMode T2-3 thinking interaction keys", () => {
 	it("focus advances the cursor with a 1-based status hint and wraps around", () => {
