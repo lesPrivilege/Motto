@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   upstream-check.launchd.plist — 定期上游检查(可选,用户侧 opt-in)。
-  LaunchAgent 每天 09:00 跑一次只读检查并写状态文件,供 motto 会话启动时读取
+  LaunchAgent 每天 09:00 跑一次上游检查(git fetch + 报告;不建分支/不改 PI-BASE/不升级)并写状态文件,
+  供 motto 会话启动时读取
   (motto-maintenance skill §2)。只检查,不应用升级。
 
   安装(用户自己执行,勿自动):

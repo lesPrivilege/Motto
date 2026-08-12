@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# upstream-check.sh — 上游更新检查(只读,不应用,拉模式)。
+# upstream-check.sh — 上游更新检查(拉模式:只读不应用——不建分支/不改 PI-BASE/不升级;仅 git fetch 更新远端跟踪引用)。
 #
 # 只做两件事:git fetch upstream + 增量报告。不建分支、不改 PI-BASE、不升级。
 # 应用升级必须走 upstream 升级流程(USAGE.md §2),由 motto/用户在检查报告基础上决策。

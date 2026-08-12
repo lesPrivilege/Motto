@@ -4,7 +4,7 @@
 	"rules": {
 		"mottoPacks": "Motto commit + 源码文件聚合 SHA-256",
 		"npmExtensions": "固定精确版本 + npm integrity",
-		"gitExtensions": "固定 commit，禁止浮动 main",
+		"gitExtensions": "固定 commit，禁止浮动 main（自动化门禁:scripts/check-pinned-deps.mjs 拒 git 依赖浮动 branch/tag,见 USAGE.md）",
 		"compatibilityBase": "每条最近一次兼容验证的 Pi base",
 		"updateMode": "manual | pinned | vendor",
 		"rollback": "每条记录回退版本"

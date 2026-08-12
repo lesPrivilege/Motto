@@ -35,7 +35,7 @@ MOTTO_DOWNSTREAM_ROOT=…    # 覆盖下游根(默认本仓 ~/Projects/pi,单仓
 ```bash
 # 0) 锚点核对
 bash scripts/maint/downstream-drill.sh           # 全链路演练(当前应 11/11)
-# 0.5) 检查上游增量(只读,可随时跑;motto 会经 motto-maintenance skill 主动报)
+# 0.5) 检查上游增量(只读:不写工作区/不建分支/不升级,仅 git fetch 更新远端引用;可随时跑;motto 会经 motto-maintenance skill 主动报)
 bash scripts/maint/upstream-check.sh             # 完整报告(含受影响包)
 bash scripts/maint/upstream-check.sh --state ~/.pi/agent/maintenance/last-check.json
 #    定期: launchd 模板 docs/maintenance/upstream-check.launchd.plist(用户侧 opt-in)
