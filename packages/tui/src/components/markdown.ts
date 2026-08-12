@@ -247,6 +247,11 @@ export class Markdown implements Component {
 	private cachedWidth?: number;
 	private cachedLines?: string[];
 
+	// 卡片帧模式:由独立一行的 `<!--motto-card-->` HTML 注释标记置位(html case),紧邻的
+	// 下一表格 token(、、、 投影卡片)在 renderTable 读取并立即复位。为真时该表格去行间
+	// 分隔线(仅外框 + 粗体表头行 + 表头分隔线 ├─);自然 markdown 表格无标记,不受影响。
+	private cardFrameMode = false;
+
 	constructor(
 		text: string,
 		paddingX: number,
@@ -275,6 +280,10 @@ export class Markdown implements Component {
 	}
 
 	render(width: number): string[] {
+		// 卡片帧标志是单次渲染的流式状态(html case 置位、renderTable 消费),每次进入 render
+		// 先复位,防跨消息/跨文本泄漏(缓存命中时本标志已被上次渲染消费,恒为 false)。
+		this.cardFrameMode = false;
+
 		// Check cache
 		if (this.cachedLines && this.cachedText === this.text && this.cachedWidth === width) {
 			return this.cachedLines;
@@ -610,6 +619,12 @@ export class Markdown implements Component {
 				break;
 
 			case "html":
+				// Motto 卡片帧标记(`<!--motto-card-->`,、、、 投影卡片表格的前导注释):
+				// 不输出任何字符,仅置卡片帧模式,交由紧随的表格 token 消费。
+				if ("raw" in token && typeof token.raw === "string" && token.raw.trim() === "<!--motto-card-->") {
+					this.cardFrameMode = true;
+					break;
+				}
 				// Render HTML as plain text (escaped for terminal)
 				if ("raw" in token && typeof token.raw === "string") {
 					lines.push(this.applyDefaultStyle(token.raw.trim()));
@@ -840,6 +855,11 @@ export class Markdown implements Component {
 		nextTokenType?: string,
 		styleContext?: InlineStyleContext,
 	): string[] {
+		// 卡片帧模式:消费 `<!--motto-card-->` 标记置位(html case)。为真 → 本表格(、、、
+		// 投影卡片)去行间分隔线(仅外框 + 表头线);立即复位,防泄漏到后续自然表格。
+		const cardFrame = this.cardFrameMode;
+		this.cardFrameMode = false;
+
 		const lines: string[] = [];
 		const numCols = token.header.length;
 
@@ -993,7 +1013,8 @@ export class Markdown implements Component {
 				lines.push(`│ ${rowParts.join(" │ ")} │`);
 			}
 
-			if (rowIndex < token.rows.length - 1) {
+			// 卡片帧模式:去行间分隔线(仅保留表头分隔线 separatorLine);自然表格逐行分隔线保留。
+			if (rowIndex < token.rows.length - 1 && !cardFrame) {
 				lines.push(separatorLine);
 			}
 		}
