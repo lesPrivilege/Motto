@@ -89,19 +89,19 @@
     "commit": "534bcbffb7e1e7551d9ee3572dfeb278e203e493"
    },
    "corePatchset": [
-    "2daa52934",
-    "fd0a3e812",
-    "1cdfd5d3c",
-    "33ca9585d",
-    "5e94171e3",
-    "0cb127bef",
-    "7b80fa727",
-    "dfb898c0b"
+    "9a3080101",
+    "505171d5b",
+    "bbbe6238c",
+    "055c43962",
+    "81dbec74f",
+    "ccab45ede",
+    "92c5818d0",
+    "bc19c7f31"
    ],
    "supportCommits": [
-    "94a2d111d",
-    "025406274",
-    "2fecf1d22"
+    "74b4a2068",
+    "140fd6783",
+    "59eeaba89"
    ],
    "mottoCommit": "20d6909d924393db32cba047a7c629a5689265ef",
    "acceptanceEvidence": [

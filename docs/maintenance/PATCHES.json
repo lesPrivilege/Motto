@@ -6,7 +6,8 @@
   "scope": "只限 coding-agent interactive integration 与 pi-tui 薄接缝；不改 agent loop / provider / session schema / 内置工具语义",
   "removal": "上游吸收等价能力即删除；删除时跑 有/无旧 patch 对照；不保留兼容层",
   "packageIdentity": "不改 npm package 名称；内部保留 @earendil-works/pi-* identity",
-  "replay": "MOTTO-UPGRADE-1 (2026-08-12): 全部 7 patch(8 commits: 2daa52934/fd0a3e812/1cdfd5d3c/33ca9585d/5e94171e3/0cb127bef/7b80fa727/dfb898c0b) + 3 support(94a2d111d/025406274/2fecf1d22) 已重放于新 base 534bcbffb(merge 20d6909d9); 无上游吸收删除; 各条 removalCondition 保持有效"
+  "replay": "MOTTO-UPGRADE-1 (2026-08-12): 全部 7 patch(8 commits) + 3 support 已重放于新 base 534bcbffb(merge 20d6909d9); 无上游吸收删除。各条 commit 字段为重放后实际哈希(见各条;support: 74b4a2068/140fd6783/59eeaba89),与 MOTTO-UPGRADE-1 记录一致; 各条 removalCondition 保持有效(叠改关系见各条「叠改注」与 removalOrder)",
+  "removalOrder": "叠改文件(多 patch 触同一文件)删除不保证单 commit `git revert` 机械干净:按「后置先退」——先退依赖同文件的较新 patch,再退目标 patch,或接受冲突手工合并;删除后必跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改关系由各条 removalCondition 的「叠改注」标注。"
  },
  "statuses": [
   "candidate",
@@ -21,9 +22,9 @@
    "title": "TUI-1 S1 — user message 首行界栏 + 续行悬挂缩进",
    "scope": "coding-agent interactive 集成层薄接缝(components/user-message.ts + motto-layout.ts)",
    "description": "UserMessageComponent 去整宽气泡卡:不再套整宽背景 Box,首行中灰左界栏 `│ `(muted 槽)标记消息边界(I6-4 显示投影),续行以 GUTTER_WIDTH 个空格悬挂缩进,正文列左锚第 3 列(与 S2 BODY_INDENT 同列),大篇幅不再逐行成 rail;OSC133 标记保留;outputPad 设置对 user 表面不再生效(界栏布局固定正文列)。共享布局常量 motto-layout.ts(GUTTER_WIDTH/GUTTER/BODY_INDENT)。细化(2026-08-11):逐行界栏 → 首行+悬挂缩进。",
-   "commit": "2daa52934, 5e94171e3",
+   "commit": "9a3080101, 81dbec74f",
    "fixture": "fixtures/tui/baseline/theme-*.txt 新增 user-gutter (S1) 块(细化后重生成)",
-   "removalCondition": "上游吸收等价 user 消息渲染出口(registerMessageRenderer 扩展至 user role 或 transcript projector 覆盖内置消息)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(回落原生基线)与 coding-agent 全量测试。",
+   "removalCondition": "上游吸收等价 user 消息渲染出口(registerMessageRenderer 扩展至 user role 或 transcript projector 覆盖内置消息)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(回落原生基线)与 coding-agent 全量测试。叠改注:与 S3(tui-1-s3-tool-index-line)同触 motto-layout.ts;删除须后置先退或处理冲突。",
    "status": "applied"
   },
   {
@@ -31,9 +32,9 @@
    "title": "TUI-1 S2 — assistant 正文列对齐 BODY_INDENT,间距承担分隔",
    "scope": "coding-agent interactive 集成层薄接缝(components/assistant-message.ts)",
    "description": "AssistantMessageComponent 正文(最终回答)Markdown 对齐正文列 BODY_INDENT(第 3 列),与 S1 user 悬挂正文同列;length/aborted/error 通知同步对齐。thinking 渲染不触碰(TUI-2 面,依 pi 原生)。无框正文不变——分隔由 Spacer 间距承担。",
-   "commit": "fd0a3e812",
+   "commit": "505171d5b",
    "fixture": "fixtures/tui/baseline/theme-*.txt 新增 assistant-body (S2) 块",
-   "removalCondition": "上游吸收等价 assistant 渲染出口后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试(thinking 面不受影响)。",
+   "removalCondition": "上游吸收等价 assistant 渲染出口后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试(thinking 面不受影响)。叠改注:与 T1/T2(tui-2-t1/tui-2-t2)同触 assistant-message.ts;删除须后置先退或处理冲突。",
    "status": "applied"
   },
   {
@@ -41,9 +42,9 @@
    "title": "TUI-1 S3 — 内置工具成功调用压缩为低对比目行",
    "scope": "coding-agent interactive 集成层薄接缝(components/tool-execution.ts + motto-layout.ts truncateVisible)",
    "description": "ToolExecutionComponent:成功的内置工具(非流式/非失败/未展开)渲染为单行低对比目行 `toolName target`(dim,正文列对齐),成功静默;计数与耗时留 review recap 著录层(I1-1)。失败/流式/展开/自定义工具保持原生卡——失败仍整卡强显(I3-2),不随著录化降权。",
-   "commit": "1cdfd5d3c",
+   "commit": "bbbe6238c",
    "fixture": "fixtures/tui/baseline/theme-*.txt 新增 tool-index-ok / tool-index-fail (S3) 块",
-   "removalCondition": "上游吸收等价内置工具卡 projector 出口后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(失败卡回落原生基线)与 coding-agent 全量测试。",
+   "removalCondition": "上游吸收等价内置工具卡 projector 出口后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(失败卡回落原生基线)与 coding-agent 全量测试。叠改注:与 A1(review-flow-a1-tool-index-all)同触 tool-execution.ts、与 S1 同触 motto-layout.ts;删除须后置先退或处理冲突。",
    "status": "applied"
   },
   {
@@ -51,9 +52,9 @@
    "title": "TUI-2 T1 — thinking 块稳定 entryId(流式/恢复同身份)+ UI 层 fold map",
    "scope": "coding-agent interactive 集成层薄接缝(components/assistant-message.ts + components/thinking-fold.ts + interactive-mode.ts)",
    "description": "thinking run 获得纯 UI 侧稳定 entryId(assistant 消息序数 + run 序数,message_start 定死,流式/恢复/重建同源同序推导);fold 状态以 entryId 键存于 interactive-mode 内存 Map(thinkingFoldState,默认 collapsed),不写 session、不入模型上下文。渲染行为不变(三态属 T2-2)。",
-   "commit": "0cb127bef",
+   "commit": "ccab45ede",
    "fixture": "fixtures/tui/baseline/theme-*.txt 新增 thinking-collapsed 块",
-   "removalCondition": "上游吸收等价 per-entry thinking 身份接缝(registerMessageRenderer/transcript projector 提供稳定 entryId)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "removalCondition": "上游吸收等价 per-entry thinking 身份接缝(registerMessageRenderer/transcript projector 提供稳定 entryId)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 T2/T3 同触 thinking-fold.ts/interactive-mode.ts、与 S2/T2 同触 assistant-message.ts、与 rebrand 同触 interactive-mode.ts;删除须后置先退或处理冲突。",
    "status": "applied"
   },
   {
@@ -61,9 +62,9 @@
    "title": "TUI-2 T2 — thinking 三态渲染(collapsed 默认 / preview 有界摘要 / full 原文)",
    "scope": "coding-agent interactive 集成层薄接缝(components/assistant-message.ts + components/thinking-fold.ts + interactive-mode.ts)",
    "description": "thinking run 按 T2-1 fold map 三态渲染:collapsed(默认,每 run 单行标签,复用 hiddenThinkingLabel 样式)/ preview(buildThinkingPreview 有界首尾摘要,head 64 + 省略号 + tail 40 字符,单 Text 块自动折行零超宽)/ full(完整 thinking 原文,原非隐藏路径不变)。fold 状态以 entryId 键经 provider 注入组件(缺省回落 DEFAULT collapsed,组件独立可用);hideThinkingBlock 兼容路径保留且优先于三态;不写 session、不入模型上下文。",
-   "commit": "7b80fa727",
+   "commit": "92c5818d0",
    "fixture": "fixtures/tui/baseline/theme-*.txt 新增 thinking-collapsed/preview/full (T2-2) 块 + thinking-hidden (T2-1 compat) 块",
-   "removalCondition": "上游吸收等价 per-entry thinking 披露渲染(registerMessageRenderer/transcript projector 提供三态)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "removalCondition": "上游吸收等价 per-entry thinking 披露渲染(registerMessageRenderer/transcript projector 提供三态)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 T3 同触 thinking-fold.ts/interactive-mode.ts、与 S2/T1 同触 assistant-message.ts;删除须后置先退或处理冲突。",
    "status": "applied"
   },
   {
@@ -71,14 +72,14 @@
    "title": "TUI-2 T3 — thinking 交互键(focus 游标 + fold 三态循环,并存 Ctrl+T 全隐)",
    "scope": "coding-agent interactive 集成层薄接缝(components/thinking-fold.ts + core/keybindings.ts + interactive-mode.ts)",
    "description": "per-entry thinking 交互键:app.thinking.focus(shift+ctrl+t,thinking focus 前进到下一 entry,环绕,status 提示 Thinking n/m)与 app.thinking.fold(alt+t,聚焦 entry 的 fold 三态循环 collapsed→preview→full→collapsed,status 提示状态)。thinkingEntryOrder 由 recordThinkingFoldStates 幂等追加(流式/恢复/重建不重复);fold 仍只存于纯内存 map,不写 session、不入模型上下文;hideThinkingBlock 兼容路径与 Ctrl+T 全隐并存保留。渲染输出零改动(三态已由 T2-2 基线覆盖)。",
-   "commit": "dfb898c0b",
+   "commit": "bc19c7f31",
    "fixture": "无——T2-3 不改变渲染输出(交互态由用户驱动,三态基线已由 T2-2 覆盖)",
-   "removalCondition": "上游吸收等价 per-entry thinking 交互(focus/fold 键或等效 disclosure 交互)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "removalCondition": "上游吸收等价 per-entry thinking 交互(focus/fold 键或等效 disclosure 交互)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 T1/T2 同触 thinking-fold.ts/interactive-mode.ts(thinking 栈顶,后置 product patch 无触碰;若有后续清理提交须先退或处理冲突)。",
    "status": "applied"
   },
   {
    "id": "motto-rebrand-1",
-   "commit": "33ca9585d5234d6fe22d0ffc745581079c2ad605",
+   "commit": "055c43962f6c8afdc973d532974241de0e413362",
    "packages": [
     "coding-agent"
    ],
@@ -88,7 +89,7 @@
    ],
    "upstreamable": true,
    "upstreamStatus": "not-submitted",
-   "removalCondition": "上游将 onboarding/tmux 提示等硬编码品牌串改为 APP_NAME 驱动后删除(piConfig.name 品牌钩子为上游内建,不需要上游化)",
+   "removalCondition": "上游将 onboarding/tmux 提示等硬编码品牌串改为 APP_NAME 驱动后删除(piConfig.name 品牌钩子为上游内建,不需要上游化)。叠改注:与 T1/T2/T3 同触 interactive-mode.ts;删除须后置先退或处理冲突。",
    "dogfoodEvidence": [],
    "status": "applied"
   },
@@ -99,7 +100,7 @@
    "description": "、、、 投影卡片(方案 A,30042d846)渲染为 box-drawing 表格时每行之间有 `├─┤` 分隔线,多行卡片观感偏密。用户裁定:微调 harness core 让投影卡片去行间分隔线,自然 markdown 表格保持逐行分隔线(普遍通行方案)。cards.ts 投影每个卡片表格前输出独立一行 HTML 注释标记 `<!--motto-card-->`(行尾用开栏行尾,幂等/守卫/fail-open/CRLF 逻辑不变);markdown.ts 引入类私有字段 cardFrameMode:html case 遇 `<!--motto-card-->` 不输出字符并置位,renderTable 读取并立即复位,为真时仅外框 + 粗体表头行 + 表头分隔线(去行间分隔线),为假时现状不变;render() 开头复位防跨消息泄漏。宽度计算/折行/布局逻辑零改动,只改是否 push 行间分隔线。",
    "commit": "8f1e90d61",
    "fixture": "无——TUI-4 不改变基线 scenario(现有 scenario 无卡片 marker,render-baseline.mjs --check 通过)",
-   "removalCondition": "上游吸收等价「带标注内容卡片帧 / 表格行分隔可配置」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "removalCondition": "上游吸收等价「带标注内容卡片帧 / 表格行分隔可配置」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 tui-4-s2-card-tag-label 同触 markdown.ts/cards.ts;删除须后置先退或处理冲突。另注(2026-08-12 独立验收):本 commit(8f1e90d61)diff 内含 PATCHES.json 自登记(+10 行),删除时须另行回退登记册条目,勿随 patch 一并 revert。",
    "status": "applied"
   },
   {
@@ -109,7 +110,7 @@
    "description": "ToolExecutionComponent 成功目行判定(S3)扩展到自定义工具(非内置、带 toolDefinition、成功、非流式、未展开):toolIndexTarget 对自定义工具退化参数摘要(已知摘要键 → 首个非空字符串值 → JSON 单行,renderSuccessIndexLine 统一截宽);失败/流式/展开/内置工具自定义覆盖保持整卡(失败强显 I3-2,不随收敛降权)。`!!` bash 属用户主动操作,按宣言取舍(失败/审批/用户主动操作不随正常轨迹隐藏;Grok Build 对用户 `!` bash 收尾强制 Expanded)不收敛为目行、保持整卡;bash-execution.ts 未展开预览行数 20→5,流式/收尾只露有界尾部预览(3–5 行 tail,Codex 5 行 / Reasonix tail 同源),展开态(Ctrl+O / app.tools.expand)看全量,transcript 兜底。",
    "commit": "e6af3794d, 943e67312",
    "fixture": "无——基线 scenario 未覆盖自定义工具/`!!` bash(render-baseline.mjs 仅用 S3 tool-index-ok/fail 块,S3 行为不变,--check 逐字节通过);新行为由单元测试锁定(tool-execution-component.test.ts / bash-execution-width.test.ts)",
-   "removalCondition": "上游吸收等价内置/自定义工具卡 projector 出口与用户 shell 有界预览后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "removalCondition": "上游吸收等价内置/自定义工具卡 projector 出口与用户 shell 有界预览后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 S3(tui-1-s3-tool-index-line)同触 tool-execution.ts;删除须后置先退或处理冲突。",
    "status": "applied"
   },
   {
@@ -127,15 +128,15 @@
   "purpose": "非产品 patch 但升级重放必须一并携带的支持提交(测试对账/测试/文档);随受控升级 cherry-pick",
   "commits": [
    {
-    "commit": "94a2d111d",
+    "commit": "74b4a2068",
     "reason": "rebrand 测试对账(CLI/help/onboarding 断言随产品层 motto 更新)——升级后 rebrand 测试必需"
    },
    {
-    "commit": "025406274",
+    "commit": "140fd6783",
     "reason": "T2 NO_SESSION_POLLUTION 断言 + 幂等回归(test-only)"
    },
    {
-    "commit": "2fecf1d22",
+    "commit": "59eeaba89",
     "reason": "motto-layout 注释随 S1 细化对齐(docs-only)"
    }
   ]
