@@ -34,6 +34,8 @@
 
 - `TUI-SURFACE-MATRIX.md` — TUI 表面矩阵（S 槽位 ↔ 渲染面映射）
 - `TRANSCRIPT-PROJECTION.md` — transcript 投影（书目化呈现设计）
+- `TUI-REVIEW-FLOW-RESEARCH.md` — 命令块折叠取舍调研（7 家开源核实；方案 A/B/C 候选，供 review-flow 决策）
+- `TUI-CARD-FRAME-RESEARCH.md` — `、、、` 卡片帧调研（fenced 块/卡片帧开源实现对比；方案 A 零 core 保真演进裁定依据）
 
 ## 研究（`docs/research/`）
 
