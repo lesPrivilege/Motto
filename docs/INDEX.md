@@ -26,6 +26,7 @@
 - `2026-08-11-motto-tui-2.md` — 工单：MOTTO-TUI-2 Per-entry Thinking Disclosure
 - `2026-08-11-motto-tui-3-composer-dock.md` — 工单：MOTTO-TUI-3 固定底栏（定调：不实现，上游已合入基线）
 - `2026-08-11-tui-construction-prep.md` — TUI 施工准备/旧裁定召回（TUI-PREP-1，不授权施工）
+- `2026-08-12-motto-upgrade-1-absorb-upstream.md` — 工单：MOTTO-UPGRADE-1 受控上游升级（v0.84.1→534bcbffb 109 commits，ACCEPTED 落地）
 - `review-flow-eval.md` — review-flow 评估结论（API 核实 + 逐项裁决）
 
 ## 架构（`docs/architecture/`）

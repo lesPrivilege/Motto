@@ -80,9 +80,15 @@ UPGRADE_GATES           ✅(candidate)npm install 成功(openai 6.40)、build:of
                         tui 908/0、dist launch smoke PASS(motto 品牌);
                         NOT TESTED: baseline --check/drill/regression(需 motto 侧 harness,
                         candidate 无 scripts/maint,按预期跳过)、GHOSTTY 人工交互与真实 dogfood
-ACCEPT_DECISION         ⏳ 用户终裁(证据 /tmp/upgrade-evidence.md 已备,不自动并入;
-                        RECOMMENDATION: PROCEED,有条件——随带 94a2d111d、全新 npm install、
-                        建议并纳入 534bcbffb 与 registry B/C 修正)
+ACCEPT_DECISION         ✅ 用户已接受(2026-08-12)
+                        执行:merge 20d6909d9(base v0.84.1→534bcbffb, 109 commits 吸收,
+                        含 4 alt-screen 增量 T3-2; 8 patch + 3 support 重放, 仅 1 处测试导入
+                        冲突最小化解析——interactive-tui.test.ts 导入块, FullscreenExitOutput+
+                        ThinkingFoldState 两 import 并存, 与 dry-run 一致); gates 全绿
+                        (npm run check / baseline --check / coding-agent 1948·0 / tui 909·0 /
+                        regression 11·0 / drill 11·11 / governance PASS, 见 RELEASES 2026-08-12.1);
+                        records 落账:PI-BASE 五元组→534bcbffb(未发版,无 tag/tarball),
+                        RELEASES 2026-08-12.1, PATCHES replay 注记(removalCondition 保留)
 ```
 
 终态只允许 ACCEPTED / ACCEPTED WITH LIMITATIONS / REJECTED；未覆盖项标 NOT TESTED。
@@ -92,3 +98,7 @@ ACCEPT_DECISION         ⏳ 用户终裁(证据 /tmp/upgrade-evidence.md 已备,
 - 2026-08-12：工单登记（受控升级 + TUI-3 T3-1/T3-2 排程；消费开源调研结果）。
 - 2026-08-12：S1（T3-1）落账 commit 9e94f75e5；S2–S4 施工完成——candidate 重放/门禁/alt-screen 验证
   全过，证据 /tmp/upgrade-evidence.md；待用户 accept 终裁（未并入 motto/main）。
+- 2026-08-12：ACCEPT 终裁——用户接受(MOTTO-UPGRADE-1)。merge 20d6909d9 落地
+  (base v0.84.1→534bcbffb, 109 commits 吸收, 8 patch + 3 support 重放), gates 全绿,
+  records 落账(PI-BASE/RELEASES 2026-08-12.1/PATCHES replay 注记); 上游未发版(无 tag/tarball),
+  base 以 commit 534bcbffb 为真源。

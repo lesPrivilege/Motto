@@ -5,7 +5,8 @@
   "onePatchPerCommit": "每个 Motto Core commit 只实现一项可独立删除的接缝，禁止巨型提交",
   "scope": "只限 coding-agent interactive integration 与 pi-tui 薄接缝；不改 agent loop / provider / session schema / 内置工具语义",
   "removal": "上游吸收等价能力即删除；删除时跑 有/无旧 patch 对照；不保留兼容层",
-  "packageIdentity": "不改 npm package 名称；内部保留 @earendil-works/pi-* identity"
+  "packageIdentity": "不改 npm package 名称；内部保留 @earendil-works/pi-* identity",
+  "replay": "MOTTO-UPGRADE-1 (2026-08-12): 全部 7 patch(8 commits: 2daa52934/fd0a3e812/1cdfd5d3c/33ca9585d/5e94171e3/0cb127bef/7b80fa727/dfb898c0b) + 3 support(94a2d111d/025406274/2fecf1d22) 已重放于新 base 534bcbffb(merge 20d6909d9); 无上游吸收删除; 各条 removalCondition 保持有效"
  },
  "statuses": [
   "candidate",
