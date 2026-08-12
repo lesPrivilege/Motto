@@ -91,6 +91,16 @@
    "removalCondition": "上游将 onboarding/tmux 提示等硬编码品牌串改为 APP_NAME 驱动后删除(piConfig.name 品牌钩子为上游内建,不需要上游化)",
    "dogfoodEvidence": [],
    "status": "applied"
+  },
+  {
+   "id": "tui-4-s1-card-light-frame",
+   "title": "TUI-4 S1 — 、、、卡片轻帧:<!--motto-card--> 标记使投影卡片去行间分隔线(自然表格不变)",
+   "scope": "pi-tui 薄接缝(packages/tui/src/components/markdown.ts renderTable + motto extensions/motto/cards.ts 投影标记)",
+   "description": "、、、 投影卡片(方案 A,30042d846)渲染为 box-drawing 表格时每行之间有 `├─┤` 分隔线,多行卡片观感偏密。用户裁定:微调 harness core 让投影卡片去行间分隔线,自然 markdown 表格保持逐行分隔线(普遍通行方案)。cards.ts 投影每个卡片表格前输出独立一行 HTML 注释标记 `<!--motto-card-->`(行尾用开栏行尾,幂等/守卫/fail-open/CRLF 逻辑不变);markdown.ts 引入类私有字段 cardFrameMode:html case 遇 `<!--motto-card-->` 不输出字符并置位,renderTable 读取并立即复位,为真时仅外框 + 粗体表头行 + 表头分隔线(去行间分隔线),为假时现状不变;render() 开头复位防跨消息泄漏。宽度计算/折行/布局逻辑零改动,只改是否 push 行间分隔线。",
+   "commit": "8f1e90d61",
+   "fixture": "无——TUI-4 不改变基线 scenario(现有 scenario 无卡片 marker,render-baseline.mjs --check 通过)",
+   "removalCondition": "上游吸收等价「带标注内容卡片帧 / 表格行分隔可配置」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "status": "applied"
   }
  ],
  "supportCommits": {

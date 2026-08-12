@@ -7,19 +7,18 @@
 //     git diff
 //   、、、
 //   ↓ 投影
+//   <!--motto-card-->
 //   | bash |
 //   |---|
 //   | cd ~/Projects/pi |
 //   | `  `git status |
 //   | `  `git diff |
-//   ↓ TUI 原生渲染
+//   ↓ TUI 原生渲染(轻帧:无行间分隔线,仅外框 + 表头线)
 //   ┌───────────────────┐
 //   │ bash              │   ← 粗体标题头（标注）
 //   ├───────────────────┤
 //   │ cd ~/Projects/pi  │
-//   ├───────────────────┤
 //   │   git status      │
-//   ├───────────────────┤
 //   │   git diff        │
 //   └───────────────────┘
 //
@@ -38,6 +37,11 @@
 // 行内 Markdown 解析维持现状(代码内容里的 `*`/`_`/反引号可能被轻度解析,已知可接受风险);
 // 内容/标题/标注中的 `|` 转义为 `\|`;未闭合 / 空卡片 / 缺标题 fail-open 原样;CRLF 不破坏;
 // 幂等(输出为表格,不再含 `、、、` 行);fail-open。
+//
+// 卡片帧标记:每个卡片表格**之前**输出独立一行 HTML 注释 `<!--motto-card-->`(行尾用开栏
+// 行尾)。TUI 核心(pi-tui markdown.ts)识别该标记:置「卡片帧模式」→ 该卡片表格去行间分隔线
+// (仅外框 + 粗体表头行 + 表头分隔线),自然 markdown 表格无标记不受影响(逐行分隔线保留)。
+// 标记为纯注释,对幂等(输出无 `、、、` 行,重跑不变)与守卫/fail-open/CRLF/行尾逻辑无影响。
 import type { MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
 import { joinLines, parseFence, splitLines, type Line } from "./headings.ts";
 
@@ -193,6 +197,8 @@ export function projectDunhaoCards(markdown: string, context: MarkdownTransformC
 				rows.push({ content, ending: k === b ? lines[j].ending : body[contentStart + k].ending });
 			}
 
+			// 卡片帧标记:独立一行,位于表格之前,行尾用开栏行尾(与表格行一致)。
+			out.push({ content: "<!--motto-card-->", ending: lines[i].ending });
 			out.push({ content: `| ${title} |`, ending: lines[i].ending });
 			out.push({ content: `|---|`, ending: lines[i].ending });
 			if (rows.length > 0) {
