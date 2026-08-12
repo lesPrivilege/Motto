@@ -1,116 +1,120 @@
 {
-	"schemaVersion": 1,
-	"purpose": "Motto 可运行发行组合登记（MOTTO-DOWNSTREAM-0 立制）。每个可运行发行 = Pi base + Core patchset + Motto commit + extension lock hash + theme hash + TUI fixture hash + acceptance evidence；回答「这一场真实 session 当时运行的是哪套系统」。",
-	"releaseManifestFormat": {
-		"piBase": "引用 PI-BASE.json 三元组",
-		"corePatchset": "引用 PATCHES.json 的 patches id 列表",
-		"mottoCommit": "Motto 仓 commit",
-		"extensionLockHash": "EXTENSIONS.lock.json 的 SHA-256",
-		"themeHash": "三主题文件 SHA-256",
-		"tuiFixtureHash": "fixtures/tui 会话/基线 SHA-256",
-		"acceptanceEvidence": "验收/省视记录引用"
-	},
-	"releases": [
-		{
-			"id": "2026-08-11.0",
-			"name": "motto.pure-extension.0",
-			"status": "pure-extension (zero core patch)",
-			"piBase": {
-				"packageVersion": "0.84.1",
-				"tag": "v0.84.1",
-				"commit": "53fa77ccd8a279eb87e92294ef3687b03ff80112"
-			},
-			"corePatchset": [],
-			"mottoCommit": "9a6042601c52145a474433a910516e20c2db13c2",
-			"extensionLock": "见 EXTENSIONS.lock.json (verifiedAt 2026-08-11)",
-			"themes": {
-				"motto.json": "66d673e8a5fc49b4baa8cd2c85b1a674be74efda87592cef870e5ac3e2b05888",
-				"motto-dark.json": "94eadde19067ea5b78242f3a433bb2cff61b7439e76c9ec41eecc162b0329ec3",
-				"motto-light.json": "51951908a491e726b5d10016cd97906fc7be5e70c36c824b79dfe0c5518a9f32"
-			},
-			"tuiFixture": "fixtures/tui/sessions/motto-tui-baseline.jsonl (26 entries, MOTTO-TUI-0)",
-			"acceptanceEvidence": [
-				"docs/decisions/2026-08-11-motto-tui-0-boundary.md",
-				"fixtures/tui/baseline/MANIFEST.txt",
-				"MOTTO-TUI-0 全量回归 11 passed + drift-check PASS",
-				"MOTTO-DOWNSTREAM-0: 演练 11/11 (downstream-drill.sh) + 零 patch 等价验证 (--help 逐字节 == 官方, --version/--list-models 同)"
-			],
-			"note": "MOTTO-DOWNSTREAM-0 立制时的基线发行;与官方 pi 0.84.1 行为等价(零 patch)。",
-			"takeover": {
-				"date": "2026-08-11",
-				"state": "COMPLETE — 交互 shell 中 pi 交付 Motto 发行",
-				"dailyDriver": "motto",
-				"escapeHatch": "pi-official | MOTTO_USE_OFFICIAL=1 motto",
-				"record": "docs/maintenance/USAGE.md §7"
-			}
-		},
-		{
-			"id": "2026-08-12.0",
-			"name": "motto.single-repo.0",
-			"status": "single-repo terminal (7 core patches)",
-			"piBase": {
-				"packageVersion": "0.84.1",
-				"tag": "v0.84.1",
-				"commit": "53fa77ccd8a279eb87e92294ef3687b03ff80112"
-			},
-			"corePatchset": [
-				"tui-1-s1-user-gutter",
-				"tui-1-s2-assistant-body",
-				"tui-1-s3-tool-index-line",
-				"tui-2-t1-thinking-identity",
-				"tui-2-t2-thinking-three-state",
-				"tui-2-t3-thinking-keys",
-				"motto-rebrand-1"
-			],
-			"mottoCommit": "e6f07290c793f65004d92e17d80ad39563ebda3d",
-			"extensionLock": "见 EXTENSIONS.lock.json (verifiedAt 2026-08-11; 单仓后随 fork 同仓)",
-			"themes": {
-				"motto.json": "66d673e8a5fc49b4baa8cd2c85b1a674be74efda87592cef870e5ac3e2b05888",
-				"motto-dark.json": "94eadde19067ea5b78242f3a433bb2cff61b7439e76c9ec41eecc162b0329ec3",
-				"motto-light.json": "51951908a491e726b5d10016cd97906fc7be5e70c36c824b79dfe0c5518a9f32"
-			},
-			"tuiFixture": "fixtures/tui/sessions/motto-tui-baseline.jsonl (26 entries, MOTTO-TUI-0)",
-			"acceptanceEvidence": [
-				"ci-checks governance PASS",
-				"baseline --check PASS",
-				"downstream-drill 11/11",
-				"coding-agent suite PASS",
-				"launch smoke PASS"
-			],
-			"note": "夺舍终局——单仓自足 fork; Motto 仓并入 lesPrivilege/pi"
-		},
-		{
-			"id": "2026-08-12.1",
-			"name": "motto.upgrade-1.0",
-			"status": "single-repo upgraded (MOTTO-UPGRADE-1 ACCEPTED)",
-			"piBase": {
-				"packageVersion": "0.84.1",
-				"tag": "v0.84.1 (109 commits 未发版无新 tag; base 以 commit 534bcbffb 为准)",
-				"commit": "534bcbffb7e1e7551d9ee3572dfeb278e203e493"
-			},
-			"corePatchset": [
-				"2daa52934",
-				"fd0a3e812",
-				"1cdfd5d3c",
-				"33ca9585d",
-				"5e94171e3",
-				"0cb127bef",
-				"7b80fa727",
-				"dfb898c0b"
-			],
-			"supportCommits": ["94a2d111d", "025406274", "2fecf1d22"],
-			"mottoCommit": "20d6909d924393db32cba047a7c629a5689265ef",
-			"acceptanceEvidence": [
-				"npm run check PASS (biome/pinned-deps/ts-imports/shrinkwrap/install-lock/tsgo/browser-smoke)",
-				"baseline --check PASS (byte-exact, zero overflow)",
-				"coding-agent 218 files/1948 tests 0 fail/49 skip",
-				"tui 909/909 0 fail",
-				"regression 11 passed/0 failed + drift-check PASS",
-				"downstream-drill 11/11 (new base 534bcbffb)",
-				"ci-checks governance PASS",
-				"launch smoke: motto identity (base 0.84.1/upstream 534bcbffb, patchset 8 commits, release 2026-08-12.1)"
-			],
-			"note": "MOTTO-UPGRADE-1 受控升级: v0.84.1→534bcbffb, 109 commits 吸收(含 4 alt-screen 增量 T3-2), 8 patch + 3 support 重放; merge 20d6909d9; 上游未发版(无 tag/tarball), base 以 git commit 为真源"
-		}
-	]
+ "schemaVersion": 1,
+ "purpose": "Motto 可运行发行组合登记（MOTTO-DOWNSTREAM-0 立制）。每个可运行发行 = Pi base + Core patchset + Motto commit + extension lock hash + theme hash + TUI fixture hash + acceptance evidence；回答「这一场真实 session 当时运行的是哪套系统」。",
+ "releaseManifestFormat": {
+  "piBase": "引用 PI-BASE.json 三元组",
+  "corePatchset": "引用 PATCHES.json 的 patches id 列表",
+  "mottoCommit": "Motto 仓 commit",
+  "extensionLockHash": "EXTENSIONS.lock.json 的 SHA-256",
+  "themeHash": "三主题文件 SHA-256",
+  "tuiFixtureHash": "fixtures/tui 会话/基线 SHA-256",
+  "acceptanceEvidence": "验收/省视记录引用"
+ },
+ "releases": [
+  {
+   "id": "2026-08-11.0",
+   "name": "motto.pure-extension.0",
+   "status": "pure-extension (zero core patch)",
+   "piBase": {
+    "packageVersion": "0.84.1",
+    "tag": "v0.84.1",
+    "commit": "53fa77ccd8a279eb87e92294ef3687b03ff80112"
+   },
+   "corePatchset": [],
+   "mottoCommit": "9a6042601c52145a474433a910516e20c2db13c2",
+   "extensionLock": "见 EXTENSIONS.lock.json (verifiedAt 2026-08-11)",
+   "themes": {
+    "motto.json": "66d673e8a5fc49b4baa8cd2c85b1a674be74efda87592cef870e5ac3e2b05888",
+    "motto-dark.json": "94eadde19067ea5b78242f3a433bb2cff61b7439e76c9ec41eecc162b0329ec3",
+    "motto-light.json": "51951908a491e726b5d10016cd97906fc7be5e70c36c824b79dfe0c5518a9f32"
+   },
+   "tuiFixture": "fixtures/tui/sessions/motto-tui-baseline.jsonl (26 entries, MOTTO-TUI-0)",
+   "acceptanceEvidence": [
+    "docs/decisions/2026-08-11-motto-tui-0-boundary.md",
+    "fixtures/tui/baseline/MANIFEST.txt",
+    "MOTTO-TUI-0 全量回归 11 passed + drift-check PASS",
+    "MOTTO-DOWNSTREAM-0: 演练 11/11 (downstream-drill.sh) + 零 patch 等价验证 (--help 逐字节 == 官方, --version/--list-models 同)"
+   ],
+   "note": "MOTTO-DOWNSTREAM-0 立制时的基线发行;与官方 pi 0.84.1 行为等价(零 patch)。",
+   "takeover": {
+    "date": "2026-08-11",
+    "state": "COMPLETE — 交互 shell 中 pi 交付 Motto 发行",
+    "dailyDriver": "motto",
+    "escapeHatch": "pi-official | MOTTO_USE_OFFICIAL=1 motto",
+    "record": "docs/maintenance/USAGE.md §7"
+   }
+  },
+  {
+   "id": "2026-08-12.0",
+   "name": "motto.single-repo.0",
+   "status": "single-repo terminal (7 core patches)",
+   "piBase": {
+    "packageVersion": "0.84.1",
+    "tag": "v0.84.1",
+    "commit": "53fa77ccd8a279eb87e92294ef3687b03ff80112"
+   },
+   "corePatchset": [
+    "tui-1-s1-user-gutter",
+    "tui-1-s2-assistant-body",
+    "tui-1-s3-tool-index-line",
+    "tui-2-t1-thinking-identity",
+    "tui-2-t2-thinking-three-state",
+    "tui-2-t3-thinking-keys",
+    "motto-rebrand-1"
+   ],
+   "mottoCommit": "e6f07290c793f65004d92e17d80ad39563ebda3d",
+   "extensionLock": "见 EXTENSIONS.lock.json (verifiedAt 2026-08-11; 单仓后随 fork 同仓)",
+   "themes": {
+    "motto.json": "66d673e8a5fc49b4baa8cd2c85b1a674be74efda87592cef870e5ac3e2b05888",
+    "motto-dark.json": "94eadde19067ea5b78242f3a433bb2cff61b7439e76c9ec41eecc162b0329ec3",
+    "motto-light.json": "51951908a491e726b5d10016cd97906fc7be5e70c36c824b79dfe0c5518a9f32"
+   },
+   "tuiFixture": "fixtures/tui/sessions/motto-tui-baseline.jsonl (26 entries, MOTTO-TUI-0)",
+   "acceptanceEvidence": [
+    "ci-checks governance PASS",
+    "baseline --check PASS",
+    "downstream-drill 11/11",
+    "coding-agent suite PASS",
+    "launch smoke PASS"
+   ],
+   "note": "夺舍终局——单仓自足 fork; Motto 仓并入 lesPrivilege/pi"
+  },
+  {
+   "id": "2026-08-12.1",
+   "name": "motto.upgrade-1.0",
+   "status": "single-repo upgraded (MOTTO-UPGRADE-1 ACCEPTED)",
+   "piBase": {
+    "packageVersion": "0.84.1",
+    "tag": "v0.84.1 (109 commits 未发版无新 tag; base 以 commit 534bcbffb 为准)",
+    "commit": "534bcbffb7e1e7551d9ee3572dfeb278e203e493"
+   },
+   "corePatchset": [
+    "2daa52934",
+    "fd0a3e812",
+    "1cdfd5d3c",
+    "33ca9585d",
+    "5e94171e3",
+    "0cb127bef",
+    "7b80fa727",
+    "dfb898c0b"
+   ],
+   "supportCommits": [
+    "94a2d111d",
+    "025406274",
+    "2fecf1d22"
+   ],
+   "mottoCommit": "20d6909d924393db32cba047a7c629a5689265ef",
+   "acceptanceEvidence": [
+    "npm run check PASS (biome/pinned-deps/ts-imports/shrinkwrap/install-lock/tsgo/browser-smoke)",
+    "baseline --check PASS (byte-exact, zero overflow)",
+    "coding-agent suite 224 files/1997 tests (218 passed + 6 skipped files; 1948 passed + 49 skipped tests, 0 fail — 1 上游 footer-data-provider 时序 flake 非升级回归)",
+    "tui 909/909 0 fail",
+    "regression 11 passed/0 failed + drift-check PASS",
+    "downstream-drill 11/11 (new base 534bcbffb)",
+    "ci-checks governance PASS",
+    "launch smoke: motto identity (base 0.84.1/upstream 534bcbffb, patchset 8 commits, release 2026-08-12.1)"
+   ],
+   "note": "MOTTO-UPGRADE-1 受控升级: v0.84.1→534bcbffb, 109 commits 吸收(含 4 alt-screen 增量 T3-2), 8 patch + 3 support 重放; merge 20d6909d9; 上游未发版(无 tag/tarball), base 以 git commit 为真源"
+  }
+ ]
 }
