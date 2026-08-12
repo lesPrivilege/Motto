@@ -1,4 +1,4 @@
-// motto 牌记/地脚/取色单元测试:宽度上界、theme 槽降级、全屏红线。
+// motto splash/footer/取色单元测试:宽度上界、theme 槽降级、全屏红线。
 // 运行:cd ~/.pi/agent && node --test notes/motto.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -33,7 +33,7 @@ function plainWidth(line) {
 	return visibleWidth(line.replace(/\x1b\[[0-9;]*m/g, ""));
 }
 
-test("牌记渲染恒 ≤ 目标宽度(40/60/66/80/200),且不抛错", () => {
+test("splash 渲染恒 ≤ 目标宽度(40/60/66/80/200),且不抛错", () => {
 	for (const width of WIDTHS) {
 		const color = makeColor(mottoTheme);
 		const lines = buildSplash("慎厥身修思永", "deepseek-v4-flash", "2026-08-08", FACTS, width).map((line) =>
@@ -51,7 +51,7 @@ test("非 motto 主题(缺 dimmer/mid)不炸:dimmer/mid 降级到 dim", () => {
 	assert.equal(color.fg("mid", "x"), stockTheme.fg("dim", "x"));
 	assert.equal(color.fg("dim", "x"), stockTheme.fg("dim", "x"));
 	assert.equal(color.fg("accent", "x"), stockTheme.fg("accent", "x"));
-	// 牌记整体在缺槽主题下可渲染。
+	// splash 整体在缺槽主题下可渲染。
 	const lines = buildSplash("慎厥身修思永", "m", "d", FACTS, 80).map((line) =>
 		line.segments.map((s) => (s.bold ? color.bold(s.text) : s.slot ? color.fg(s.slot, s.text) : s.text)).join(""),
 	);

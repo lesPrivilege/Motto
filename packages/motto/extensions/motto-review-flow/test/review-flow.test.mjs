@@ -80,7 +80,7 @@ test("tool metrics stay compact", () => {
 	assert.equal(toolMetric("edit", {}, { details: { diff: "--- a\n+++ b\n-old\n+new\n+next" }, content: [] }, false), "+2 −1");
 	// run 成功不记输出度量。
 	assert.equal(toolMetric("bash", {}, { content: [{ type: "text", text: "first\nsecond\n" }] }, false), "");
-	// 失败不记普通度量,由退出状态/错误提要承载。
+	// 失败不记普通度量,由退出状态/error tail 承载。
 	assert.equal(toolMetric("bash", {}, { content: [{ type: "text", text: "fatal: failed" }] }, true), "");
 });
 
@@ -331,11 +331,11 @@ test("collapsed 态:失败工具强制展示,成功工具折叠", () => {
 	const collapsed = renderPlain(buildTurnLines(data, false, 120));
 	assert.equal(collapsed[0], "  2 tools · explore 1 · run 1 · 1 failed · 5.0s");
 	assert.ok(collapsed[0].includes("1 failed"));
-	// read 不出现(成功折叠),bash 失败行 + 错误提要出现。
+	// read 不出现(成功折叠),bash 失败行 + error tail 出现。
 	assert.equal(collapsed.some((l) => l.includes("read  a.ts")), false);
 	assert.ok(collapsed.some((l) => l.startsWith("  bash  pnpm test · exit 1")), "failed run visible when collapsed");
 	assert.ok(collapsed.some((l) => l.includes("fatal: no tests")), "error tail visible when collapsed");
-	// 错误提要悬挂到内容列(动词列 4 + 间隔 2 = 6)。
+	// error tail 悬挂到内容列(动词列 4 + 间隔 2 = 6)。
 	const preview = collapsed.find((l) => l.includes("fatal: no tests"));
 	assert.equal(preview.startsWith("        fatal: no tests"), true, `tail hanging: "${preview}"`);
 
@@ -354,7 +354,7 @@ test("窗口缩放折行:续行悬挂对齐,断点在 · 处", () => {
 		],
 	};
 	const lines = renderPlain(buildTurnLines(data, true, 44));
-	// 汇总行:著录缩进 2,计数起始。
+	// 汇总行:recap 缩进 2,计数起始。
 	const statsLine = lines[0];
 	assert.ok(statsLine.startsWith("  2 tools"), `stats starts with count: "${statsLine}"`);
 	// 工具行:首行 = 缩进 2 + 动词;续行悬挂第 8 列(缩进 2 + 动词列 4 + 间隔 2)。
@@ -375,7 +375,7 @@ test("CJK 对象按双列宽度折行,不错列", () => {
 	};
 	const lines = renderPlain(buildTurnLines(data, true, 20));
 	for (const line of lines) assert.ok(visibleWidth(line) <= 20, `overflow: "${line}" (${visibleWidth(line)})`);
-	// 工具行续行悬挂第 8 列(著录缩进 2 + 动词 read 4 + 间隔 2)。
+	// 工具行续行悬挂第 8 列(recap 缩进 2 + 动词 read 4 + 间隔 2)。
 	for (const line of lines) {
 		if (/^ {2}(read|edit|bash)/.test(line)) continue; // 工具首行
 		if (/^ {2}\d/.test(line)) continue; // 汇总行续行(悬挂第 2 列)
@@ -385,7 +385,7 @@ test("CJK 对象按双列宽度折行,不错列", () => {
 	}
 });
 
-test("超长单元硬折(错误提要 > 可用宽)", () => {
+test("超长单元硬折(error tail > 可用宽)", () => {
 	const long = "x".repeat(50);
 	const lines = wrapUnits([{ text: "      ", slot: null }], [{ text: long, slot: "dim" }], 6, 20);
 	const plain = lines.map((l) => l.map((u) => u.text).join(""));
@@ -394,7 +394,7 @@ test("超长单元硬折(错误提要 > 可用宽)", () => {
 	assert.ok(plain.length > 1, "long unit hard-wrapped");
 });
 
-test("48 列失败提要折行不产生零内容空行", () => {
+test("48 列失败 tail 折行不产生零内容空行", () => {
 	const data = {
 		version: 1,
 		turnIndex: 0,

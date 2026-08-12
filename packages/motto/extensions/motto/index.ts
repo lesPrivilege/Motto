@@ -1,5 +1,5 @@
 // motto —— TUI 品牌层(index.ts 薄:pi 集成接线;纯逻辑见 core.ts)。
-// 牌记(splash)/ footer(含 TPS)/ 终端标题守护 / 提示词品牌化。
+// splash / footer(含 TPS)/ 终端标题守护 / 提示词品牌化。
 import type { ExtensionAPI, MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
 import { visibleWidth } from "@earendil-works/pi-tui";
 import { projectDunhaoCards } from "./cards.ts";

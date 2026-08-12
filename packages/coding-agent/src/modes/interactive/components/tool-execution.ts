@@ -224,7 +224,7 @@ export class ToolExecutionComponent extends Container {
 			return [];
 		}
 
-		// S3+review-flow A1:成功的内置/自定义工具压缩为低对比目行(成功静默;计数与耗时留
+		// S3+review-flow A1:成功的内置/自定义工具压缩为低对比 index 行(成功静默;计数与耗时留
 		// review recap)。流式/失败/展开/内置工具自定义覆盖保持原生卡(失败整卡强显 I3-2)。
 		if (this.isSuccessIndexLine()) {
 			return this.renderSuccessIndexLine(width);
@@ -266,7 +266,7 @@ export class ToolExecutionComponent extends Container {
 		if (this.builtInToolDefinition !== undefined) {
 			return this.toolDefinition === undefined;
 		}
-		// 自定义工具(非内置、带 toolDefinition):成功亦收敛为目行(review-flow A1)。
+		// 自定义工具(非内置、带 toolDefinition):成功亦收敛为 index 行(review-flow A1)。
 		// 未知工具(无任何 definition)保持原生回退卡,不代建。
 		return this.toolDefinition !== undefined;
 	}

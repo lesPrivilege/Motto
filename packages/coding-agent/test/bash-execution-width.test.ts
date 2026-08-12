@@ -80,7 +80,7 @@ describe("BashExecutionComponent width handling (#2569)", () => {
 	});
 
 	// review-flow A1:未展开时输出只露有界尾部预览(3–5 行 tail,借鉴 Codex 5 行 / Reasonix tail),
-	// 不全量铺屏;展开态(Ctrl+O / app.tools.expand)看全量。`!!` 属用户主动操作,不收敛为目行。
+	// 不全量铺屏;展开态(Ctrl+O / app.tools.expand)看全量。`!!` 属用户主动操作,不收敛为 index 行。
 	it("keeps a bounded tail preview of 5 lines when not expanded", () => {
 		const { stub } = createTuiStub(80);
 		const component = new BashExecutionComponent("git status --short", stub, true);

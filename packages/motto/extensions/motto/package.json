@@ -2,7 +2,7 @@
   "name": "motto",
   "version": "0.1.0",
   "private": true,
-  "description": "Motto TUI brand layer: splash (牌记), single-line footer with TPS, terminal title watchdog, prompt branding.",
+  "description": "Motto TUI brand layer: splash, single-line footer with TPS, terminal title watchdog, prompt branding.",
   "type": "module",
   "dependencies": {
     "@earendil-works/pi-coding-agent": "0.84.1",

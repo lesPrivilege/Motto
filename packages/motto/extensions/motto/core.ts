@@ -1,4 +1,4 @@
-// motto core —— 牌记 / footer(含 TPS)/ 标题守护 的纯逻辑层。
+// motto core —— splash / footer(含 TPS)/ 终端标题守护 的纯逻辑层。
 // 只做版式、取色、宽度、统计与 TPS 状态机;pi 集成接线在 index.ts。
 // 与 ~/.pi/agent 仓源文本逐字对应(源 commit f6f93ca 前的 a9bbba6 + TPS)。
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -10,7 +10,7 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 // ============================================================================
 // 品牌注入:只做加法,不做改写。
 // 身份段拼接在提示词末尾;上游提示词原文逐字节不动——路径/命令/包名/API 名等
-// 功能性 token 零触碰(「设计语不外泄」的对偶条款:「功能语不可侵」,凡例见
+// 功能性 token 零触碰(「设计语不外泄」的对偶条款:「功能语不可侵」,规范见
 // docs/MOTTO.md 总纲五.5)。曾用全文正则把独立 "pi" 替换为 "Motto",越界改写
 // `.pi`/`/pi` 路径导致 skill 读取 ENOENT,已废弃替换路径。
 // ============================================================================
@@ -84,12 +84,12 @@ export function injectProjectDoc(systemPrompt: string, doc: ProjectDoc): string 
 }
 
 // ============================================================================
-// 版式常量 —— 牌记版式。theme 只定义颜色,此处只定义版式。
+// 版式常量 —— splash 版式。theme 只定义颜色,此处只定义版式。
 // ============================================================================
 const LAYOUT = {
-	/** 天头:牌记块上方留 2 空行 */
+	/** splash 块上方留 2 空行 */
 	topBlank: 2,
-	/** 题名行:"motto" 顶格 */
+	/** 标题行:"motto" 顶格 */
 	titleIndent: 0,
 	/** motto 与格言之间的空格数 */
 	titleGap: 2,
@@ -135,7 +135,7 @@ interface ThemeLike {
 //
 // dimmer / mid 为 motto 主题私有槽,内置主题(如 pi 自带 dark/light)没有;
 // pi 的 theme.fg 对未知槽抛错,故与 review-flow 同宗做法:探测后按链降级,
-// 非 motto 主题下静默降级到 dim,绝不崩牌记/地脚。
+// 非 motto 主题下静默降级到 dim,绝不崩 splash/footer。
 // ============================================================================
 
 type Color = (slot: string, text: string) => string;
@@ -442,7 +442,7 @@ function wrapContent(items: string[], availableWidth: number): string[] {
 }
 
 // ============================================================================
-// 牌记版式装配
+// splash 版式装配
 // ============================================================================
 
 function blankLine(): SplashLine {
@@ -472,7 +472,7 @@ export function buildSplash(
 ): SplashLine[] {
 	const blocks: SplashLine[][] = [];
 
-	// 1. 题名行:motto 顶格 accent bold,两空格后格言 text bold,格言逐字疏排(仅 CJK 间插空格);
+	// 1. 标题行:motto 顶格 accent bold,两空格后格言 text bold,格言逐字疏排(仅 CJK 间插空格);
 	//    超宽则格言折行悬挂;MOTTO_DOUBLE_HEIGHT 开启时以 DECDHL 倍高渲染(上下两行同内容)。
 	if (inscription) {
 		const titleStart = visibleWidth("motto") + LAYOUT.titleGap;
@@ -518,7 +518,7 @@ export function buildSplash(
 		}]);
 	}
 
-	// 3. facts 细目:标签列 dimmer(固定 12 列),内容列 dim(第 15 列起)。
+	// 3. facts 明细:标签列 dimmer(固定 12 列),内容列 dim(第 15 列起)。
 	const factEntries: Array<{ label: string; items: string[] }> = [];
 	if (facts.context.length > 0) factEntries.push({ label: "context", items: facts.context });
 	if (facts.skills.length > 0) factEntries.push({ label: "skills", items: facts.skills });
@@ -551,7 +551,7 @@ export function buildSplash(
 
 	if (blocks.length === 0) return [];
 
-	// 天头 + 块间空行(块内不空);牌记块与后续内容之间保留 1 空行。
+	// 顶部空行 + 块间空行(块内不空);splash 块与后续内容之间保留 1 空行。
 	const lines: SplashLine[] = [];
 	for (let i = 0; i < LAYOUT.topBlank; i++) lines.push(blankLine());
 	for (const block of blocks) {

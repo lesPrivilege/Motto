@@ -16,16 +16,16 @@ describe("UserMessageComponent", () => {
 		const lines = component.render(20);
 
 		expect(lines).toHaveLength(4);
-		// OSC 起始标记在首行行首；界栏只落首行。
+		// OSC 起始标记在首行行首；gutter 只落首行。
 		expect(lines[0].startsWith(OSC133_ZONE_START)).toBe(true);
-		// 正文在界栏后可用宽度（width − 2）内折行，续行以两空格悬挂缩进同列对齐。
+		// 正文在 gutter 后可用宽度（width − 2）内折行，续行以两空格悬挂缩进同列对齐。
 		expect(stripAnsi(lines[0]).trimEnd()).toBe(`${GUTTER}hello world, this`);
 		expect(stripAnsi(lines[1]).trimEnd()).toBe(`  is a longer user`);
 		expect(stripAnsi(lines[2]).trimEnd()).toBe(`  message to force`);
 		expect(stripAnsi(lines[3]).trimEnd()).toBe(`  wrapping`);
 		// 末行以 OSC 结束标记收尾。
 		expect(lines[lines.length - 1].endsWith(OSC133_ZONE_END + OSC133_ZONE_FINAL)).toBe(true);
-		// 首行界栏使用 muted 槽（中灰），与正文不同色。
+		// 首行 gutter 使用 muted 槽（中灰），与正文不同色。
 		expect(lines[0]).toContain(theme.fg("muted", GUTTER));
 	});
 

@@ -1,7 +1,7 @@
 // motto 品牌化单测:「功能语不可侵」。
 // 回归锚点:曾用全文正则把独立 "pi" 替换为 "Motto",越界改写 `.pi`/`/pi` 路径
 // (~/.pi/agent/skills/... → ~/.Motto/agent/skills/...)导致 skill 读取 ENOENT。
-// 修复为只注入身份段,上游提示词原文逐字节不动。凡例见 docs/MOTTO.md 总纲五.5。
+// 修复为只注入身份段,上游提示词原文逐字节不动。规范见 docs/MOTTO.md 总纲五.5。
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { injectBrandIdentity } from "../core.ts";

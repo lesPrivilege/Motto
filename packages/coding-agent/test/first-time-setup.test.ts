@@ -38,7 +38,7 @@ describe("shouldRunFirstTimeSetup", () => {
 		// platform contract keeps Pi (configDir .pi, PI_* env names).
 		// isOfficialDistribution gates on appName === "pi"; a rebranded motto build is
 		// therefore NOT "official pi", so pi's first-run setup is intentionally skipped
-		// (Motto onboarding is its own 牌记, not pi's first-run selector).
+		// (Motto onboarding is its own splash, not pi's first-run selector).
 		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(false);
 	});
 

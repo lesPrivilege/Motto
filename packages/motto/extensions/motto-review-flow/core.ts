@@ -5,13 +5,13 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 //
 // 经 pi 原生 custom entry(appendEntry / registerEntryRenderer)落一条
 // `motto-review-flow.turn.v1` 投影:不入模型上下文、不改工具/消息/session 语义。
-// 与 motto 牌记同宗:两列悬挂、` · ` 间隔、灰阶三级 + accent,零框零竖线。
+// 与 motto splash 同宗:两列悬挂、` · ` 间隔、灰阶三级 + accent,零框零竖线。
 //
 // 色槽:只取 text / dim / dimmer / accent 四槽(theme.fg 语义取色,extension 内无 hex)。
 // dimmer 为 motto 主题私有槽,缺省时(非 motto 主题)静默降级到 dim。
 //
 // 全部文案为机械投影:tool 名、路径、计数、耗时、退出状态一律取自原生元数据,
-// 错误提要 = stderr 尾部原文截取(≤5 行),无任何生成式摘要或改写。
+// 错误摘要 = stderr 尾部原文截取(≤5 行),无任何生成式摘要或改写。
 //
 // fail-closed:旧版 pi 缺 custom entry API 时静默失活,绝不降级注入模型上下文。
 // ============================================================================
@@ -28,7 +28,7 @@ export interface ToolReview {
 	metric: string;
 	status: "ok" | "error";
 	durationMs?: number;
-	/** 失败工具的错误提要:stderr 尾部原文 ≤5 行,每行裁剪。 */
+	/** 失败工具的 error tail:stderr 尾部原文 ≤5 行,每行裁剪。 */
 	errorLines?: string[];
 }
 
@@ -46,13 +46,13 @@ export interface TurnReviewData {
 /** 动词列与对象列之间的空格数。 */
 const ITEM_GAP = 2;
 
-/** 著录化缩进（TUI-1 S4）：对齐 transcript 正文列（与 S1 界栏 / S2 assistant 同列）。 */
+/** recap 缩进（TUI-1 S4）：对齐 transcript 正文列（与 S1 gutter / S2 assistant 同列）。 */
 export const RECAP_INDENT = 2;
 /** 动词列显示宽度上限(超长自定义工具名裁剪)。 */
 const MAX_VERB_WIDTH = 16;
 /** 对象(路径/模式/命令)裁剪长度。 */
 const MAX_OBJECT_LEN = 80;
-/** 错误提要:最多行数与每行裁剪长度。 */
+/** error tail:最多行数与每行裁剪长度。 */
 const MAX_ERROR_LINES = 5;
 const MAX_ERROR_LINE_LEN = 100;
 /** 列表项间隔符(一律 · ,不用逗号)。 */
@@ -259,7 +259,7 @@ function mediaMetric(result: unknown): string {
 	return "";
 }
 
-/** 度量列:行数/匹配数/改笔统计。run 成功不记输出度量。失败不记度量,由错误提要承载。 */
+/** 度量列:行数/匹配数/diff 统计。run 成功不记输出度量。失败不记度量,由 error tail 承载。 */
 export function toolMetric(name: unknown, args: unknown, result: unknown, isError: boolean): string {
 	const normalized = String(name ?? "").toLowerCase();
 	if (isError) return "";
@@ -317,7 +317,7 @@ export function toolExitStatus(result: unknown): string {
 	return "aborted";
 }
 
-/** 错误提要:stderr/结果尾部原文 ≤5 个非空行,每行裁剪;剔除已上行的退出状态行。 */
+/** error tail:stderr/结果尾部原文 ≤5 个非空行,每行裁剪;剔除已上行的退出状态行。 */
 export function errorTail(result: unknown): string[] {
 	const text = extractText(result);
 	const lines = String(text)
@@ -472,7 +472,7 @@ function hardWrapText(text: string, width: number): string[] {
 
 /**
  * 两列悬挂折行:首行 = prefix + 内容;续行悬挂到 hang 列。
- * 断点优先在 ` · ` 处;超长单元(错误提要等)按空格/字素硬折,续行仍悬挂。
+ * 断点优先在 ` · ` 处;超长单元(error tail 等)按空格/字素硬折,续行仍悬挂。
  */
 export function wrapUnits(
 	prefix: readonly LineUnit[],
@@ -547,7 +547,7 @@ function toolLineUnits(tool: ToolReview): LineUnit[] {
 	const units: LineUnit[] = [];
 	if (tool.target) units.push({ text: tool.target, slot: failed ? "accent" : "dim" });
 	if (tool.metric) {
-		// 改笔(diff 统计)与失败一律 accent。
+		// diff 统计与失败一律 accent。
 		units.push({ text: tool.metric, slot: failed || tool.category === "change" ? "accent" : "dimmer" });
 	}
 	const duration = formatDuration(tool.durationMs);
@@ -558,7 +558,7 @@ function toolLineUnits(tool: ToolReview): LineUnit[] {
 /**
  * 组装全部行(未着色,供测试与渲染共用)。
  * collapsed 时失败工具强制展示;展开时展示全部工具。
- * S4 著录化:全块缩进 RECAP_INDENT 对齐正文列;失败仍 accent 强显,不随著录化降权。
+ * S4 recap 化:全块缩进 RECAP_INDENT 对齐正文列;失败仍 accent 强显,不随 recap 化降权。
  */
 export function buildTurnLines(data: TurnReviewData, expanded: boolean, width: number): LineUnit[][] {
 	const lines: LineUnit[][] = [];

@@ -53,7 +53,7 @@ describe("ToolExecutionComponent parity", () => {
 		);
 		expect(stripAnsi(component.render(120).join("\n"))).toContain("custom call");
 
-		// review-flow A1:成功自定义工具默认收敛为目行,渲染器组合在展开态下检验。
+		// review-flow A1:成功自定义工具默认收敛为 index 行,渲染器组合在展开态下检验。
 		component.setExpanded(true);
 		component.updateResult(
 			{
@@ -88,7 +88,7 @@ describe("ToolExecutionComponent parity", () => {
 		);
 		expect(component.render(120)).toEqual([]);
 
-		// review-flow A1:成功自定义工具默认收敛为目行,空 self 渲染路径在展开态下检验。
+		// review-flow A1:成功自定义工具默认收敛为 index 行,空 self 渲染路径在展开态下检验。
 		component.setExpanded(true);
 		component.updateResult(
 			{

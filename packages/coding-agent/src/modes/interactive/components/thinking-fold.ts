@@ -8,7 +8,7 @@ import type { SessionEntry } from "../../../core/session-manager.ts";
 /** 单条 thinking entry 的 fold 状态(T2-2 三态消费;T2-1 只建 map + 默认)。 */
 export type ThinkingFoldState = "collapsed" | "preview" | "full";
 
-/** 任何 thinking entry 的缺省 fold 状态(著录层纪律:thinking 归不著录之列)。 */
+/** 任何 thinking entry 的缺省 fold 状态(展示层纪律:thinking 不进 recap、依 pi 原生)。 */
 export const DEFAULT_THINKING_FOLD_STATE: ThinkingFoldState = "collapsed";
 
 /**
