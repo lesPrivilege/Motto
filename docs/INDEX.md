@@ -15,6 +15,7 @@
 | `docs/MIGRATION.md` | 迁移记录 |
 | `docs/CONTRIBUTING-PACKS.md` | pack 贡献规范 |
 | `docs/NOTICE-MOTTO.txt` | 公告 |
+| `docs/HANDOFF-DECLARATION-2026-08-12.md` | 宣言级 handoff：立言→四层验收阶梯（build/feature/architecture/philosophy），供独立验收 |
 
 ## 决策（`docs/decisions/`）
 
