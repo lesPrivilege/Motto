@@ -56,6 +56,21 @@ test("身份段照常生效:追加于末尾,含 Motto 身份与功能语不可�
 	assert.equal(tail.length > 0, true);
 });
 
+test("卡片用法段随身份段注入:含卡片语法与展示层约定", () => {
+	const out = injectBrandIdentity(PROMPT_SAMPLE);
+	assert.ok(out.includes("## 卡片用法"), "卡片用法小节必须存在");
+	// 三顿号围栏语法(开/闭围栏 + 首行标题 + 内容)必须在位。
+	assert.ok(out.includes("、、、"), "顿号围栏标记必须存在");
+	assert.ok(out.includes("首个非空行为标题"), "标题规则必须存在");
+	// 展示层边界:卡片不影响模型上下文 / session。
+	assert.ok(out.includes("展示层约定"), "展示层约定声明必须存在");
+	assert.ok(out.includes("模型上下文 / session"), "不改模型上下文 / session 条款必须存在");
+	// 新段位于身份段之后(纯追加,不侵入上游原文与既有身份段)。
+	const tail = out.slice(PROMPT_SAMPLE.length);
+	assert.ok(tail.includes("## 卡片用法"), "卡片用法段必须位于原文之后");
+	assert.ok(tail.indexOf("## 卡片用法") > tail.indexOf("## Motto identity"), "卡片用法段必须位于身份段之后");
+});
+
 test("空提示词边界:空串也可注入身份段", () => {
 	const out = injectBrandIdentity("");
 	assert.ok(out.includes("## Motto identity"));
