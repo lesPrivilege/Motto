@@ -266,3 +266,53 @@ REJECTED 不适用：无安全红线违反，无 Core 侵入，无供应链浮�
 - L1/L2 整层（build、render-baseline、真实 TUI 目验）在用户真机复跑留证
 - TUI-1 终态验收与 GHOSTTY-BASELINE 补做
 - `MOTTO_USE_OFFICIAL=1` 回退实跑、`downstream-drill.sh` 全链路实跑
+
+## 9. 第三轮独立复验（本机实测，2026-08-12）
+
+> 本轮在真实机器上执行，非沙箱。环境：darwin arm64（`uname -a` 确认），node v25.9.0、npm 11.12.1，与 `PI-BASE.json` 声明的 `buildEnvironment.node` 一致；仓库状态 `git status` 干净，`git rev-list --left-right --count origin/motto/main...motto/main` = `0 0`；真实部署位 `~/.pi/agent` 存在。前两轮因沙箱缺 rolldown 原生绑定、缺全局安装位、缺部署位而标 NOT TESTED 的项，本轮具备条件逐一实测。
+
+### 9.1 补齐的 L1 机械门
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| `npm run check`（biome/pinned-deps/ts-imports/shrinkwrap/install-lock/tsgo/browser-smoke） | **PASS** | biome 检查 1063 文件零告警；六项子检查全绿，`tsgo --noEmit` 零错 |
+| `npm run build:offline`（9 包全量构建） | **PASS** | tui→telemetry→ai→agent→sqlite-node→protocol→client→server→coding-agent 顺序构建，零报错 |
+| `render-baseline.mjs --check` | **PASS** | 四主题（dark/motto/motto-dark/motto-light）逐宽度零超宽，与已提交基线逐字节一致；`BASELINE_CHECK_PASS` |
+| `drift-check.sh`（真实部署位） | **PASS** | 5 pack + 3 主题，共 8 条 `ok`（§8.3 记「9 ok」，实测 8，计数误差，见 9.4） |
+| `ci-checks.sh governance` | **PASS** | pinned-deps、registry 一致性、五包 typecheck、binary-guard、TUI baseline --check、drift-check 全绿 |
+
+### 9.2 测试计数复核
+
+| 套件 | §8.3 所记 | 本轮实测 | 差异 |
+|---|---|---|---|
+| motto pack | 78/78 | 78/78 | 一致 |
+| review-flow pack | 25/25 | 25/25 | 一致 |
+| coding-agent 相关组件（assistant-message、user-message、thinking-fold×2、first-time-setup×2、bash-execution-width、tool-execution-component 共 8 文件） | 95/95 | **96/96** | 差 1（见 9.4） |
+| `scripts/check-pinned-deps.test.mjs` | 6/6 | 6/6 | 一致 |
+
+### 9.3 单点可删清单未能复现
+
+§8.1 称改用 `git apply --cached --check -R` 对 HEAD 重测，12 条登记 SHA 中 5 条可干净反向应用（`81dbec74f`、`055c43962`、`e6af3794d`、`943e67312`、`34b30ba80`）。本轮以同一命令、同一方法独立重放，且所处 HEAD 与 §8.1 撰写时一致（`ee7ebdc64` 之后仅 `35906f1ea` 一次纯文档提交，未触代码），结果为 **2 条**（`055c43962`、`34b30ba80`）可干净反向应用，另 3 条（`81dbec74f`、`e6af3794d`、`943e67312`）冲突。冲突落点分别为 `user-message.test.ts:9`、`tool-execution-component.test.ts:53`、`bash-execution-width.test.ts:78`——三者均为 `8b5f903d7`（I11-3 注释清理，其提交时间早于 §8.1 复测所在的 `ee7ebdc64`）触及的同一文件区域。
+
+带 `--cached`（对暂存区，不落working tree）与不带 `--cached`（对working tree，`git status` 全程确认干净）两种方式各测一遍，结果一致；12 条 SHA 本身逐一以 `git merge-base --is-ancestor` 确认为 HEAD 祖先，登记无误，差异只在反向应用可清结果。
+
+差额不影响 §8.1 的主论点——「多数条目不可机械单点回退」在 2/12 与 5/12 两种读数下都成立，`removalOrder` 的处置建议（后置先退、接受冲突手工合并）不因此改变。但作为独立证据链的一环，「5/12」这一具体数字本轮未能复现，宜在 §8.1 或 `PATCHES.json` 的 `removalOrder` 说明中更正为 2/12，并注明差额来源（`8b5f903d7` 与前序 patch 的注释层重叠）。
+
+### 9.4 两处计数误差
+
+- `drift-check.sh` 记「9 ok」，实测为 8 ok（5 pack + 3 主题之和）。不影响 PASS 结论。
+- coding-agent 相关组件记「95/95」，本轮实测同一 8 个测试文件为 96/96。不影响 PASS 结论，差 1 未溯源。
+
+### 9.5 上游残余数为写作当时的读数,已随时间推移
+
+`docs/HANDOFF-DECLARATION-2026-08-12.md` 三处以定值写「上游残余 3 commits」（`534bcbffb..upstream/main`）。本轮重新 `git fetch upstream` 后，`upstream/main` 较该数写下时已前进 3 个新提交（fetch 回显 `47b5119d0..9795d6023`）；实测 `upstream/v0.84.1..upstream/main` = 115（原记 112）、`534bcbffb..upstream/main` = 6（原记 3）。`v0.84.1..534bcbffb` 仍为 109，不变——base 已固定，不受上游后续提交影响。
+
+此非本仓缺陷：`upstream-check.sh` 的性质即某一时刻的只读快照，upstream 为持续更新的外部仓库，数字必然随时间移动。但文档以确定语气写入定值且未标读数时间戳，读者数小时后核对即见数字与实况不符。建议改为引用 `upstream-check.sh` 最近一次运行的时间戳与输出，而非把某一时刻的计数写成固定事实。
+
+### 9.6 结论
+
+**ACCEPTED WITH LIMITATIONS（维持）。** 本轮在真实机器（构建环境与 `PI-BASE.json` 声明一致）上补齐了前两轮因沙箱限制标记 NOT TESTED 的五道 L1 机械门，全部实测 PASS；测试计数除两处一位数误差外与 §8.3 相符；高 2（投影零写回）、中 5/中 6（pinned-deps 门禁）复核成立；高 3（单仓合并门）、中 8（hideThinkingBlock）两项披露文字如实在案，未被误标为已解决，与 §8.2 的「披露」状态一致。
+
+未成立的一项：高 1 的反向应用清单（「5/12 可清」）本轮未能复现，实测 2/12，已记于 9.3，建议更正登记。
+
+残余未覆盖（同 §8.4，本轮未推进）：L2 整层真实 TUI 目验、TUI-1 终态验收、GHOSTTY-BASELINE、`MOTTO_USE_OFFICIAL=1` 回退实跑、`downstream-drill.sh` 全链路。
