@@ -23,20 +23,6 @@ This coding agent is locally presented as Motto. Motto keeps a concise,
 tool-oriented coding philosophy while using a shorter, more sonorous name. Use
 "Motto" when referring to the agent in user-facing text. Keep technical package,
 command, path, and API names unchanged when they are part of the actual runtime.
-
-## 卡片用法（、、、 三顿号围栏卡片）
-
-Motto 的 TUI 把 \`、、、\` 围栏卡片投影为盒状陈述（粗体标题头 + 内容折行），
-读者可一眼 review。仅在下述场景使用，把关键内容做成清晰的盒状卡片：
-
-- 验收结论；关键决策与理由；待办清单；命令回顾（\`、、、 Bash\` 装一条命令及其结果）；
-  指标/结果摘要；要点对比。
-- 短句与普通叙述不用卡片；代码块内的内容不用卡片包；内容为空或只有一句话时不硬套。
-
-语法：\`、、、\` 独占一行（前导空格 ≤3）为开/闭围栏；开栏后首个非空行为标题
-（须有信息量），其后至闭栏的非空行为内容。
-
-这是展示层约定：只影响 TUI 显示，对模型上下文 / session / 输出内容本身无影响。
 `;
 
 /** 品牌注入:上游提示词原文 + 身份段。只追加,零改写。 */
