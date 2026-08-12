@@ -53,6 +53,8 @@ describe("ToolExecutionComponent parity", () => {
 		);
 		expect(stripAnsi(component.render(120).join("\n"))).toContain("custom call");
 
+		// review-flow A1:成功自定义工具默认收敛为目行,渲染器组合在展开态下检验。
+		component.setExpanded(true);
 		component.updateResult(
 			{
 				content: [{ type: "text", text: "done" }],
@@ -86,6 +88,8 @@ describe("ToolExecutionComponent parity", () => {
 		);
 		expect(component.render(120)).toEqual([]);
 
+		// review-flow A1:成功自定义工具默认收敛为目行,空 self 渲染路径在展开态下检验。
+		component.setExpanded(true);
 		component.updateResult(
 			{
 				content: [],
@@ -316,6 +320,8 @@ describe("ToolExecutionComponent parity", () => {
 			createFakeTui(),
 			process.cwd(),
 		);
+		// review-flow A1:成功自定义工具默认收敛,共享渲染器状态在展开态下检验。
+		component.setExpanded(true);
 		component.updateResult({ content: [{ type: "text", text: "done" }], details: {}, isError: false }, false);
 		const rendered = stripAnsi(component.render(120).join("\n"));
 		expect(rendered).toContain("custom call shared-token");
@@ -339,6 +345,8 @@ describe("ToolExecutionComponent parity", () => {
 			createFakeTui(),
 			process.cwd(),
 		);
+		// review-flow A1:成功自定义工具默认收敛,render 上下文在展开态下检验。
+		component.setExpanded(true);
 		component.updateResult({ content: [{ type: "text", text: "done" }], details: {}, isError: false }, false);
 		const rendered = stripAnsi(component.render(120).join("\n"));
 		expect(rendered).toContain("arg:bar");
@@ -358,6 +366,8 @@ describe("ToolExecutionComponent parity", () => {
 			createFakeTui(),
 			process.cwd(),
 		);
+		// review-flow A1:成功自定义工具默认收敛,无自定义渲染器的回退卡在展开态下检验。
+		component.setExpanded(true);
 		component.updateResult({ content: [{ type: "text", text: "done" }], details: {}, isError: false }, false);
 		const rendered = stripAnsi(component.render(120).join("\n"));
 		expect(rendered).toContain("custom_tool");
@@ -633,7 +643,7 @@ describe("ToolExecutionComponent success index line (TUI-1 S3)", () => {
 		expect(rendered).toContain("running");
 	});
 
-	test("successful custom tool keeps its own renderer (not compressed)", () => {
+	test("successful custom tool collapses to a single index line", () => {
 		const toolDefinition: ToolDefinition = {
 			...createBaseToolDefinition(),
 			renderCall: () => new Text("custom call", 0, 0),
@@ -657,8 +667,212 @@ describe("ToolExecutionComponent success index line (TUI-1 S3)", () => {
 			false,
 		);
 
+		const lines = component.render(120).map((line) => stripAnsi(line).trimEnd());
+		expect(lines).toEqual(["  custom_tool"]);
+		expect(lines.join("\n")).not.toContain("custom call");
+		expect(lines.join("\n")).not.toContain("custom result");
+	});
+
+	test("successful custom tool index line shows a parameter summary target", () => {
+		const toolDefinition: ToolDefinition = {
+			...createBaseToolDefinition("web_search"),
+			renderCall: () => new Text("custom call", 0, 0),
+			renderResult: () => new Text("custom result", 0, 0),
+		};
+		const component = new ToolExecutionComponent(
+			"web_search",
+			"tool-custom-target",
+			{ query: "pi tui review flow", maxResults: 5 },
+			{},
+			toolDefinition,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "done" }],
+				details: {},
+				isError: false,
+			},
+			false,
+		);
+
+		const lines = component.render(120).map((line) => stripAnsi(line).trimEnd());
+		expect(lines).toEqual(["  web_search pi tui review flow"]);
+	});
+
+	test("successful custom tool without a string target falls back to the tool name", () => {
+		const toolDefinition: ToolDefinition = {
+			...createBaseToolDefinition("apply_patch"),
+		};
+		const component = new ToolExecutionComponent(
+			"apply_patch",
+			"tool-custom-json",
+			{ patches: [{ op: "add", path: "/a" }] },
+			{},
+			toolDefinition,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "done" }],
+				details: {},
+				isError: false,
+			},
+			false,
+		);
+
+		const rendered = stripAnsi(component.render(120).join("\n"));
+		expect(rendered.trim()).toMatch(/^apply_patch/);
+		expect(rendered).not.toContain("done");
+	});
+
+	test("failed custom tool keeps the full card with error styling", () => {
+		const toolDefinition: ToolDefinition = {
+			...createBaseToolDefinition(),
+			renderCall: () => new Text("custom call", 0, 0),
+			renderResult: (result) =>
+				new Text(`custom result: ${(result.content[0] as { text?: string } | undefined)?.text ?? ""}`, 0, 0),
+		};
+		const component = new ToolExecutionComponent(
+			"custom_tool",
+			"tool-custom-fail",
+			{},
+			{},
+			toolDefinition,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "Error: boom" }],
+				details: {},
+				isError: true,
+			},
+			false,
+		);
+
+		const rendered = stripAnsi(component.render(120).join("\n"));
+		expect(rendered).toContain("custom call");
+		expect(rendered).toContain("custom result: Error: boom");
+	});
+
+	test("streaming (partial) custom tool keeps the pending card", () => {
+		const toolDefinition: ToolDefinition = {
+			...createBaseToolDefinition(),
+			renderCall: () => new Text("custom call", 0, 0),
+			renderResult: (result) =>
+				new Text(`custom result: ${(result.content[0] as { text?: string } | undefined)?.text ?? ""}`, 0, 0),
+		};
+		const component = new ToolExecutionComponent(
+			"custom_tool",
+			"tool-custom-pending",
+			{},
+			{},
+			toolDefinition,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "running" }],
+				details: {},
+				isError: false,
+			},
+			true,
+		);
+
+		const rendered = stripAnsi(component.render(120).join("\n"));
+		expect(rendered).toContain("custom call");
+		expect(rendered).toContain("custom result: running");
+	});
+
+	test("expanded successful custom tool keeps the full card", () => {
+		const toolDefinition: ToolDefinition = {
+			...createBaseToolDefinition(),
+			renderCall: () => new Text("custom call", 0, 0),
+			renderResult: () => new Text("custom result", 0, 0),
+		};
+		const component = new ToolExecutionComponent(
+			"custom_tool",
+			"tool-custom-expanded",
+			{},
+			{},
+			toolDefinition,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.setExpanded(true);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "done" }],
+				details: {},
+				isError: false,
+			},
+			false,
+		);
+
 		const rendered = stripAnsi(component.render(120).join("\n"));
 		expect(rendered).toContain("custom call");
 		expect(rendered).toContain("custom result");
+	});
+
+	test("built-in tool with a custom override definition keeps its own renderers on success", () => {
+		const overrideDefinition: ToolDefinition = {
+			...createBaseToolDefinition("read"),
+			renderCall: () => new Text("override call", 0, 0),
+			renderResult: () => new Text("override result", 0, 0),
+		};
+		const component = new ToolExecutionComponent(
+			"read",
+			"tool-builtin-override",
+			{ path: "notes.txt" },
+			{},
+			overrideDefinition,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: "hello" }],
+				details: undefined,
+				isError: false,
+			},
+			false,
+		);
+
+		const rendered = stripAnsi(component.render(120).join("\n"));
+		expect(rendered).toContain("override call");
+		expect(rendered).toContain("override result");
+	});
+
+	test("streaming (partial) built-in bash keeps a bounded tail preview, not the full output", () => {
+		const component = new ToolExecutionComponent(
+			"bash",
+			"tool-bash-streaming",
+			{ command: "generate output" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		const lines = Array.from({ length: 100 }, (_, i) => `line-${String(i + 1).padStart(3, "0")}`);
+		component.updateResult(
+			{
+				content: [{ type: "text", text: lines.join("\n") }],
+				details: {},
+				isError: false,
+			},
+			true,
+		);
+
+		const rendered = stripAnsi(component.render(80).join("\n"));
+		expect(rendered).toContain("$ generate output");
+		expect(rendered).toContain("line-100");
+		// 有界尾部预览:首行不可见,早于尾部的行被省略提示收住。
+		expect(rendered).not.toContain("line-001");
+		expect(rendered).not.toContain("line-090");
+		expect(rendered).toContain("earlier lines");
 	});
 });

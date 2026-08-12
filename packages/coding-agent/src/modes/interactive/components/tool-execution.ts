@@ -224,8 +224,8 @@ export class ToolExecutionComponent extends Container {
 			return [];
 		}
 
-		// S3:成功的内置工具压缩为低对比目行(成功静默;计数与耗时留 review recap)。
-		// 流式/失败/展开/自定义工具保持原生卡。
+		// S3+review-flow A1:成功的内置/自定义工具压缩为低对比目行(成功静默;计数与耗时留
+		// review recap)。流式/失败/展开/内置工具自定义覆盖保持原生卡(失败整卡强显 I3-2)。
 		if (this.isSuccessIndexLine()) {
 			return this.renderSuccessIndexLine(width);
 		}
@@ -258,25 +258,40 @@ export class ToolExecutionComponent extends Container {
 	}
 
 	private isSuccessIndexLine(): boolean {
-		return (
-			this.builtInToolDefinition !== undefined &&
-			this.toolDefinition === undefined &&
-			!this.expanded &&
-			this.result !== undefined &&
-			!this.result.isError &&
-			!this.isPartial
-		);
+		// 成功路径(非流式/未展开/无错误)才可收敛;失败/流式/展开守卫在前。
+		if (this.expanded || this.isPartial || this.result === undefined || this.result.isError) {
+			return false;
+		}
+		// 内置工具:无自定义 toolDefinition 覆盖时收敛(S3 同款)。
+		if (this.builtInToolDefinition !== undefined) {
+			return this.toolDefinition === undefined;
+		}
+		// 自定义工具(非内置、带 toolDefinition):成功亦收敛为目行(review-flow A1)。
+		// 未知工具(无任何 definition)保持原生回退卡,不代建。
+		return this.toolDefinition !== undefined;
 	}
 
 	private toolIndexTarget(): string {
 		const args = this.args as Record<string, unknown> | undefined;
 		if (!args) return "";
+		// 已知摘要键优先(S3 同款,机械投影不做语义摘要)。
 		for (const key of ["command", "file_path", "path", "pattern"]) {
 			const value = args[key];
 			if (typeof value === "string" && value.trim()) {
-				// bash 命令取首行,其余取原值(机械投影,不做摘要)。
+				// bash 命令取首行,其余取原值。
 				return value.trim().split("\n")[0].trim();
 			}
+		}
+		// 自定义工具:退化为参数摘要——取首个非空字符串值(文件名/查询等);
+		// 无字符串值时 JSON 单行摘要,宽度由 renderSuccessIndexLine 统一截断。
+		for (const value of Object.values(args)) {
+			if (typeof value === "string" && value.trim()) {
+				return value.trim().split("\n")[0].trim();
+			}
+		}
+		const compact = JSON.stringify(args);
+		if (compact && compact !== "{}") {
+			return compact;
 		}
 		return "";
 	}
