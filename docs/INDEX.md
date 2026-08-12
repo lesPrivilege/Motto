@@ -60,6 +60,7 @@
   - `acceptance-t2-3.md` — T2-3 thinking 交互键验收
   - `acceptance-t2-2.md` — T2-2 thinking 三态渲染验收
   - `maintenance-skill-test.md` — maintenance skill 端到端实测与受控升级评估
+  - `clone-selfsufficiency.md` — clone 自足核验（结构已证；构建受离线环境阻断，如实）
 
 ## 施工计划（`docs/archive/plans/`）
 
