@@ -157,23 +157,23 @@ test("组合契约:headings 投影后卡片照常投影(同消息双投影不互
 	assert.ok(!once.includes("、、、"), "无残留围栏");
 });
 
-// ---------------------------------------------------------------- 13 带标注围栏(方案 A)
-test("带标注 `、、、 bash`:标注=标题,内容每行一个 body 行且保留行首缩进", () => {
+// ---------------------------------------------------------------- 13 带标注围栏(方案 A → 小标签)
+test("带标注 `、、、 bash`:标注=表格头行(卡片帧标记带 :tag),内容每行一个 body 行且保留行首缩进", () => {
 	const src = "、、、 bash\ncd ~/Projects/pi\n  git status\n  git diff\n、、、";
 	assert.equal(
 		projectDunhaoCards(src, ctx()),
-		"<!--motto-card-->\n| bash |\n|---|\n| cd ~/Projects/pi |\n| `  `git status |\n| `  `git diff |",
+		"<!--motto-card:tag-->\n| bash |\n|---|\n| cd ~/Projects/pi |\n| `  `git status |\n| `  `git diff |",
 	);
 });
 
-test("带标注 `、、、 txt` 同理;标注含多词(`、、、 验收结论`)整段为标题", () => {
+test("带标注 `、、、 txt` 同理;标注含多词(`、、、 验收结论`)整段为头行", () => {
 	assert.equal(
 		projectDunhaoCards("、、、 txt\n第一行\n第二行\n、、、", ctx()),
-		"<!--motto-card-->\n| txt |\n|---|\n| 第一行 |\n| 第二行 |",
+		"<!--motto-card:tag-->\n| txt |\n|---|\n| 第一行 |\n| 第二行 |",
 	);
 	assert.equal(
 		projectDunhaoCards("、、、 验收结论\n基线逐字节\n、、、", ctx()),
-		"<!--motto-card-->\n| 验收结论 |\n|---|\n| 基线逐字节 |",
+		"<!--motto-card:tag-->\n| 验收结论 |\n|---|\n| 基线逐字节 |",
 	);
 });
 
@@ -181,12 +181,12 @@ test("带标注开栏:内容区首尾空行去除,内部空行保留为空表格
 	const src = "、、、 bash\n\ncmd1\n\ncmd2\n\n、、、";
 	assert.equal(
 		projectDunhaoCards(src, ctx()),
-		"<!--motto-card-->\n| bash |\n|---|\n| cmd1 |\n|  |\n| cmd2 |",
+		"<!--motto-card:tag-->\n| bash |\n|---|\n| cmd1 |\n|  |\n| cmd2 |",
 	);
 });
 
-test("带标注 + 无内容 → 仅标题头(标注为标题)", () => {
-	assert.equal(projectDunhaoCards("、、、 bash\n、、、", ctx()), "<!--motto-card-->\n| bash |\n|---|");
+test("带标注 + 无内容 → 仅头行(标注为头行,卡片帧标记带 :tag)", () => {
+	assert.equal(projectDunhaoCards("、、、 bash\n、、、", ctx()), "<!--motto-card:tag-->\n| bash |\n|---|");
 });
 
 test("闭栏必须裸 `、、、`:卡内带标注顿号行是内容,不闭卡;无裸闭栏则未闭合 fail-open", () => {
@@ -194,7 +194,7 @@ test("闭栏必须裸 `、、、`:卡内带标注顿号行是内容,不闭卡;�
 	const src = "、、、 bash\nfoo\n、、、 note\nbar\n、、、";
 	assert.equal(
 		projectDunhaoCards(src, ctx()),
-		"<!--motto-card-->\n| bash |\n|---|\n| foo |\n| 、、、 note |\n| bar |",
+		"<!--motto-card:tag-->\n| bash |\n|---|\n| foo |\n| 、、、 note |\n| bar |",
 	);
 	// 只有带标注闭栏,无裸闭栏 → 未闭合,原样
 	const unclosed = "、、、 bash\nfoo\n、、、 note";
@@ -208,7 +208,7 @@ test("裸开栏维持现状:首个非空行=标题,内容区带标注顿号行�
 
 test("标注含 `|` 转义为 `\\|`", () => {
 	const src = "、、、 bash | zsh\n内容\n、、、";
-	assert.equal(projectDunhaoCards(src, ctx()), "<!--motto-card-->\n| bash \\| zsh |\n|---|\n| 内容 |");
+	assert.equal(projectDunhaoCards(src, ctx()), "<!--motto-card:tag-->\n| bash \\| zsh |\n|---|\n| 内容 |");
 });
 
 // ---------------------------------------------------------------- 14 端到端:TUI 渲染成卡片
@@ -230,7 +230,7 @@ test("端到端:投影后经 TUI Markdown 组件渲染为 box-drawing 卡片", (
 	assert.ok(lines.some((l) => l === "后文"));
 });
 
-test("端到端:带标注 `、、、 bash` 渲染为卡片,标注=粗体头,内容行首缩进可见", () => {
+test("端到端:带标注 `、、、 bash` 渲染为小标签卡片——标注=盒顶上方 [bash],盒内无头行", () => {
 	initTheme("motto");
 	const theme = getMarkdownTheme();
 	const src = "、、、 bash\ncd ~/Projects/pi\n  git status\n  git diff\n、、、";
@@ -238,11 +238,32 @@ test("端到端:带标注 `、、、 bash` 渲染为卡片,标注=粗体头,内�
 	const md = new Markdown(projected, 0, 0, theme);
 	const lines = md.render(80).map(stripAnsi);
 
+	// 小标签:标注渲染为盒顶上方 `[bash]`,不再作为盒内粗体头
+	assert.ok(lines.some((l) => l === "[bash]"), `应有小标签 [bash],实际: ${JSON.stringify(lines)}`);
+	assert.ok(!lines.some((l) => l.includes("│ bash")), "标注不再是盒内头行");
 	assert.ok(lines.some((l) => l.startsWith("┌─") && l.endsWith("─┐")), "应有上边框");
 	assert.ok(lines.some((l) => l.startsWith("└─") && l.endsWith("─┘")), "应有下边框");
-	assert.ok(lines.some((l) => l.includes("│ bash")), "标注=标题在卡片内");
+	assert.ok(lines.some((l) => l.includes("│ cd ~/Projects/pi")), "内容行在卡片内");
 	assert.ok(lines.some((l) => l.includes("│   git status")), "行首缩进可见");
 	assert.ok(lines.some((l) => l.includes("│   git diff")), "行首缩进可见");
+	// 小标签在盒外:位于上边框之前
+	const tagIdx = lines.findIndex((l) => l === "[bash]");
+	const topIdx = lines.findIndex((l) => l.startsWith("┌─"));
+	assert.ok(tagIdx !== -1 && topIdx !== -1 && tagIdx < topIdx, "小标签位于上边框之前");
+});
+
+test("端到端:裸卡(无标注)标题仍为盒内粗体头——小标签仅限带标注卡", () => {
+	initTheme("motto");
+	const theme = getMarkdownTheme();
+	const src = "、、、\n验收结论\n基线逐字节\n、、、";
+	const projected = projectDunhaoCards(src, ctx());
+	const md = new Markdown(projected, 0, 0, theme);
+	const lines = md.render(80).map(stripAnsi);
+
+	assert.ok(lines.some((l) => l.includes("│ 验收结论")), "裸卡标题仍在盒内粗体头");
+	assert.ok(!lines.some((l) => l.startsWith("[") && l.endsWith("]")), "裸卡无盒外小标签");
+	const separators = lines.filter((l) => l.includes("├─"));
+	assert.equal(separators.length, 1, `裸卡仅 1 条表头线,实际: ${separators.length}`);
 });
 
 test("端到端:窄宽(40)卡片折行且无超宽", () => {
@@ -256,7 +277,7 @@ test("端到端:窄宽(40)卡片折行且无超宽", () => {
 	}
 });
 
-test("端到端:带标记投影卡片(多内容行)轻帧——仅 1 条表头线,无行间分隔线,标记不泄漏为文本", () => {
+test("端到端:带标注投影卡片(多内容行)小标签帧——无头行/无分隔线(0 条 ─),标记不泄漏为文本", () => {
 	initTheme("motto");
 	const theme = getMarkdownTheme();
 	const src = "、、、 bash\ncd ~/Projects/pi\n  git status\n  git diff\n  git log\n、、、";
@@ -267,10 +288,11 @@ test("端到端:带标记投影卡片(多内容行)轻帧——仅 1 条表头�
 	// 外框完整:上框 / 下框
 	assert.ok(lines.some((l) => l.startsWith("┌─") && l.endsWith("─┐")), "应有上边框");
 	assert.ok(lines.some((l) => l.startsWith("└─") && l.endsWith("─┘")), "应有下边框");
-	// 表头线仅 1 条(粗体表头行下方),多内容行之间无第二条 ── 去行间分隔线
+	// 小标签帧:无头行 → 无表头分隔线,亦无行间分隔线(0 条 ─)
 	const separators = lines.filter((l) => l.includes("├─"));
-	assert.equal(separators.length, 1, `只有表头分隔线一条,实际: ${separators.length}`);
-	// 三个内容行均在卡片内(行首缩进可见),标记不泄漏为可见文本
+	assert.equal(separators.length, 0, `带标注卡应无任何分隔线,实际: ${separators.length}`);
+	// 内容行均在卡片内(行首缩进可见),标注为盒上小标签,标记不泄漏为可见文本
+	assert.ok(lines.some((l) => l === "[bash]"), "标注=盒上小标签");
 	assert.ok(lines.some((l) => l.includes("│ cd ~/Projects/pi")), "内容行 1");
 	assert.ok(lines.some((l) => l.includes("│   git status")), "内容行 2");
 	assert.ok(lines.some((l) => l.includes("│   git diff")), "内容行 3");

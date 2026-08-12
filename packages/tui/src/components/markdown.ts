@@ -212,6 +212,8 @@ export interface MarkdownTheme {
 	italic: (text: string) => string;
 	strikethrough: (text: string) => string;
 	underline: (text: string) => string;
+	/** 卡片标签(、、、 带标注投影):标注渲染为盒顶上方的小标签(如 `[bash]`)。 */
+	cardLabel: (text: string) => string;
 	highlightCode?: (code: string, lang?: string) => string[];
 	/** Prefix applied to each rendered code block line (default: "  ") */
 	codeBlockIndent?: string;
@@ -251,6 +253,9 @@ export class Markdown implements Component {
 	// 下一表格 token(、、、 投影卡片)在 renderTable 读取并立即复位。为真时该表格去行间
 	// 分隔线(仅外框 + 粗体表头行 + 表头分隔线 ├─);自然 markdown 表格无标记,不受影响。
 	private cardFrameMode = false;
+	// 卡片标签模式:`<!--motto-card:tag-->` 置位(带标注的 、、、 投影卡片)。为真时标注
+	// (表格头行)渲染为盒顶上方 accent 小标签 `[bash]`,盒内不再渲染头行与表头分隔线。
+	private cardTag = false;
 
 	constructor(
 		text: string,
@@ -283,6 +288,7 @@ export class Markdown implements Component {
 		// 卡片帧标志是单次渲染的流式状态(html case 置位、renderTable 消费),每次进入 render
 		// 先复位,防跨消息/跨文本泄漏(缓存命中时本标志已被上次渲染消费,恒为 false)。
 		this.cardFrameMode = false;
+		this.cardTag = false;
 
 		// Check cache
 		if (this.cachedLines && this.cachedText === this.text && this.cachedWidth === width) {
@@ -621,9 +627,18 @@ export class Markdown implements Component {
 			case "html":
 				// Motto 卡片帧标记(`<!--motto-card-->`,、、、 投影卡片表格的前导注释):
 				// 不输出任何字符,仅置卡片帧模式,交由紧随的表格 token 消费。
-				if ("raw" in token && typeof token.raw === "string" && token.raw.trim() === "<!--motto-card-->") {
-					this.cardFrameMode = true;
-					break;
+				// 带标注卡用 `<!--motto-card:tag-->`:另置卡片标签模式(标注→盒顶小标签)。
+				if ("raw" in token && typeof token.raw === "string") {
+					const raw = token.raw.trim();
+					if (raw === "<!--motto-card-->") {
+						this.cardFrameMode = true;
+						break;
+					}
+					if (raw === "<!--motto-card:tag-->") {
+						this.cardFrameMode = true;
+						this.cardTag = true;
+						break;
+					}
 				}
 				// Render HTML as plain text (escaped for terminal)
 				if ("raw" in token && typeof token.raw === "string") {
@@ -857,8 +872,12 @@ export class Markdown implements Component {
 	): string[] {
 		// 卡片帧模式:消费 `<!--motto-card-->` 标记置位(html case)。为真 → 本表格(、、、
 		// 投影卡片)去行间分隔线(仅外框 + 表头线);立即复位,防泄漏到后续自然表格。
+		// 卡片标签模式(`<!--motto-card:tag-->`):标注(表格头行)渲染为盒顶上方小标签,
+		// 盒内不再渲染头行与表头分隔线。
 		const cardFrame = this.cardFrameMode;
+		const cardTag = this.cardTag;
 		this.cardFrameMode = false;
+		this.cardTag = false;
 
 		const lines: string[] = [];
 		const numCols = token.header.length;
@@ -885,10 +904,13 @@ export class Markdown implements Component {
 		// Calculate natural column widths (what each column needs without constraints)
 		const naturalWidths: number[] = [];
 		const minWordWidths: number[] = [];
-		for (let i = 0; i < numCols; i++) {
-			const headerText = this.renderInlineTokens(token.header[i].tokens || [], styleContext);
-			naturalWidths[i] = visibleWidth(headerText);
-			minWordWidths[i] = Math.max(1, this.getLongestWordWidth(headerText, maxUnbrokenWordWidth));
+		// 卡片标签模式:标注(头行)在盒外渲染,不参与盒内列宽计算。
+		if (!cardTag) {
+			for (let i = 0; i < numCols; i++) {
+				const headerText = this.renderInlineTokens(token.header[i].tokens || [], styleContext);
+				naturalWidths[i] = visibleWidth(headerText);
+				minWordWidths[i] = Math.max(1, this.getLongestWordWidth(headerText, maxUnbrokenWordWidth));
+			}
 		}
 		for (const row of token.rows) {
 			for (let i = 0; i < row.length; i++) {
@@ -971,31 +993,41 @@ export class Markdown implements Component {
 			}
 		}
 
+		// 卡片标签模式:标注(头行)渲染为盒顶上方小标签 `[bash]`,与盒左缘对齐;
+		// 盒内不再渲染头行与表头分隔线。
+		if (cardTag) {
+			const headerText = this.renderInlineTokens(token.header[0].tokens || [], styleContext);
+			lines.push(this.theme.cardLabel(`[${headerText}]`));
+		}
+
 		// Render top border
 		const topBorderCells = columnWidths.map((w) => "─".repeat(w));
 		lines.push(`┌─${topBorderCells.join("─┬─")}─┐`);
 
-		// Render header with wrapping
-		const headerCellLines: string[][] = token.header.map((cell, i) => {
-			const text = this.renderInlineTokens(cell.tokens || [], styleContext);
-			return this.wrapCellText(text, columnWidths[i]);
-		});
-		const headerLineCount = Math.max(...headerCellLines.map((c) => c.length));
-
-		for (let lineIdx = 0; lineIdx < headerLineCount; lineIdx++) {
-			const rowParts = headerCellLines.map((cellLines, colIdx) => {
-				const text = cellLines[lineIdx] || "";
-				const padded = text + " ".repeat(Math.max(0, columnWidths[colIdx] - visibleWidth(text)));
-				return this.theme.bold(padded);
-			});
-			lines.push(`│ ${rowParts.join(" │ ")} │`);
-		}
-
-		// Render separator
+		// Render separator(表头分隔线;自然表格逐行分隔线也复用同一条)
 		const separatorCells = columnWidths.map((w) => "─".repeat(w));
 		const separatorLine = `├─${separatorCells.join("─┼─")}─┤`;
-		lines.push(separatorLine);
 
+		if (!cardTag) {
+			// Render header with wrapping
+			const headerCellLines: string[][] = token.header.map((cell, i) => {
+				const text = this.renderInlineTokens(cell.tokens || [], styleContext);
+				return this.wrapCellText(text, columnWidths[i]);
+			});
+			const headerLineCount = Math.max(...headerCellLines.map((c) => c.length));
+
+			for (let lineIdx = 0; lineIdx < headerLineCount; lineIdx++) {
+				const rowParts = headerCellLines.map((cellLines, colIdx) => {
+					const text = cellLines[lineIdx] || "";
+					const padded = text + " ".repeat(Math.max(0, columnWidths[colIdx] - visibleWidth(text)));
+					return this.theme.bold(padded);
+				});
+				lines.push(`│ ${rowParts.join(" │ ")} │`);
+			}
+
+			// Render separator
+			lines.push(separatorLine);
+		}
 		// Render rows with wrapping
 		for (let rowIndex = 0; rowIndex < token.rows.length; rowIndex++) {
 			const row = token.rows[rowIndex];
@@ -1013,7 +1045,8 @@ export class Markdown implements Component {
 				lines.push(`│ ${rowParts.join(" │ ")} │`);
 			}
 
-			// 卡片帧模式:去行间分隔线(仅保留表头分隔线 separatorLine);自然表格逐行分隔线保留。
+			// 卡片帧模式(裸卡/带标注卡):去行间分隔线(裸卡仅保留表头分隔线 separatorLine,
+			// 带标注卡连表头线也无);自然表格(cardFrame=false)逐行分隔线保留。
 			if (rowIndex < token.rows.length - 1 && !cardFrame) {
 				lines.push(separatorLine);
 			}

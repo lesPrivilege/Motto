@@ -7,16 +7,15 @@
 //     git diff
 //   、、、
 //   ↓ 投影
-//   <!--motto-card-->
+//   <!--motto-card:tag-->
 //   | bash |
 //   |---|
 //   | cd ~/Projects/pi |
 //   | `  `git status |
 //   | `  `git diff |
-//   ↓ TUI 原生渲染(轻帧:无行间分隔线,仅外框 + 表头线)
+//   ↓ TUI 原生渲染(小标签:标注=盒顶上方 accent 小标签,盒内无头行,无行间分隔线)
+//   [bash]                 ← 小标签（accent 色）
 //   ┌───────────────────┐
-//   │ bash              │   ← 粗体标题头（标注）
-//   ├───────────────────┤
 //   │ cd ~/Projects/pi  │
 //   │   git status      │
 //   │   git diff        │
@@ -29,8 +28,9 @@
 // (``` / ~~~,含 blockquote 前缀形式)内一律跳过,卡片体内嵌代码块时块内 `、、、` 不闭卡;
 // 顿号围栏须独占一行(前导空格 ≤3);开栏可裸 `、、、` 或带标注 `、、、 标注`(须空白分隔),
 // 闭栏必须裸 `、、、`;
-// 带标注开栏:标注即标题(表格头行/粗体),首个非空内容行是正文(不再是标题);
-// 裸开栏:首个非空行 = 标题,其后为内容;
+// 带标注开栏:标注 = 表格头行(卡片帧标记带 :tag 后缀 → TUI 渲染为盒顶上方小标签,
+// 盒内不再渲染头行/分隔线),首个非空内容行是正文(不再是标题);
+// 裸开栏:首个非空行 = 标题(卡片帧标记不带 :tag → 标题仍为盒内粗体头),其后为内容;
 // 内容逐行保真:每个非空行 = 一个表格行,行首缩进保留(marked 表格单元格会 trim 前导空白,
 // 故把前导空白包进内联代码保真,渲染时列宽按最宽行自适应),内部空行保留为空表格行,
 // 首尾空行去除;
@@ -38,10 +38,14 @@
 // 内容/标题/标注中的 `|` 转义为 `\|`;未闭合 / 空卡片 / 缺标题 fail-open 原样;CRLF 不破坏;
 // 幂等(输出为表格,不再含 `、、、` 行);fail-open。
 //
-// 卡片帧标记:每个卡片表格**之前**输出独立一行 HTML 注释 `<!--motto-card-->`(行尾用开栏
-// 行尾)。TUI 核心(pi-tui markdown.ts)识别该标记:置「卡片帧模式」→ 该卡片表格去行间分隔线
-// (仅外框 + 粗体表头行 + 表头分隔线),自然 markdown 表格无标记不受影响(逐行分隔线保留)。
-// 标记为纯注释,对幂等(输出无 `、、、` 行,重跑不变)与守卫/fail-open/CRLF/行尾逻辑无影响。
+// 卡片帧标记:每个卡片表格**之前**输出独立一行 HTML 注释(行尾用开栏行尾)。TUI 核心
+// (pi-tui markdown.ts)识别该标记:裸卡 `<!--motto-card-->` → 置「卡片帧模式」→ 表格去行间
+// 分隔线(仅外框 + 粗体表头行 + 表头分隔线);带标注卡 `<!--motto-card:tag-->` → 另置「卡片
+// 标签模式」→ 标注(表格头行)渲染为盒顶上方 accent 小标签,盒内无头行/分隔线。自然 markdown
+// 表格无标记不受影响(逐行分隔线保留)。标记为纯注释,对幂等(输出无 `、、、` 行,重跑不变)与
+// 守卫/fail-open/CRLF/行尾逻辑无影响。
+// 标注入表格头行(而非入标记):标注可含任意字符(`--`/`>`/`:` 等)均安全,标记只承载裸/带标注
+// 二态;TUI 从紧随表格的头行读标签文本。盒宽以内容为准(标签在盒外,不参与列宽)。
 import type { MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
 import { joinLines, parseFence, splitLines, type Line } from "./headings.ts";
 
@@ -80,8 +84,9 @@ function preserveIndent(text: string): string {
  *
  * - 只作用于 assistant 完成态消息(interactive final);user / thinking / 流式中完全不变。
  * - fenced 代码块内(顶层或带 blockquote 前缀)逐字不动。
- * - 开栏可裸 `、、、` 或带标注 `、、、 标注`(须空白分隔);带标注时标注即标题(表格头行/
- *   粗体),首个非空内容行是正文;裸开栏时首个非空行 = 标题,其后为内容。
+ * - 开栏可裸 `、、、` 或带标注 `、、、 标注`(须空白分隔);带标注时标注为表格头行
+ *   (卡片帧标记带 `:tag` → TUI 渲染为盒顶上方 accent 小标签,盒内无头行/分隔线);
+ *   裸开栏时首个非空行 = 标题(盒内粗体头),其后为内容。
  * - 闭栏必须裸 `、、、`;带标注的顿号行在卡内是内容,不闭卡。
  * - 内容逐行保真:每个非空行 = 一个表格行(行首缩进保留,`|` 转义),内部空行保留为
  *   空表格行,首尾空行去除;内容为空则仅标题头。
@@ -198,7 +203,10 @@ export function projectDunhaoCards(markdown: string, context: MarkdownTransformC
 			}
 
 			// 卡片帧标记:独立一行,位于表格之前,行尾用开栏行尾(与表格行一致)。
-			out.push({ content: "<!--motto-card-->", ending: lines[i].ending });
+			// 带标注(annot !== "")发 `<!--motto-card:tag-->`(TUI 渲染为盒上小标签);
+			// 裸卡发 `<!--motto-card-->`(标题仍为盒内粗体头)。
+			const marker = annot !== "" ? "<!--motto-card:tag-->" : "<!--motto-card-->";
+			out.push({ content: marker, ending: lines[i].ending });
 			out.push({ content: `| ${title} |`, ending: lines[i].ending });
 			out.push({ content: `|---|`, ending: lines[i].ending });
 			if (rows.length > 0) {
