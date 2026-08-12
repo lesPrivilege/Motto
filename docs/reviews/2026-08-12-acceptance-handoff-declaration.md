@@ -256,10 +256,10 @@ REJECTED 不适用：无安全红线违反，无 Core 侵入，无供应链浮�
 ### 8.3 验证证据
 
 - `node scripts/check-pinned-deps.mjs` 退出码 0；`check-pinned-deps.test.mjs` 6/6 实跑通过
-- 返修测试：motto pack 78/78、review-flow pack 25/25、coding-agent 相关组件 87/87、scripts 11/11
-- 两 pack `tsc --noEmit` 零错；biome 零告警
-- `ci-checks.sh governance`：pinned-deps PASS、TUI baseline --check PASS（注释清理未改渲染输出）；仅 drift-check 待 deploy 收敛
-- 部署次序按「先 commit 后 deploy」执行：仓为唯一 canonical，部署位为镜像，避免「镜像与脏工作区一致」的假 PASS
+- 返修测试：motto pack 78/78、review-flow pack 25/25、coding-agent 相关组件 95/95、scripts 11/11
+- 两 pack `tsc --noEmit` 零错；biome 零告警；五批 commit 每次 pre-commit `npm run check` 全绿
+- `ci-checks.sh governance`：pinned-deps PASS、TUI baseline --check PASS（注释清理未改渲染输出）
+- **部署留证（2026-08-12，先 commit 后 deploy）**：`bash scripts/maint/deploy.sh`（motto / motto-review-flow 等五 pack + 三主题，rsync -a --delete）→ `drift-check.sh` PASS（9 ok）→ `ci-checks.sh governance` **GOVERNANCE: PASS**。部署次序保证镜像与 canonical（而非脏工作区）一致
 
 ### 8.4 待用户真机补验（非返修缺陷）
 
