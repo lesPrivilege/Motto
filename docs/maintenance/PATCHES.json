@@ -111,6 +111,16 @@
    "fixture": "无——基线 scenario 未覆盖自定义工具/`!!` bash(render-baseline.mjs 仅用 S3 tool-index-ok/fail 块,S3 行为不变,--check 逐字节通过);新行为由单元测试锁定(tool-execution-component.test.ts / bash-execution-width.test.ts)",
    "removalCondition": "上游吸收等价内置/自定义工具卡 projector 出口与用户 shell 有界预览后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
    "status": "applied"
+  },
+  {
+   "id": "tui-4-s2-card-tag-label",
+   "title": "TUI-4 S2 — 、、、卡片小标签:带标注卡标注=盒顶 accent 标签,盒内仅内容",
+   "scope": "pi-tui 薄接缝(packages/tui/src/components/markdown.ts renderTable + MarkdownTheme.cardLabel + motto extensions/motto/cards.ts 投影标记)",
+   "description": "带标注卡(、、、 bash)标注不再渲染为盒内粗体标题头(方案 A 头行),改为盒顶上方 accent 小标签 [bash]、盒内仅内容——接近 chatbot GUI「标签 + 内容面板」。cards.ts:带标注卡发 <!--motto-card:tag--> 标记(裸卡 <!--motto-card--> 不变),标注入表格头行不入标记(标注可含 --/>/: 等任意字符安全);markdown.ts:新增 cardTag 类字段 + MarkdownTheme.cardLabel 主题槽(coding-agent 接 accent);tag 模式下标注(头行)渲染为盒上 [标签] 行、盒内无头行/无表头分隔线、盒宽以内容为准(头行不参与列宽),裸卡维持现状(首行=盒内粗体头+表头线),自然 markdown 表格逐行分隔线不受影响;render() 开头双复位防跨消息泄漏。",
+   "commit": "34b30ba80",
+   "fixture": "无——TUI-4 不改变基线 scenario(现有 scenario 无卡片 marker,render-baseline.mjs --check 通过);cards.test.mjs 端到端断言更新",
+   "removalCondition": "上游吸收等价「带标注内容卡片标签渲染 / 表格头行可配置为盒外标签」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "status": "applied"
   }
  ],
  "supportCommits": {
