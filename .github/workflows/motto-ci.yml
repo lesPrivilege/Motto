@@ -2,7 +2,8 @@ name: motto-ci
 
 on:
   push:
-    branches: [main]
+    # 产品线是 motto/main(单一真源);main 为上游镜像锚,保留以覆盖镜像刷新。
+    branches: [main, motto/main]
   pull_request:
 
 jobs:

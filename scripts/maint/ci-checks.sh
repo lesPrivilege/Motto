@@ -20,6 +20,17 @@ bad() { echo "   FAIL: $*"; FAIL=$((FAIL+1)); }
 if [[ "$CMD" == "governance" ]]; then
   note "pack structure + registry consistency + checksum metadata + binary guard + typecheck + drift"
 
+  # --- 依赖钉版门禁(第三方只 lock、禁浮动 main;git 依赖须钉 commit SHA)
+  if command -v node >/dev/null 2>&1; then
+    if node scripts/check-pinned-deps.mjs >/tmp/pinned-ci.log 2>&1; then
+      ok "pinned-deps PASS"
+    else
+      bad "pinned-deps:"; cat /tmp/pinned-ci.log | sed 's/^/      /'
+    fi
+  else
+    note "node missing — skip pinned-deps check"
+  fi
+
   REG="packages/motto/extensions/REGISTRY.md"
   for packdir in packages/motto/extensions/*/; do
     [[ -d "$packdir" ]] || continue
