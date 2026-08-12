@@ -7,7 +7,7 @@
   "removal": "上游吸收等价能力即删除；删除时跑 有/无旧 patch 对照；不保留兼容层",
   "packageIdentity": "不改 npm package 名称；内部保留 @earendil-works/pi-* identity",
   "replay": "MOTTO-UPGRADE-1 (2026-08-12): 全部 7 patch(8 commits) + 3 support 已重放于新 base 534bcbffb(merge 20d6909d9); 无上游吸收删除。各条 commit 字段为重放后实际哈希(见各条;support: 74b4a2068/140fd6783/59eeaba89),与 MOTTO-UPGRADE-1 记录一致; 各条 removalCondition 保持有效(叠改关系见各条「叠改注」与 removalOrder)",
-  "removalOrder": "叠改文件(多 patch 触同一文件)删除不保证单 commit `git revert` 机械干净:按「后置先退」——先退依赖同文件的较新 patch,再退目标 patch,或接受冲突手工合并;删除后必跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改关系由各条 removalCondition 的「叠改注」标注。"
+  "removalOrder": "叠改文件(多 patch 触同一文件)删除不保证单 commit `git revert` 机械干净:按「后置先退」——先退依赖同文件的较新 patch,再退目标 patch,或接受冲突手工合并;删除后必跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改关系由各条 removalCondition 的「叠改注」标注。可清反向应用清单为 HEAD 依赖值(实测 2/12 可清,注释/清理提交会收窄清单),不设固定数字。"
  },
  "statuses": [
   "candidate",

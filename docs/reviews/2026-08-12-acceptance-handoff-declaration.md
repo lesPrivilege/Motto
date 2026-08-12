@@ -232,8 +232,13 @@ REJECTED 不适用：无安全红线违反，无 Core 侵入，无供应链浮�
 ### 8.1 方法更正
 
 首轮「单点可删」反向应用试算跑在脏工作区上（返修注释清理恰好触及 `tool-execution.ts` 等文件），
-读数被污染。改用 `git apply --cached --check -R` 对 HEAD 重测：12 条登记 SHA 中 5 条可干净反向应用
-（`81dbec74f`、`055c43962`、`e6af3794d`、`943e67312`、`34b30ba80`），7 条冲突，与修前同数。
+读数被污染。改用 `git apply --cached --check -R` 对 HEAD 重测，并经第三轮 §9.3 以同一命令同一方法复核：
+**2 条**可干净反向应用（`055c43962`、`34b30ba80`），10 条冲突。第二稿曾记 5 条可清（`81dbec74f`、
+`055c43962`、`e6af3794d`、`943e67312`、`34b30ba80`），该读数采于注释清理提交 `8b5f903d7` 落 HEAD 之前
+（对 `acf7bae24`）；`8b5f903d7` 与前序 patch 同文件区域（`user-message.test.ts:9`、
+`tool-execution-component.test.ts:53`、`bash-execution-width.test.ts:78`）注释层重叠后，其中 3 条转冲突。
+故反向应用可清数为 **HEAD 依赖值**，不设固定清单；主结论「多数条目不可机械单点回退」在 2/12 与 5/12
+下均成立，`removalOrder` 的处置（后置先退、接受冲突手工合并）不变。
 
 ### 8.2 逐项闭合状态
 
@@ -249,17 +254,17 @@ REJECTED 不适用：无安全红线违反，无 Core 侵入，无供应链浮�
 | 中 6 CI 分支错配 | **闭合** | motto-ci 触发含 motto/main；governance 内置 pinned-deps（本地与 CI 同源） |
 | 高 3 单仓合并门未过 | **披露** | §六 如实补记；TUI-1 终态验收与 GHOSTTY-BASELINE 留用户侧补做 |
 | 「不自立新义」 | **闭合** | 开篇/结尾自认四层阶梯为新立框架，§七 勘误登记 |
-| 中 7 上游增量计数（112/109/3） | **闭合** | 修正为「共 112，109 已吸纳至 base 534bcbffb，残余 3」 |
+| 中 7 上游增量计数（112/109/3） | **闭合** | 修正为「共 112，109 已吸纳至 base 534bcbffb，2026-08-12 检查时点残余 3」；上游为外部仓，后续读数以 `upstream-check.sh` 最近输出为准（§9.5 已记漂移至 6） |
 | 中 8 hideThinkingBlock 兼容路径 | **披露** | 上游原生特性与宪制「不保留向后兼容」的张力在 §六 披露，取舍 8 待察点补注 |
 | 低 13 立言时间线 | **标注** | §1.3 标注文档自陈性质 + 归档路径 |
 
 ### 8.3 验证证据
 
 - `node scripts/check-pinned-deps.mjs` 退出码 0；`check-pinned-deps.test.mjs` 6/6 实跑通过
-- 返修测试：motto pack 78/78、review-flow pack 25/25、coding-agent 相关组件 95/95、scripts 11/11
+- 返修测试：motto pack 78/78、review-flow pack 25/25、coding-agent 相关组件 96/96（8 文件，含 first-time-setup-fork）、scripts 11/11
 - 两 pack `tsc --noEmit` 零错；biome 零告警；五批 commit 每次 pre-commit `npm run check` 全绿
 - `ci-checks.sh governance`：pinned-deps PASS、TUI baseline --check PASS（注释清理未改渲染输出）
-- **部署留证（2026-08-12，先 commit 后 deploy）**：`bash scripts/maint/deploy.sh`（motto / motto-review-flow 等五 pack + 三主题，rsync -a --delete）→ `drift-check.sh` PASS（9 ok）→ `ci-checks.sh governance` **GOVERNANCE: PASS**。部署次序保证镜像与 canonical（而非脏工作区）一致
+- **部署留证（2026-08-12，先 commit 后 deploy）**：`bash scripts/maint/deploy.sh`（motto / motto-review-flow 等五 pack + 三主题，rsync -a --delete）→ `drift-check.sh` PASS（8 ok，5 pack + 3 主题）→ `ci-checks.sh governance` **GOVERNANCE: PASS**。部署次序保证镜像与 canonical（而非脏工作区）一致
 
 ### 8.4 待用户真机补验（非返修缺陷）
 

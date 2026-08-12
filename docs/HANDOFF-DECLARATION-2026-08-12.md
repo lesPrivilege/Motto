@@ -116,7 +116,7 @@ Motto 站在两线收束处——既是对 model 的选择，也是对 harness �
 | 一 commit 一 patch | 每条 patch 单点可删、独立回退；removalCondition 不废 |
 | 只读投影 | cards/headings 为 display-only 投影：不持有 canonical、不入模型上下文、不写回 session；review-flow 以 custom entry 追加 session 文件（I10-1 允许，不入模型上下文、不发 message）；canonical 是唯一语义证据 |
 | 单一真源 + 部署位镜像 | 仓为唯一 canonical；扩展/主题经 `deploy.sh` → `~/.pi/agent`，`drift-check.sh` 防手改 |
-| 受控升级链路 | `upstream-check.sh` 只读报告（仅 git fetch 更新远端引用，不建分支/不改 PI-BASE/不升级；当前：自 v0.84.1 共 112 commits，其中 109 已由 UPGRADE-1 吸纳至 base 534bcbffb，对当前 base 实际残余 3 commits，**未自动升级**）；升级须 candidate 重放 + 回归 + dogfood |
+| 受控升级链路 | `upstream-check.sh` 只读报告（仅 git fetch 更新远端引用，不建分支/不改 PI-BASE/不升级；当前：自 v0.84.1 共 112 commits，其中 109 已由 UPGRADE-1 吸纳至 base 534bcbffb，对当前 base 实际残余 3 commits——2026-08-12 检查时点读数，上游为持续更新的外部仓，数字以 `upstream-check.sh` 最近一次输出为准，**未自动升级**）；升级须 candidate 重放 + 回归 + dogfood |
 | 分支卫生 | 产品线仅 `motto/main`；`main` 为上游镜像锚、`upstream/v0.84.1` 为基线；已 merge feature 分支已清，本地=远端一致 |
 
 ### L4 Philosophy — ⚠️ 主体已落实，留三条待独立验收细察
@@ -176,7 +176,7 @@ Motto 站在两线收束处——既是对 model 的选择，也是对 harness �
 - review-flow 方案 B/C（三态折叠 / diff-only 改笔面）：观察期触发，**未实现**（不以调研代替使用）。
 - 卡片流式实时成卡、user 消息卡片：按使用摩擦触发，未实现。
 - 主题外框粗细：用户曾提「边框线略微过重」，轻帧已缓解主体观感，外框粗细留待微调。
-- 上游残余 3 commits 增量（自 v0.84.1 共 112，其中 109 已由 UPGRADE-1 吸纳至 base 534bcbffb）：已报告，**未应用**（铁律：只读检查≠升级；须用户决策走全流程）。
+- 上游残余 3 commits 增量（2026-08-12 检查时点：自 v0.84.1 共 112，其中 109 已由 UPGRADE-1 吸纳至 base 534bcbffb；上游为外部仓，数字随时间移动，以 `upstream-check.sh` 最近输出为准）：已报告，**未应用**（铁律：只读检查≠升级；须用户决策走全流程）。
 - **单仓合并前置门未全过即执行（2026-08-12，已发生，如实披露）**：fork-consolidation 自设四道验收门（decisions/2026-08-11-motto-fork-consolidation.md:56-61），其中 TUI-1 全切片终态 ACCEPTED 与 GHOSTTY-BASELINE（用户侧，从未落档）两项未满足即完成合并。TUI-1 终态验收与 GHOSTTY-BASELINE 留待用户侧补做。
 - **hideThinkingBlock 兼容路径**（T2 三态并存、Ctrl+T 全隐保留）：为上游原生隐藏 thinking 特性，非 Motto 新增兼容层；与宪制「不保留向后兼容」存在取舍张力，保留理由在 decisions/2026-08-11-motto-tui-2.md:73 与 PATCHES.json 各 T2 条，如实披露。
 - **四层验收阶梯为新立框架**：L1–L4 分层无正典先例（grep 唯一命中为本文档自引用）；结论体例沿用 ACCEPTANCE.md 三类。已在开篇与 §七 勘误中自认新造。
@@ -194,7 +194,7 @@ Motto 站在两线收束处——既是对 model 的选择，也是对 harness �
 - 「不自立新义」自认新造：四层验收阶梯为新立框架（结论体例沿用 ACCEPTANCE.md），开篇与结尾措辞已改。
 - 单仓合并前置门未全过即执行（TUI-1 终态验收 + GHOSTTY-BASELINE 从未落档）：已在 §六 如实披露，补做留用户侧。
 - hideThinkingBlock 兼容路径（上游原生特性）与「不保留向后兼容」张力：已在 §六 披露，取舍 8 待察点补注。
-- 上游增量计数修正：112 系对旧基线 v0.84.1，109 已吸纳，对 base 534bcbffb 实际残余 3。
+- 上游增量计数修正：112 系 2026-08-12 检查时点对旧基线 v0.84.1 的读数，109 已吸纳，对 base 534bcbffb 当时残余 3；上游为外部仓，后续提交会使残余数随时间移动，以 `upstream-check.sh` 最近输出为准。
 - 立言时间线无法用本仓 git 核验（两仓合并丢失历史）：§1.3 已标注自陈性质与归档路径。
 
 ---
