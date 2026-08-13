@@ -24,7 +24,7 @@
    "description": "UserMessageComponent 去整宽气泡卡:不再套整宽背景 Box,首行中灰左界栏 `│ `(muted 槽)标记消息边界(I6-4 显示投影),续行以 GUTTER_WIDTH 个空格悬挂缩进,正文列左锚第 3 列(与 S2 BODY_INDENT 同列),大篇幅不再逐行成 rail;OSC133 标记保留;outputPad 设置对 user 表面不再生效(界栏布局固定正文列)。共享布局常量 motto-layout.ts(GUTTER_WIDTH/GUTTER/BODY_INDENT)。细化(2026-08-11):逐行界栏 → 首行+悬挂缩进。",
    "commit": "9a3080101, 81dbec74f",
    "fixture": "fixtures/tui/baseline/theme-*.txt 新增 user-gutter (S1) 块(细化后重生成)",
-   "removalCondition": "上游吸收等价 user 消息渲染出口(registerMessageRenderer 扩展至 user role 或 transcript projector 覆盖内置消息)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(回落原生基线)与 coding-agent 全量测试。叠改注:与 S3(tui-1-s3-tool-index-line)同触 motto-layout.ts;删除须后置先退或处理冲突。",
+   "removalCondition": "上游吸收等价 user 消息渲染出口(registerMessageRenderer 扩展至 user role 或 transcript projector 覆盖内置消息)后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check(回落原生基线)与 coding-agent 全量测试。叠改注:与 S3(tui-1-s3-tool-index-line)同触 motto-layout.ts;删除须后置先退或处理冲突。 叠改注:被 tui-1-s1-r1-footnote-dash 叠改(首行竖界栏已替换为短横衬线);删除时先退 tui-1-s1-r1 再退本 patch(后置先退)。",
    "status": "applied"
   },
   {
@@ -132,6 +132,17 @@
    "reason": "tui-4-s2-card-tag-label(34b30ba80)落账后补充的宽度守卫;commit dab2db1ee 落账。",
    "fixture": "无——TUI-4 不改变基线 scenario(render-baseline.mjs --check 逐字节通过);cards.test.mjs 新增超长标注端到端用例",
    "removalCondition": "随 tui-4-s2-card-tag-label 一并删除(同触 markdown.ts cardTag 分支);删除时 git revert 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 tui-4-s1-card-light-frame / tui-4-s2-card-tag-label 同触 markdown.ts;删除须后置先退或处理冲突。",
+   "status": "applied"
+  },
+  {
+   "id": "tui-1-s1-r1-footnote-dash",
+   "title": "TUI-1 S1 叠改 — user 消息首行竖界栏改左上方短横衬线(脚注分隔线风格)",
+   "scope": "coding-agent interactive 组件(packages/coding-agent/src/modes/interactive/components/user-message.ts + motto-layout.ts)",
+   "description": "原 tui-1-s1-user-gutter 首行 `│ ` 竖界栏不够美观。改为左上方短横衬线:3×U+2500 `───` 独立成行、左锚、muted(脚注分隔线风格),正文全部续行 GUTTER_WIDTH(2)空格悬挂缩进,正文列与 S2/S3/S4 BODY_INDENT 对齐关系逐字符不变。box-drawing 与竖线同族,拉丁/CJK 字体恒 1 列,零宽度风险(em-dash 方案因 CJK 满宽错列风险被否)。每 user 消息 +1 行。基线 9 文件 user-gutter 块重生成。",
+   "commit": "badbe2163",
+   "reason": "目验摩擦:竖界栏不够美观,改现代纸质发行脚注式短横衬线(2026-08-13 用户裁定)",
+   "fixture": "fixtures/tui/baseline/theme-*.txt/.ansi.txt user-gutter (S1) 块重生成(--write),--check 逐字节 PASS + 零超宽",
+   "removalCondition": "叠改注:叠于 tui-1-s1-user-gutter(同触 user-message.ts/motto-layout.ts/user-message.test.ts/assistant-message.test.ts/基线 8+1 文件)。删除时先退本 patch 再退 tui-1-s1(后置先退),或接受冲突手工合并;删除后跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
    "status": "applied"
   }
  ],

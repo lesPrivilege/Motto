@@ -38,13 +38,13 @@
 - 改变模型/session 语义：不改变。若用 `sendMessage` 冒充则改变——禁止路径。
 - 影响 streaming：不适用（user 消息瞬时）。
 - 影响 copy：命令复制（`/copy-answer`、`/copy-code`）读语义源，不受本面影响；拖选按
-  I6-3 视觉行 join，S1 界栏 `│ ` 为显示投影、会进入拖选剪贴板，侧车落地前不宣称
+  I6-3 视觉行 join，S1 短横衬线 `───` 为显示投影、会进入拖选剪贴板，侧车落地前不宣称
   保真（I6-4 就地界定）。
 - Ownership 冲突：`UserMessageComponent` 为内置，无 extension 出口。
 - **归属：GENERIC_CORE_SEAM**（`registerMessageRenderer` 扩展至 user role，或
   transcript projector 覆盖内置消息）。
 - 理由：MOTTO-TUI-1（Transcript Visual Composition，用户指令裁定）已将
-  user message 列为首轮视觉表面——去整宽气泡卡 → 中灰左界栏 + 悬挂正文；
+  user message 列为首轮视觉表面——去整宽气泡卡 → 左上方短横衬线(脚注分隔线风格)+ 悬挂正文；
   本接缝由此进入待改面，不再属「无需改动」观察项。「长 paste 分层
   （超长折叠）」仍为后续面，不随首单扩张。
 - 最小验收用例：长 paste（`paste-long.txt`）渲染不超宽、不闪烁；复制命令保真。
