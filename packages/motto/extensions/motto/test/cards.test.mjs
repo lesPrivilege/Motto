@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { initTheme, getMarkdownTheme } from "@earendil-works/pi-coding-agent";
-import { Markdown } from "@earendil-works/pi-tui";
+import { Markdown, visibleWidth } from "@earendil-works/pi-tui";
 import { projectDunhaoCards } from "../cards.ts";
 
 /** 默认 assistant 完成态上下文。 */
@@ -310,4 +310,32 @@ test("端到端:自然 markdown 表格(无标记)逐行分隔线保留——边�
 	assert.ok(lines.some((l) => l.startsWith("└─") && l.endsWith("─┘")), "应有下边框");
 	const separators = lines.filter((l) => l.includes("├─"));
 	assert.ok(separators.length >= 2, `自然表格逐行分隔线保留(表头线+行间线),实际: ${separators.length}`);
+});
+
+// ---------------------------------------------------------------- 15 超长标注截断(I9-1 / tui-4-s2)
+test("端到端:超长标注(60 字)× 窄宽 40——小标签按显示宽度截断,零超宽且截断符 …", () => {
+	initTheme("motto");
+	const theme = getMarkdownTheme();
+	const longLabel = "超长标注".repeat(15); // 60 字 → 显示宽 120 列
+	const src = `、、、 ${longLabel}\n内容行\n、、、`;
+	const projected = projectDunhaoCards(src, ctx());
+	const md = new Markdown(projected, 0, 0, theme);
+	const lines = md.render(40);
+
+	// I9-1:逐行显示宽度 ≤ 终端宽(CJK 双列计)
+	for (const line of lines) {
+		assert.ok(visibleWidth(line) <= 40, `超宽 ${visibleWidth(line)}: ${JSON.stringify(line)}`);
+	}
+
+	// 截断正确:小标签以 [ 开头、…] 结尾,显示宽度 ≤ 终端宽,且确实发生截断
+	const tag = lines.map(stripAnsi).find((l) => l.startsWith("[") && l.endsWith("]"));
+	assert.ok(tag, `应有小标签行,实际: ${JSON.stringify(lines.map(stripAnsi))}`);
+	assert.ok(visibleWidth(tag) <= 40, `小标签显示宽度 ${visibleWidth(tag)} ≤ 40`);
+	assert.ok(tag.endsWith("…]"), `小标签应以 …] 结尾(截断符 …),实际: ${JSON.stringify(tag)}`);
+	assert.ok(tag.length < longLabel.length, `超长标注被截断,不整段透传: ${JSON.stringify(tag)}`);
+
+	// 对照:同标注在宽终端(200)不截断,整段保留
+	const mdWide = new Markdown(projected, 0, 0, theme);
+	const wideTag = mdWide.render(200).map(stripAnsi).find((l) => l.startsWith("[") && l.endsWith("]"));
+	assert.equal(wideTag, `[${longLabel}]`, "宽终端(200)下小标签整段保留");
 });

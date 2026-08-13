@@ -30,7 +30,7 @@ export const defaultMarkdownTheme: MarkdownTheme = {
 	italic: (text: string) => chalk.italic(text),
 	strikethrough: (text: string) => chalk.strikethrough(text),
 	underline: (text: string) => chalk.underline(text),
-	cardLabel: (text: string) => chalk.magenta(text),
+	cardLabel: (text: string) => chalk.red(text),
 };
 
 export const defaultEditorTheme: EditorTheme = {

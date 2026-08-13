@@ -49,7 +49,7 @@ const SELF_UPDATE_NOTE_MARKDOWN_THEME: MarkdownTheme = {
 	italic: (text) => chalk.italic(text),
 	strikethrough: (text) => chalk.strikethrough(text),
 	underline: (text) => chalk.underline(text),
-	cardLabel: (text) => chalk.magenta(text),
+	cardLabel: (text) => chalk.red(text),
 };
 
 interface PackageCommandOptions {

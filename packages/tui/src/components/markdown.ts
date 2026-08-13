@@ -2,7 +2,7 @@ import { Marked, type Token, Tokenizer, type TokenizerExtension, type Tokens } f
 import { renderLatex } from "../latex.ts";
 import { getCapabilities, hyperlink, isImageLine } from "../terminal-image.ts";
 import type { Component } from "../tui.ts";
-import { applyBackgroundToLine, visibleWidth, wrapTextWithAnsi } from "../utils.ts";
+import { applyBackgroundToLine, truncateToWidth, visibleWidth, wrapTextWithAnsi } from "../utils.ts";
 
 const STRICT_STRIKETHROUGH_REGEX = /^(~~)(?=[^\s~])((?:\\.|[^\\])*?(?:\\.|[^\s~\\]))\1(?=[^~]|$)/;
 
@@ -997,7 +997,9 @@ export class Markdown implements Component {
 		// 盒内不再渲染头行与表头分隔线。
 		if (cardTag) {
 			const headerText = this.renderInlineTokens(token.header[0].tokens || [], styleContext);
-			lines.push(this.theme.cardLabel(`[${headerText}]`));
+			// tui-4-s2:小标签按显示宽度截断(CJK 双列计,截断符 …),防超长标注超宽(I9-1)。
+			const tag = truncateToWidth(headerText, Math.max(1, availableWidth - 2), "…");
+			lines.push(this.theme.cardLabel(`[${tag}]`));
 		}
 
 		// Render top border
