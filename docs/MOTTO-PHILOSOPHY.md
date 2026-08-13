@@ -1,6 +1,6 @@
 # Motto 的理念与取舍（夺舍终局 · 合并时代宣言）
 
-> 用途：嵌入单仓自足 Pi fork（`lesPrivilege/pi`）作合并时代正典，与 `docs/MOTTO.md`（凡例）、
+> 用途：嵌入单仓自足 Pi fork（`lesPrivilege/motto`）作合并时代正典，与 `docs/MOTTO.md`（凡例）、
 > `docs/TUI-THESIS.md`（可测试不变量）并列；本文是「为什么」，二者是「是什么、怎么验」。
 > 引用编号见文末「出处索引」。
 

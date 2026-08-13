@@ -7,7 +7,7 @@
 
 ## 0. 目标态一句话
 
-> TUI 验收后，把 `~/Projects/Motto` 并入 `lesPrivilege/pi`（harness Core），
+> TUI 验收后，把 `~/Projects/Motto` 并入 `lesPrivilege/motto`（harness Core），
 > 单仓即一个足量的 agent（类似 Pi Fork / omp 的效果）：上游历史 + Motto patchset
 > + Motto 系列 extensions/skills/themes/docs/fixtures 同仓；上游与生态不进仓，
 > 只作清单记录。
@@ -17,7 +17,7 @@
 ```text
 earendil-works/pi          上游(remote, 永远不进仓)
    ↓
-lesPrivilege/pi            ← 唯一产品仓(合并后)
+lesPrivilege/motto            ← 唯一产品仓(合并后)
    ├── 上游历史(v0.84.1 基线 + 未来吸收)
    ├── Motto patchset(PATCHES.json 登记)
    ├── packages/motto/     extensions + themes + skills(并入)

@@ -45,7 +45,7 @@ MOTTO-TUI-0 的边界拆解证明第一项 Core 能力（per-entry transcript pr
 earendil-works/pi
        ↓ upstream remote
 
-lesPrivilege/pi
+lesPrivilege/motto
        受控下游：上游历史 + 独立 patchset
        不存 Motto extensions
 
@@ -54,7 +54,7 @@ lesPrivilege/Motto
        patch registry、extension lock、release manifest
 ```
 
-`lesPrivilege/pi` 即原宪制中的「PI repo」——由「上游维护」改为「Motto 受控下游」，
+`lesPrivilege/motto` 即原宪制中的「PI repo」——由「上游维护」改为「Motto 受控下游」，
 仍是同一仓位的实体。分支约定：
 
 ```text
@@ -141,7 +141,7 @@ check/tests → Motto extension compatibility → fixture/baseline → motto-dev
 ## 7. 本轮验收目标（MOTTO-DOWNSTREAM-0）
 
 1. 修改宪制：从永久禁止 fork 改为 upstream-first + controlled downstream。
-2. 建立 `lesPrivilege/pi` 的 upstream/origin 拓扑。
+2. 建立 `lesPrivilege/motto` 的 upstream/origin 拓扑。
 3. 以 `v0.84.1` 建立零 patch 的 `motto/main`。
 4. 生成 `pi`、`motto-dev` 并行 launcher。
 5. 证明零 patch 下行为与官方发行等价。

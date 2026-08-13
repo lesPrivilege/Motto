@@ -100,7 +100,7 @@ Motto 不是又一个 agent，是骑在极简 harness 上的一套版式：耳�
 ## 终局裁定（2026-08-11，非候选）
 
 - **夺舍终局 — 单仓自足 Pi Fork**：TUI 验收后，`~/Projects/Motto` 并入
-  `lesPrivilege/pi`（harness Core），单仓即足量 agent（上游历史 + patchset +
+  `lesPrivilege/motto`（harness Core），单仓即足量 agent（上游历史 + patchset +
   Motto 系列 extensions/skills/themes/docs/fixtures）；上游与生态不入仓，只作
   清单记录（EXTENSIONS.lock / PI-BASE）；维护/update skill 以泛化方式随仓。
 - 触发条件（全部满足才执行）：MOTTO-TUI-1 全部切片 ACCEPTED +

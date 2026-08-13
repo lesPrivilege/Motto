@@ -6,7 +6,7 @@
 
 ## 一、仓库链接
 
-- Repo: https://github.com/lesPrivilege/pi （Motto fork；凡例正典 `docs/MOTTO.md`，理念 `docs/MOTTO-PHILOSOPHY.md`）
+- Repo: https://github.com/lesPrivilege/motto （Motto fork；凡例正典 `docs/MOTTO.md`，理念 `docs/MOTTO-PHILOSOPHY.md`）
 - TUI 基线（文本渲染产物）: `fixtures/tui/baseline/`（theme-motto-dark.txt 等）
 
 ## 二、凡例要点（给生成模型的约束）

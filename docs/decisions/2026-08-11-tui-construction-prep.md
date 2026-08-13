@@ -11,7 +11,7 @@
 1. **排序**：立制（发行/版本/升级/回退主权）先于任何 Core patch；第一项 TUI Core
    修改只能等 MOTTO-DOWNSTREAM-0 全部验收态通过后开始。
 2. 本文件只做召回与准备；**施工开关 = 阶段一 merge 验收通过 + 收口文档落地**。
-3. 阶段一由另一 Pi session 施工（`lesPrivilege/pi` 下游仓，零 patch 基线已锚
+3. 阶段一由另一 Pi session 施工（`lesPrivilege/motto` 下游仓，零 patch 基线已锚
    v0.84.1/53fa77ccd）；本分支不触碰其文档（AGENTS.md 宪制、UPSTREAM-CONTRACT、
    PI-BASE、decision §6、downstream-0.md 工单）。
 4. merge 验收通过后按 §3 分单，可并行派发。
@@ -32,7 +32,7 @@
 
 ### 1.2 MOTTO-DOWNSTREAM-0 立制（08-11 评估 session 终裁）
 
-- 受控薄叉 GO（extension-only 路线 NO_GO）；双仓拓扑（`lesPrivilege/pi` 下游 +
+- 受控薄叉 GO（extension-only 路线 NO_GO）；双仓拓扑（`lesPrivilege/motto` 下游 +
   `lesPrivilege/Motto` 正典）；PATCHES.json / EXTENSIONS.lock / RELEASES.json 装置；
   `motto`/`motto-dev` 双轨 launcher；patch 单点可删、range-diff 审查、dogfood 终验收。
 - **现状**：`stash@{0}`（e8faa93）已有 AGENTS.md 宪制 / ROADMAP / decision §6 /
@@ -73,7 +73,7 @@
 |---|---|
 | Motto `main` | merge `19f3743`（TUI-0 定界 + PACK-VISION-2 双线收敛，FLOW 回退保留） |
 | 本分支 `agent/tui-consumption-pre-downstream` | 3 commit：I9-1 逐宽度门禁 + 勘误×2；待 merge 验收时合入 |
-| pi 下游 `motto/main` | 锚 v0.84.1/53fa77ccd，零 patch；`lesPrivilege/pi` origin 已建 |
+| pi 下游 `motto/main` | 锚 v0.84.1/53fa77ccd，零 patch；`lesPrivilege/motto` origin 已建 |
 | 阶段一文档 | `stash@{0}` 有雏形；`downstream-0.md` 未建；另一 session 施工中 |
 | GHOSTTY-BASELINE | 仍 DRAFT（用户侧） |
 | usage-log 摩擦 | 尚无「目行粒度失准」类记录（观察期条款未触发，turn reducer 冻结） |

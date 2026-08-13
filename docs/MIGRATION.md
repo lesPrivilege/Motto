@@ -43,7 +43,7 @@
 
 ## 手动步骤（人工项照单走）
 
-1. clone 两个仓：`~/.pi/agent`（settings / models / skills / notes 随之而来）与 `pi`（本仓，单仓自足含全部 Motto 产品内容，`git clone https://github.com/lesPrivilege/pi.git`，放 `~/Projects/`）。
+1. clone 两个仓：`~/.pi/agent`（settings / models / skills / notes 随之而来）与 `pi`（本仓，单仓自足含全部 Motto 产品内容，`git clone https://github.com/lesPrivilege/motto.git`，放 `~/Projects/`）。
 2. 跑 `./scripts/maint/bootstrap.sh`（自动项全落位）。
 3. 按脚本末尾清单逐项：zshrc 两条 env、ghostty theme 双值、settings.json 关键键核对。
 4. 各项目 `.motto/agent.md` 随项目仓 clone 自动携带，无需动作。

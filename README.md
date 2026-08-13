@@ -12,7 +12,7 @@
 
 # Pi Agent Harness
 
-> ## Motto 受控下游（lesPrivilege/pi）
+> ## Motto 受控下游（lesPrivilege/motto）
 >
 > 本仓是 **Motto** 的受控下游（Pi fork），**单仓自足（夺舍终局，2026-08-12）**：
 > 上游历史 + 最小 patchset（登记于 `docs/maintenance/PATCHES.json`）+ Motto 产品内容

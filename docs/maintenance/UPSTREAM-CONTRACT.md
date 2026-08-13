@@ -7,7 +7,7 @@
 
 ## 0. 锚定原则
 
-1. **单仓自足、分区共存**（夺舍终局）：`lesPrivilege/pi` 为唯一产品仓，上游历史 +
+1. **单仓自足、分区共存**（夺舍终局）：`lesPrivilege/motto` 为唯一产品仓，上游历史 +
    最小 patchset + Motto 产品内容（`packages/motto/`、`docs/`、`fixtures/`、
    `scripts/maint/`）同仓但物理分区；harness（`packages/`）零改动，产品内容只进
    专属目录。
@@ -56,7 +56,7 @@ interactive 层——只换 pi-tui 不够（TRANSCRIPT-PROJECTION 第十节）�
 ```json
 {
   "id": "TUI-DISCLOSURE-1",
-  "commit": "<lesPrivilege/pi commit>",
+  "commit": "<lesPrivilege/motto commit>",
   "packages": ["coding-agent"],
   "invariants": ["I0-2", "I5-1", "I7-1"],
   "upstreamable": true,
@@ -94,7 +94,7 @@ evidence。回答「这一场真实 session 当时运行的是哪套系统」。
 ```text
 earendil-works/pi  (upstream remote)
    ↓
-lesPrivilege/pi    (唯一产品仓:上游历史 + 独立 patchset
+lesPrivilege/motto    (唯一产品仓:上游历史 + 独立 patchset
                     + Motto 产品内容 packages/motto/·docs/·fixtures/·scripts/maint/)
 ```
 
