@@ -25,7 +25,7 @@
 - `2026-08-11-motto-tui-0-boundary.md` — 裁定：从扩展集合到受控下游的边界（MOTTO-TUI-0）
 - `2026-08-11-motto-tui-1.md` — 工单：MOTTO-TUI-1 Transcript Visual Composition
 - `2026-08-11-motto-tui-2.md` — 工单：MOTTO-TUI-2 Per-entry Thinking Disclosure
-- `2026-08-11-motto-tui-3-composer-dock.md` — 工单：MOTTO-TUI-3 固定底栏（定调：不实现，上游已合入基线）
+- `2026-08-11-motto-tui-3-composer-dock.md` — 工单：MOTTO-TUI-3 固定底栏（结构已入基线；2026-08-13 因 composer 跳跃/闪烁重开 P0；footer 替换接缝机制 PROVEN（`tui3-p0-rebind-frame.test.ts`）、端到端 rebind NOT_TESTED、ROOT_CAUSE STRONGLY_SUPPORTED，最小修复单（MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT=1）已授权待施工）
 - `2026-08-11-tui-construction-prep.md` — TUI 施工准备/旧裁定召回（TUI-PREP-1，不授权施工）
 - `2026-08-12-motto-upgrade-1-absorb-upstream.md` — 工单：MOTTO-UPGRADE-1 受控上游升级（v0.84.1→534bcbffb 109 commits，ACCEPTED 落地）
 - `2026-08-12-motto-tui-4-dunhao-cards.md` — 工单：MOTTO-TUI-4 顿号卡片投影（、、、围栏 → box-drawing 卡片，调研+实现逻辑 diff+最小实现）
@@ -46,6 +46,7 @@
 - 上游提案：`UPSTREAM-PROPOSAL.md`、`UPSTREAM-SELECTION-PROJECTION.md`、`SUBMISSION-7721.md`
 - 补充：`TUI-GPT-SESSION-SUPPLEMENT-2026-08-11.md`、`MOTTO-MARKDOWN-HEADING-2026-08-08.md`
 - 全会话体例 dogfood（2026-08-13）：`2026-08-13-tui-full-session-composition-dogfood.md`（真实 Ghostty R0–R6 逐面证据 + 消费矩阵 + 下一张工单草案；发现 S3 目行实机失效）
+- composer 固底稳定性（2026-08-13）：`2026-08-13-tui-composer-dock-stability.md`（Codex CLI / OpenCode 源码对照；Grok Build 仅行为参照；TUI-3 重开 P0 依据；文末 P0 逐帧 trace 结论：接缝机制 PROVEN / 端到端 NOT_TESTED / ROOT_CAUSE STRONGLY_SUPPORTED）
 
 ## 维护登记册（`docs/maintenance/`）
 

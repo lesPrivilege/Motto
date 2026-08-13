@@ -75,9 +75,16 @@ Motto 不是又一个 agent，是骑在极简 harness 上的一套版式：耳�
   是先取得发行/版本/升级/回退主权再改 TUI。下一张工单为 **MOTTO-DOWNSTREAM-0（立制）**，
   见 `docs/decisions/2026-08-11-motto-downstream-0.md`；上游化路径与触发条件见
   `docs/decisions/2026-08-11-motto-tui-0-boundary.md` + `docs/maintenance/UPSTREAM-CONTRACT.md`。
-- **MOTTO-TUI-3（登记，2026-08-11）**：alt-screen 固定底栏——composer 行固定在下方。
-  调研前置，不急于实现；借助开源 TUI 项目（上游优先）实现。见
-  `docs/decisions/2026-08-11-motto-tui-3-composer-dock.md` + `~/Projects/Motto/tui-plan.md`。
+- **MOTTO-TUI-3（登记 2026-08-11；重开 2026-08-13；P0：接缝 PROVEN / 端到端 NOT_TESTED
+  2026-08-13）**：alt-screen 固定底栏结构已入基线；dogfood 回报 composer 上下跳跃/闪烁。
+  ROOT_CAUSE STRONGLY_SUPPORTED（footer 1→2→3→1 ↔ composer y20→y19→y18→y20；
+  reset/rebind 异步间隙渲染原生 footer 中间态），footer 替换接缝机制由
+  `tui3-p0-rebind-frame.test.ts` 机械复现（footer 1→2→1、composer y20→y19→y20）且 mutation
+  proof 通过，**端到端生产 rebind 链 NOT_TESTED**，最小修复单（MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT=1
+  原子接缝 + 生态 fallback）已授权、**未开工（DRAFT）**。Codex CLI / OpenCode 只作源码
+  参照，Grok Build 仅作行为参照。见
+  `docs/decisions/2026-08-11-motto-tui-3-composer-dock.md`（§8.5 结论 + 文末最小修复单草案）+
+  `~/Projects/Motto/tui-plan.md`。
 - live widget——运行中动态展示与收工 review 立意正交（裁定：二轮调研裁决，ea8f5cd，2026-08-08）。
 - extension 层模拟三态——invalidate() 不触发渲染、shortcut 无 requestRender，旁路均寄生他人副作用（裁定：三态预览核实撤单，docs/decisions/review-flow-eval.md，2026-08-08）。
 - 重注册内置工具——shadow 执行定义，制造上游漂移面（裁定：review-flow 初版边界条款，2026-08-07）。
