@@ -1,5 +1,5 @@
 # MOTTO-TUI-0 无头渲染基线 — 清单
-生成时间(UTC): 2026-08-13T04:34:19.859Z
+生成时间(UTC): 2026-08-13T05:58:39.161Z
 pi: @earendil-works/pi-coding-agent 0.84.1 (v0.84.1 -> 53fa77ccd8a279eb87e92294ef3687b03ff80112)
 pi-tui: 0.84.1 | node: v25.9.0
 主题来源: ~/.pi/agent/themes/{motto,motto-dark,motto-light}.json + 内置 dark
