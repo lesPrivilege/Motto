@@ -11,7 +11,7 @@
 MAINT_CONFIG="${MAINT_CONFIG:-$HOME/.pi/agent/maintenance/config.json}"
 
 maint_load_config() {
-  HARNESS_REPO="${MOTTO_DOWNSTREAM_ROOT:-$HOME/Projects/pi}"
+  HARNESS_REPO="${MOTTO_DOWNSTREAM_ROOT:-$HOME/Projects/Motto}"
   SCRIPTS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   STATE_FILE="$HOME/.pi/agent/maintenance/last-check.json"
   if [[ -f "$MAINT_CONFIG" ]]; then

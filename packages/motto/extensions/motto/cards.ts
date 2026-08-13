@@ -2,7 +2,7 @@
 // 把 `、、、` 围栏卡片投影为单列 Markdown 表格,使 TUI 原生渲染出 box-drawing 卡片:
 //
 //   、、、 bash
-//   cd ~/Projects/pi
+//   cd ~/Projects/Motto
 //     git status
 //     git diff
 //   、、、
@@ -10,13 +10,13 @@
 //   <!--motto-card:tag-->
 //   | bash |
 //   |---|
-//   | cd ~/Projects/pi |
+//   | cd ~/Projects/Motto |
 //   | `  `git status |
 //   | `  `git diff |
 //   ↓ TUI 原生渲染(小标签:标注=盒顶上方 accent 小标签,盒内无头行,无行间分隔线)
 //   [bash]                 ← 小标签（accent 色）
 //   ┌───────────────────┐
-//   │ cd ~/Projects/pi  │
+//   │ cd ~/Projects/Motto  │
 //   │   git status      │
 //   │   git diff        │
 //   └───────────────────┘

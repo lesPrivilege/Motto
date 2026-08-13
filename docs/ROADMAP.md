@@ -77,7 +77,7 @@ Motto 不是又一个 agent，是骑在极简 harness 上的一套版式：耳�
   `docs/decisions/2026-08-11-motto-tui-0-boundary.md` + `docs/maintenance/UPSTREAM-CONTRACT.md`。
 - **MOTTO-TUI-3（登记，2026-08-11）**：alt-screen 固定底栏——composer 行固定在下方。
   调研前置，不急于实现；借助开源 TUI 项目（上游优先）实现。见
-  `docs/decisions/2026-08-11-motto-tui-3-composer-dock.md` + `~/Projects/pi/tui-plan.md`。
+  `docs/decisions/2026-08-11-motto-tui-3-composer-dock.md` + `~/Projects/Motto/tui-plan.md`。
 - live widget——运行中动态展示与收工 review 立意正交（裁定：二轮调研裁决，ea8f5cd，2026-08-08）。
 - extension 层模拟三态——invalidate() 不触发渲染、shortcut 无 requestRender，旁路均寄生他人副作用（裁定：三态预览核实撤单，docs/decisions/review-flow-eval.md，2026-08-08）。
 - 重注册内置工具——shadow 执行定义，制造上游漂移面（裁定：review-flow 初版边界条款，2026-08-07）。

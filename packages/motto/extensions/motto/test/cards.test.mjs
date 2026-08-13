@@ -159,10 +159,10 @@ test("组合契约:headings 投影后卡片照常投影(同消息双投影不互
 
 // ---------------------------------------------------------------- 13 带标注围栏(方案 A → 小标签)
 test("带标注 `、、、 bash`:标注=表格头行(卡片帧标记带 :tag),内容每行一个 body 行且保留行首缩进", () => {
-	const src = "、、、 bash\ncd ~/Projects/pi\n  git status\n  git diff\n、、、";
+	const src = "、、、 bash\ncd ~/Projects/Motto\n  git status\n  git diff\n、、、";
 	assert.equal(
 		projectDunhaoCards(src, ctx()),
-		"<!--motto-card:tag-->\n| bash |\n|---|\n| cd ~/Projects/pi |\n| `  `git status |\n| `  `git diff |",
+		"<!--motto-card:tag-->\n| bash |\n|---|\n| cd ~/Projects/Motto |\n| `  `git status |\n| `  `git diff |",
 	);
 });
 
@@ -233,7 +233,7 @@ test("端到端:投影后经 TUI Markdown 组件渲染为 box-drawing 卡片", (
 test("端到端:带标注 `、、、 bash` 渲染为小标签卡片——标注=盒顶上方 [bash],盒内无头行", () => {
 	initTheme("motto");
 	const theme = getMarkdownTheme();
-	const src = "、、、 bash\ncd ~/Projects/pi\n  git status\n  git diff\n、、、";
+	const src = "、、、 bash\ncd ~/Projects/Motto\n  git status\n  git diff\n、、、";
 	const projected = projectDunhaoCards(src, ctx());
 	const md = new Markdown(projected, 0, 0, theme);
 	const lines = md.render(80).map(stripAnsi);
@@ -243,7 +243,7 @@ test("端到端:带标注 `、、、 bash` 渲染为小标签卡片——标注=
 	assert.ok(!lines.some((l) => l.includes("│ bash")), "标注不再是盒内头行");
 	assert.ok(lines.some((l) => l.startsWith("┌─") && l.endsWith("─┐")), "应有上边框");
 	assert.ok(lines.some((l) => l.startsWith("└─") && l.endsWith("─┘")), "应有下边框");
-	assert.ok(lines.some((l) => l.includes("│ cd ~/Projects/pi")), "内容行在卡片内");
+	assert.ok(lines.some((l) => l.includes("│ cd ~/Projects/Motto")), "内容行在卡片内");
 	assert.ok(lines.some((l) => l.includes("│   git status")), "行首缩进可见");
 	assert.ok(lines.some((l) => l.includes("│   git diff")), "行首缩进可见");
 	// 小标签在盒外:位于上边框之前
@@ -280,7 +280,7 @@ test("端到端:窄宽(40)卡片折行且无超宽", () => {
 test("端到端:带标注投影卡片(多内容行)小标签帧——无头行/无分隔线(0 条 ─),标记不泄漏为文本", () => {
 	initTheme("motto");
 	const theme = getMarkdownTheme();
-	const src = "、、、 bash\ncd ~/Projects/pi\n  git status\n  git diff\n  git log\n、、、";
+	const src = "、、、 bash\ncd ~/Projects/Motto\n  git status\n  git diff\n  git log\n、、、";
 	const projected = projectDunhaoCards(src, ctx());
 	const md = new Markdown(projected, 0, 0, theme);
 	const lines = md.render(80).map(stripAnsi);
@@ -293,7 +293,7 @@ test("端到端:带标注投影卡片(多内容行)小标签帧——无头行/�
 	assert.equal(separators.length, 0, `带标注卡应无任何分隔线,实际: ${separators.length}`);
 	// 内容行均在卡片内(行首缩进可见),标注为盒上小标签,标记不泄漏为可见文本
 	assert.ok(lines.some((l) => l === "[bash]"), "标注=盒上小标签");
-	assert.ok(lines.some((l) => l.includes("│ cd ~/Projects/pi")), "内容行 1");
+	assert.ok(lines.some((l) => l.includes("│ cd ~/Projects/Motto")), "内容行 1");
 	assert.ok(lines.some((l) => l.includes("│   git status")), "内容行 2");
 	assert.ok(lines.some((l) => l.includes("│   git diff")), "内容行 3");
 	assert.ok(!lines.some((l) => l.includes("motto-card")), "标记不渲染为可见文本");

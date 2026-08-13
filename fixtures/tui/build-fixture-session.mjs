@@ -5,8 +5,8 @@
 // session JSONL(resume 渲染路径 renderSessionEntries 消费同款格式)。
 // 输出:fixtures/tui/sessions/motto-tui-baseline.jsonl
 //
-// 运行:cd ~/Projects/pi && node fixtures/tui/build-fixture-session.mjs
-// 渲染:cd ~/Projects/pi && node fixtures/tui/render-baseline.mjs
+// 运行:cd ~/Projects/Motto && node fixtures/tui/build-fixture-session.mjs
+// 渲染:cd ~/Projects/Motto && node fixtures/tui/render-baseline.mjs
 // 真终端捕获:./fixtures/tui/ghostty-capture.sh(用户侧,见 README)
 
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";

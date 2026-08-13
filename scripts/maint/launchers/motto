@@ -4,7 +4,7 @@
 # 运行形态：
 #   motto version           打印 Motto Pi 身份块
 #   motto <pi args...>      运行当前已接受的 Motto downstream
-#   MOTTO_DOWNSTREAM_ROOT=<path> 覆盖下游根（默认 ~/Projects/pi）
+#   MOTTO_DOWNSTREAM_ROOT=<path> 覆盖下游根（默认 ~/Projects/Motto）
 #   MOTTO_USE_OFFICIAL=1    强制走官方 pi（等价性对照用）
 #
 # 零 patch 阶段：motto 与官方 pi 行为等价（同一 dist）；身份只出现在版本输出。

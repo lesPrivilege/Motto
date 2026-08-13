@@ -6,7 +6,7 @@
 #   - 用于 dogfood 门（只决定「是否晋升」，不承担 patch 迁移）。
 #
 #   motto-dev version         打印身份（含 candidate 标记）
-#   MOTTO_DEV_ROOT=<path>     候选下游根（默认 ~/Projects/pi）
+#   MOTTO_DEV_ROOT=<path>     候选下游根（默认 ~/Projects/Motto）
 #   MOTTO_DEV_FORCE_OFFICIAL=1 等价性对照（官方 pi vs 无 patch motto-dev）
 
 set -uo pipefail

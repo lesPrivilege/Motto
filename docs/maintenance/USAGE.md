@@ -17,14 +17,14 @@ motto-dev   候选 / dogfood 版本（升级、patch 试用）
 motto version              # 身份块: base / upstream / patchset / release
 motto --help               # 跑下游产物(零 patch 期与官方逐字节一致)
 MOTTO_USE_OFFICIAL=1 motto # 原子回退官方(rollback 对照)
-MOTTO_DOWNSTREAM_ROOT=…    # 覆盖下游根(默认本仓 ~/Projects/pi,单仓自包含)
+MOTTO_DOWNSTREAM_ROOT=…    # 覆盖下游根(默认本仓 ~/Projects/Motto,单仓自包含)
 ```
 
 ## 1. 日常使用
 
 - 主力命令 `motto`（= pi 行为 + Motto 身份）。扩展/主题/skills 走 `~/.pi/agent`
   部署位，pi 与 motto 共享同一套配置，零迁移。
-- 改动后的 self-host：`motto-dev` 跑候选产物（`~/Projects/pi/packages/coding-agent/dist/cli.js`），
+- 改动后的 self-host：`motto-dev` 跑候选产物（`~/Projects/Motto/packages/coding-agent/dist/cli.js`），
   摩擦写 `docs/usage-log/`；验收通过后 `motto` 才指新产物。
 - **维护交互（skill）**：`motto-maintenance` skill（部署于 `~/.pi/agent/skills/`，正典在
   `docs/maintenance/skills/`）——对 motto 披露检查/升级/回退操作。
@@ -41,7 +41,7 @@ bash scripts/maint/upstream-check.sh --state ~/.pi/agent/maintenance/last-check.
 #    定期: launchd 模板 docs/maintenance/upstream-check.launchd.plist(用户侧 opt-in)
 #    状态文件 checkedAt 距会话启动 >24h 时,motto 会话内跑一次只读检查再报
 # 1) 拉上游
-cd ~/Projects/pi && git fetch upstream --tags
+cd ~/Projects/Motto && git fetch upstream --tags
 # 2) 增量审查(不重读全量)
 git rev-list --left-right --count v0.84.1...upstream/main   # left=基线性,right=上游新增
 git range-diff v0.84.1...upstream/main                      # 逐 diff 分类
@@ -84,7 +84,7 @@ extension 更新。Core 与 extension 不得混成一次不可归因升级。
 ```bash
 MOTTO_USE_OFFICIAL=1 motto      # launcher 级原子回退官方(临时)
 pi-official                     # 同左(命令级)
-# 补丁回退: ~/Projects/pi git revert <patch>,重跑全量回归 + 基线 diff
+# 补丁回退: ~/Projects/Motto git revert <patch>,重跑全量回归 + 基线 diff
 # 升级回退: PI-BASE.json 还原旧五元组 + 重建下游 + session fixture resume 证明兼容
 ```
 

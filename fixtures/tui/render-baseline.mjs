@@ -46,8 +46,8 @@ const { initTheme, getMarkdownTheme } = await import(PI_CORE);
 const { Markdown, visibleWidth } = await import(PI_TUI);
 
 // TUI-1 表面经 fork(lesPrivilege/pi)构建产物渲染:S1 user 左界栏等只在 fork 组件中存在。
-// PI_FORK_ROOT 可覆盖(默认 ~/Projects/pi)。
-const PI_FORK_ROOT = process.env.PI_FORK_ROOT ?? join(os.homedir(), "Projects", "pi");
+// PI_FORK_ROOT 可覆盖(默认 ~/Projects/Motto)。
+const PI_FORK_ROOT = process.env.PI_FORK_ROOT ?? join(os.homedir(), "Projects", "Motto");
 const FORK_COMPONENTS = join(
 	PI_FORK_ROOT,
 	"packages/coding-agent/dist/modes/interactive/components/index.js",

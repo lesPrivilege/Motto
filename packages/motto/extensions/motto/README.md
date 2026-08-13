@@ -54,7 +54,7 @@ accent 小标签(`[bash]`),盒内仅内容,接近 chatbot GUI 的「标签 + 内
 
 ```text
 、、、 bash
-cd ~/Projects/pi
+cd ~/Projects/Motto
   git status
   git diff
 、、、
@@ -63,7 +63,7 @@ cd ~/Projects/pi
 ```text
 [bash]                                   ← 小标签（accent 色，盒外）
 ┌───────────────────┐
-│ cd ~/Projects/pi  │
+│ cd ~/Projects/Motto  │
 │   git status      │
 │   git diff        │
 └───────────────────┘
@@ -129,7 +129,7 @@ cd ~/Projects/pi
 文本块 · 2 行
 
 ```text
-cd ~/Projects/pi
+cd ~/Projects/Motto
 npm test
 ```
 ````
@@ -172,7 +172,7 @@ npm test
 安装是**显式动作**（命令位属用户环境，deploy.sh 不自动安装——与 .motto 立域同族纪律）：
 
 ```bash
-ln -s ~/Projects/pi/scripts/maint/motto ~/bin/motto   # ~/bin 须在 PATH
+ln -s ~/Projects/Motto/scripts/maint/motto ~/bin/motto   # ~/bin 须在 PATH
 ```
 
 选型：`~/bin`（用户级、免 sudo，与既有 taucode symlink 同先例）；`/usr/local/bin` 需 sudo，不默认。

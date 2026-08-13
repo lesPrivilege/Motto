@@ -28,11 +28,11 @@ description: >
 - 维护脚本：仓内 `scripts/maint/`（`$HARNESS_REPO/scripts/maint`；夺舍终局后即同仓
   `scripts/maint/`，Motto 仓回退已删除）。
 - 配置：`~/.pi/agent/maintenance/config.json`；读取失败用默认
-  （harnessRepo=~/Projects/pi, stateFile=~/.pi/agent/maintenance/last-check.json）。
+  （harnessRepo=~/Projects/Motto, stateFile=~/.pi/agent/maintenance/last-check.json）。
 
 ```bash
 MAINT_CONFIG=~/.pi/agent/maintenance/config.json
-HARNESS_REPO="$(python3 -c "import json,os;print(json.load(open(os.path.expanduser('$MAINT_CONFIG'))).get('harnessRepo','~/Projects/pi'))")"
+HARNESS_REPO="$(python3 -c "import json,os;print(json.load(open(os.path.expanduser('$MAINT_CONFIG'))).get('harnessRepo','~/Projects/Motto'))")"
 SCRIPTS="$HARNESS_REPO/scripts/maint"
 ```
 

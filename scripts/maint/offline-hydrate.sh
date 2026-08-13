@@ -8,7 +8,7 @@
 #   2) 逐包按依赖序 build:offline（ai 用 offline，其余用 build）。
 # 网络可达时，等价于根目录 `NODE_USE_ENV_PROXY=1 npm run build`。
 #
-# 用法：bash scripts/maint/offline-hydrate.sh   （在下游根 ~/Projects/pi 执行）
+# 用法：bash scripts/maint/offline-hydrate.sh   （在下游根 ~/Projects/Motto 执行）
 
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
