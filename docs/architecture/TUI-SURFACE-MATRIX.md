@@ -38,7 +38,7 @@
 - 改变模型/session 语义：不改变。若用 `sendMessage` 冒充则改变——禁止路径。
 - 影响 streaming：不适用（user 消息瞬时）。
 - 影响 copy：命令复制（`/copy-answer`、`/copy-code`）读语义源，不受本面影响；拖选按
-  I6-3 视觉行 join，S1 短横衬线 `───` 为显示投影、会进入拖选剪贴板，侧车落地前不宣称
+  I6-3 视觉行 join，S1 短横衬线 `─────` 为显示投影、会进入拖选剪贴板，侧车落地前不宣称
   保真（I6-4 就地界定）。
 - Ownership 冲突：`UserMessageComponent` 为内置，无 extension 出口。
 - **归属：GENERIC_CORE_SEAM**（`registerMessageRenderer` 扩展至 user role，或

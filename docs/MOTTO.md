@@ -37,7 +37,7 @@
 一、一红:accent 于牌记仅现于题名 motto 一处。
 二、零线:不置装饰线;线唯 composer 与 footer 原生边界(transcript user 消息首行短横衬线为例外,见凡例四)。
 三、块间必空一行,块内不空;天头二行。
-四、全部左锚,右侧余白不填充;无框、无竖线、无居中(辖 chrome,不辖 content:文档表格等数据结构的框线归原生渲染;唯一例外:transcript user 消息左上方短横衬线 `───`(独立成行,脚注分隔线风格)+ 正文续行悬挂缩进,I6-4 裁定,衬线非装饰框)。
+四、全部左锚,右侧余白不填充;无框、无竖线、无居中(辖 chrome,不辖 content:文档表格等数据结构的框线归原生渲染;唯一例外:transcript user 消息左上方短横衬线 `─────`(独立成行,脚注分隔线风格)+ 正文续行悬挂缩进,I6-4 裁定,衬线非装饰框)。
 五、间隔符唯 ` · `;显示宽度按 CJK 双列计。
 六、theme 只管色(五槽 bg/text/accent/dim/dimmer,另 mid 双宗同值),extension 只管版式;代码内无 hex。
 七、题名疏排;倍高行为默认关闭的实验位。
@@ -166,12 +166,12 @@ TUI 模式下固定以 `Motto` 替换原生终端/标签页标题(不再附加 s
 
 ## Not in scope
 
-居中、96 列版心、格言下居中短横线、方括号标签、frame、竖线、阴影、spinner、success marks、占位符、消息/tool/diff 渲染器、host 输出改写、extension statuses 行均不得实现或恢复。对话流渲染不挂任何 hook。唯一例外:transcript user 消息左上方短横衬线 `───`(TUI-1 S1 + tui-1-s1-r1 叠改,依据 I6-4 就地界定;衬线非装饰框,会随拖选进入剪贴板,侧车落地前不宣称保真)。
+居中、96 列版心、格言下居中短横线、方括号标签、frame、竖线、阴影、spinner、success marks、占位符、消息/tool/diff 渲染器、host 输出改写、extension statuses 行均不得实现或恢复。对话流渲染不挂任何 hook。唯一例外:transcript user 消息左上方短横衬线 `─────`(TUI-1 S1 + tui-1-s1-r1/r2 叠改,依据 I6-4 就地界定;衬线非装饰框,会随拖选进入剪贴板,侧车落地前不宣称保真)。
 
 ## Acceptance
 
 1. 深浅两宗切换后,版式逐字符一致,仅颜色不同。
 2. 终端从 200 列缩到 40 列:牌记始终左锚、无居中跳动、折行悬挂正确、CJK 不错列;格言疏排生效,bold 与色值不变。
 3. motto.ts 中无 `#` 开头的 hex;全屏间隔符无 `•`;`MOTTO_DOUBLE_HEIGHT` 为 false 时输出无 `ESC#3`/`ESC#4`。
-4. 全屏视觉:一处红、零装饰线、三级灰阶(text bold / dim / dimmer)、块间空行;无框、无竖线、无阴影(transcript 首行短横衬线 `───` 为 I6-4 裁定例外)。
+4. 全屏视觉:一处红、零装饰线、三级灰阶(text bold / dim / dimmer)、块间空行;无框、无竖线、无阴影(transcript 首行短横衬线 `─────` 为 I6-4 裁定例外)。
 5. footer 单行,左右簇对齐,窗口宽度连续变化时右簇对齐无抖动、按「模型信息最后折」退化;数值与原生 footer 逐项一致;composer 与 context 显示与重构前一致。

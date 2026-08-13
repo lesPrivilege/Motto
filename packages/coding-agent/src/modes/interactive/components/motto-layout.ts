@@ -2,8 +2,9 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 
 // motto-layout.ts — Motto transcript 视觉构成（TUI-1）共享布局常量。
 //
-// 布局文法（MOTTO_TUI_CORE）：user 消息首行为左上方短横衬线 `───`（脚注分隔线
-// 风格，tui-1-s1-r1 叠改，替代原首行竖界栏 `│ `），衬线独立成行、左锚、muted；
+// 布局文法（MOTTO_TUI_CORE）：user 消息首行为左上方短横衬线 `─────`（脚注分隔线
+// 风格，tui-1-s1-r1 叠改，替代原首行竖界栏 `│ `；tui-1-s1-r2 加长 3→5 × U+2500），
+// 衬线独立成行、左锚、muted；
 // 正文续行以 GUTTER_WIDTH 空格悬挂缩进对齐正文列；assistant / tool index /
 // review recap 对齐同一正文列。
 // 标识符与文案使用现代 CS 用语（不引入仿古词）。
@@ -14,8 +15,8 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 /** 悬挂缩进宽度（显示列）：正文列自第 3 列起。 */
 export const GUTTER_WIDTH = 2;
 
-/** user 消息左上方短横衬线（显示投影，非语义源）：3 × U+2500。 */
-export const GUTTER_RULE = "───";
+/** user 消息左上方短横衬线（显示投影，非语义源）：5 × U+2500。 */
+export const GUTTER_RULE = "─────";
 
 /** 正文列缩进（= gutter 宽度），user / assistant / tool / recap 对齐点。 */
 export const BODY_INDENT = GUTTER_WIDTH;
