@@ -153,7 +153,18 @@
    "commit": "badbe2163",
    "reason": "目验摩擦:竖界栏不够美观,改现代纸质发行脚注式短横衬线(2026-08-13 用户裁定)",
    "fixture": "fixtures/tui/baseline/theme-*.txt/.ansi.txt user-gutter (S1) 块重生成(--write),--check 逐字节 PASS + 零超宽",
-   "removalCondition": "叠改注:叠于 tui-1-s1-user-gutter(同触 user-message.ts/motto-layout.ts/user-message.test.ts/assistant-message.test.ts/基线 8+1 文件)。删除时先退本 patch 再退 tui-1-s1(后置先退),或接受冲突手工合并;删除后跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
+   "removalCondition": "叠改注:叠于 tui-1-s1-user-gutter(同触 user-message.ts/motto-layout.ts/user-message.test.ts/assistant-message.test.ts/基线 8+1 文件)。删除时先退本 patch 再退 tui-1-s1(后置先退),或接受冲突手工合并;删除后跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:被 tui-1-s1-r2-rule-lengthen 叠改(衬线加长 3→5 × U+2500);删除时先退 r2 再退本 patch。",
+   "status": "applied"
+  },
+  {
+   "id": "tui-1-s1-r2-rule-lengthen",
+   "title": "TUI-1 S1 叠改 — user 消息首行短横衬线加长 3→5 × U+2500",
+   "scope": "coding-agent interactive 组件(motto-layout.ts GUTTER_RULE 单点常量 + user-message.ts 注释)",
+   "description": "tui-1-s1-r1-footnote-dash 的衬线 3×U+2500 `───` 目验略短,加长为 5×U+2500 `─────`。单点常量变更,悬挂缩进/正文列对齐/用色槽位(muted)/OSC133/每 user 消息行数均不变。基线 8 文件 user-gutter 块重生成。",
+   "commit": "f454ab28b",
+   "reason": "目验摩擦:衬线略短(2026-08-13 用户裁定加长)",
+   "fixture": "fixtures/tui/baseline/theme-*.txt/.ansi.txt user-gutter (S1) 块重生成(--write),--check 逐字节 PASS + 零超宽",
+   "removalCondition": "叠改注:叠于 tui-1-s1-r1-footnote-dash(同触 motto-layout.ts/基线文件)。删除时先退本 patch 再退 r1 再退 tui-1-s1(后置先退),或接受冲突手工合并;删除后跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
    "status": "applied"
   }
  ],
