@@ -249,11 +249,11 @@ describe("AssistantMessageComponent", () => {
 	test("user messages ignore outputPad: body stays left-anchored after gutter", () => {
 		initTheme("dark");
 
-		// S1 gutter 布局：user 正文固定左锚于 gutter 后第 3 列，不随 outputPad 平移。
+		// S1 布局：user 正文固定左锚于第 3 列，不随 outputPad 平移。
 		for (const pad of [0, 1, 3]) {
 			const component = new UserMessageComponent("hello", undefined, pad);
 			const lines = component.render(40).map((line) => stripAnsi(line));
-			expect(lines.some((line) => line.trimEnd() === "│ hello")).toBe(true);
+			expect(lines.some((line) => line.trimEnd() === "  hello")).toBe(true);
 		}
 	});
 
