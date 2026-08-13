@@ -226,7 +226,8 @@ MINIMAL_PATCH_BOUNDARY：布局原语（VStack 分配、transcript grow + dock b
 ——授权范围仅限 §8.5 候选最小修复（reset + footer 替换 + 最终 requestRender 合为一次可见
 frame；或延后原生 footer 可见化至 Motto 单行 footer 就位后）；不触碰 layout.ts / stack.ts /
 tui-alt-screen.ts 渲染差分、agent loop / session / 工具；不复制 Codex/OpenCode 框架、不建
-第二套 composer、不用 timer debounce。下一张最小修复单草案见决策单文末（DRAFT，未开工）。
+第二套 composer、不用 timer debounce。此处记录 P0 授权时点；P1 后续已实施并验收，见 §8
+与决策单 §9/§10。
 
 证据边界：逐帧数字以报告为准，机制经源码互证；footer 替换接缝机制经返工确定性测试机械复现
 （可重放），**但该测试不是完整生产 rebind 链**（END_TO_END_RUNTIME_REBIND NOT_TESTED）。
@@ -235,5 +236,15 @@ tui-alt-screen.ts 渲染差分、agent loop / session / 工具；不复制 Codex
 列连续捕获未在本轮覆盖，留待最小修复施工后的 USER_ACCEPTANCE 阶段。
 
 结论登记：`docs/decisions/2026-08-11-motto-tui-3-composer-dock.md` §8.5；
-usage-log：`docs/usage-log/2026-08.md` 2026-08-13 composer 条目（处置 = 接缝机制 PROVEN /
-端到端 NOT_TESTED / ROOT_CAUSE STRONGLY_SUPPORTED，最小修复单已授权待施工）。
+usage-log：`docs/usage-log/2026-08.md` 2026-08-13 composer 条目。
+
+## 8. P1 消费结果（2026-08-13）
+
+调研中的“原子 rebind、单帧提交、bottom-aligned”候选已在 Motto 边界内消费：core 只增加
+custom footer replacement/commit 接缝与 reload 最终强制帧；Motto extension 负责单行 status
+投影和 TPS/status 退化。未复制 Codex renderable、OpenCode Yoga root 或 Grok Build 架构。
+
+自动测试覆盖四类 footer 拓扑、reload 最终帧、mutation proof，以及 single/multi status ×
+40/60/80/120/200。Ghostty 覆盖 60/80 reload 连拍、120 status 与 200 TPS+status；终态为
+`ACCEPTED WITH LIMITATIONS`。未覆盖项见决策单 §10；尤其完整 runtimeHost 端到端 rebind 与
+Grok Build 具体布局源码仍为 `NOT TESTED / NOT VERIFIED`。

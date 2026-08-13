@@ -708,7 +708,8 @@ export function degradeLeft(pwd: string, stats: readonly FooterStat[], width: nu
 function buildFooterStats(
 	ctx: ExtensionContext,
 	footerData: ReadonlyFooterDataProvider,
-	tpsText?: string,
+	tpsText: string | undefined,
+	width: number,
 ): { pwd: string; stats: FooterStat[] } {
 	let pwd = formatCwdForFooter(ctx.sessionManager.getCwd(), process.env.HOME || process.env.USERPROFILE);
 	const branch = footerData.getGitBranch();
@@ -730,6 +731,19 @@ function buildFooterStats(
 	if (totals.cost || usingSubscription) {
 		stats.push({ priority: 1, text: `$${totals.cost.toFixed(3)}${usingSubscription ? " (sub)" : ""}` });
 	}
+	// MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1 (decision §9):extension statuses 投影进单行。
+	// 按 key 稳定排序（localeCompare），值与原生 footer 同语义清理，itemSep 连接为一个段；
+	// 段内先做 bounded truncate（上限 = max(8, width/3)，…收尾），再放在 TPS 后以同级
+	// priority 3 参与 degradeLeft：同级先弃更靠右者，故普通 status 先于 TPS/R 降级；不恢复
+	// 原生多行 footer。
+	const extensionStatuses = footerData.getExtensionStatuses();
+	if (extensionStatuses.size > 0) {
+		const joined = Array.from(extensionStatuses.entries())
+			.sort(([a], [b]) => a.localeCompare(b))
+			.map(([, text]) => sanitizeStatusText(text))
+			.join(LAYOUT.itemSep);
+		stats.push({ priority: 3, text: truncateToWidth(joined, Math.max(8, Math.floor(width / 3))) });
+	}
 	const contextUsage = ctx.getContextUsage();
 	const contextWindow = contextUsage?.contextWindow ?? ctx.model?.contextWindow ?? 0;
 	const contextPercentValue = contextUsage?.percent ?? 0;
@@ -749,7 +763,7 @@ export function buildFooterLine(
 	tpsText?: string,
 ): string {
 	// 左簇:cwd(含 branch / session,•→·)+ " · " + stats。
-	const { pwd, stats } = buildFooterStats(ctx, footerData, tpsText);
+	const { pwd, stats } = buildFooterStats(ctx, footerData, tpsText, width);
 
 	// 右簇:(provider) model · thinking(多 provider 时加 provider 括号,同原生 footer 规则;
 	// thinking 仅 reasoning 模型显示)。
@@ -806,6 +820,11 @@ export function buildFooterLine(
 
 /** 结算均值展示存活期:TTL 内展示,过后自然隐藏(避免永久残留过期速率)。 */
 const TPS_SETTLED_TTL_MS = 60_000;
+
+/** 与原生 footer 同语义：去换行/制表/回车、折叠连续空格（单行展示用）。 */
+function sanitizeStatusText(text: string): string {
+	return text.replace(/[\r\n\t]/g, " ").replace(/ +/g, " ").trim();
+}
 
 export interface TpsSnapshot {
 	/** 展示文本,如 "~42 t/s"(流式)或 "38 t/s"(已结算)。 */

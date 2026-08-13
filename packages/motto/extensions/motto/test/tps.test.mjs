@@ -3,7 +3,8 @@
 // 运行:cd ~/.pi/agent && node --test notes/tps.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createTpsTracker, degradeLeft } from "../core.ts";
+import { visibleWidth } from "@earendil-works/pi-tui";
+import { buildFooterLine, createTpsTracker, degradeLeft, makeColor } from "../core.ts";
 
 /** 手动时钟:精确驱动流式/结算/工具期的时间轴。 */
 function makeClock() {
@@ -134,9 +135,7 @@ test("无 NaN/∞:空窗口、零产出、非有限 usage 均不产生非法显�
 	assert.equal(tps.snapshot(c.now()), undefined);
 });
 
-test("footer 集成:TPS 文本进入左簇统计且不破宽度上界", async () => {
-	const { buildFooterLine, makeColor } = await import("../core.ts");
-	const { visibleWidth } = await import("@earendil-works/pi-tui");
+test("footer 集成:TPS 文本进入左簇统计且不破宽度上界", () => {
 	const color = makeColor({ fg: (s, t) => t, bold: (t) => t });
 	const ctx = {
 		sessionManager: {
@@ -150,7 +149,11 @@ test("footer 集成:TPS 文本进入左簇统计且不破宽度上界", async ()
 		thinkingLevel: "max",
 		getContextUsage: () => ({ contextWindow: 1000000, percent: 0.5 }),
 	};
-	const footerData = { getGitBranch: () => undefined, getAvailableProviderCount: () => 1 };
+	const footerData = {
+		getGitBranch: () => undefined,
+		getAvailableProviderCount: () => 1,
+		getExtensionStatuses: () => new Map(),
+	};
 	for (const width of [40, 60, 66, 80, 200]) {
 		const line = buildFooterLine(color, ctx, footerData, width, "~42 t/s");
 		assert.ok(visibleWidth(line) <= width, `w=${width} 超宽 ${visibleWidth(line)}`);
@@ -162,4 +165,80 @@ test("footer 集成:TPS 文本进入左簇统计且不破宽度上界", async ()
 	assert.ok(l200.includes("deepseek-v4-flash · max"), `w=200 模型信息应完整: ${l200}`);
 	const l80 = buildFooterLine(color, ctx, footerData, 80, "~42 t/s");
 	assert.ok(l80.includes("deepseek-v4-flash · max"), `w=80 模型信息应完整: ${l80}`);
+});
+
+test("footer 组合矩阵:普通 extension status 不得在 120 列吞掉流式 TPS", () => {
+	const color = makeColor({ fg: (_slot, text) => text, bold: (text) => text });
+	const ctx = {
+		sessionManager: {
+			getCwd: () => "/private/tmp/motto-audit",
+			getSessionName: () => undefined,
+			getEntries: () => [
+				{
+					type: "message",
+					message: {
+						role: "assistant",
+						usage: {
+							input: 135000,
+							output: 18000,
+							cacheRead: 3000000,
+							cacheWrite: 2000,
+							cost: { total: 0.005 },
+						},
+					},
+				},
+			],
+		},
+		model: { id: "deepseek-v4-pro", provider: "deepseek", reasoning: true, contextWindow: 1000000 },
+		thinkingLevel: "max",
+		getContextUsage: () => ({ contextWindow: 1000000, percent: 0.5 }),
+	};
+	const cases = [
+		{
+			name: "single",
+			statuses: new Map([["subagent", "1 subagent working"]]),
+			texts: ["1 subagent working"],
+		},
+		{
+			name: "multi",
+			statuses: new Map([
+				["z-status", "zeta ready"],
+				["a-status", "alpha working"],
+			]),
+			texts: ["alpha working", "zeta ready"],
+		},
+	];
+
+	for (const { name, statuses, texts } of cases) {
+		for (const width of [40, 60, 80, 120, 200]) {
+			const line = buildFooterLine(
+				color,
+				ctx,
+				{
+					getGitBranch: () => undefined,
+					getAvailableProviderCount: () => 2,
+					getExtensionStatuses: () => statuses,
+				},
+				width,
+				"~42 t/s",
+			);
+			assert.ok(visibleWidth(line) <= width, `${name} w=${width} 超宽 ${visibleWidth(line)}: ${line}`);
+			assert.ok(line.includes("(deepseek) deepseek-v4-pro · max"), `${name} w=${width} 模型信息应完整: ${line}`);
+			if (width <= 80) {
+				assert.ok(!line.includes("t/s"), `${name} w=${width} 窄宽应按合同降级 TPS: ${line}`);
+				for (const text of texts) assert.ok(!line.includes(text), `${name} w=${width} 窄宽应先降级 status: ${line}`);
+			} else {
+				assert.ok(line.includes("~42 t/s"), `${name} w=${width} 普通 status 不得吞 TPS: ${line}`);
+			}
+			if (width === 120) {
+				for (const text of texts) assert.ok(!line.includes(text), `${name} w=120 应先于 TPS 降级 status: ${line}`);
+			}
+			if (width === 200) {
+				for (const text of texts) assert.ok(line.includes(text), `${name} w=200 应保留 status: ${line}`);
+				if (name === "multi") {
+					assert.ok(line.indexOf(texts[0]) < line.indexOf(texts[1]), `multi w=200 status 应按 key 排序: ${line}`);
+				}
+			}
+		}
+	}
 });

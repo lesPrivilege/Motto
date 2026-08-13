@@ -421,6 +421,11 @@ export class InteractiveMode {
 	private footer: FooterComponent;
 	private footerContainer: Container;
 	private footerDataProvider: FooterDataProvider;
+	// MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1 (decision §9): set by resetExtensionUI when it
+	// defers the native footer restore during a rebind/reload. Cleared when a new custom
+	// footer is registered or the pending native restore is committed (see
+	// commitFooterAfterRebind).
+	private footerReplacePending = false;
 	// Stored so the same manager can be injected into custom editors, selectors, and extension UI.
 	private keybindings: KeybindingsManager;
 	private version: string;
@@ -1961,7 +1966,14 @@ export class InteractiveMode {
 			this.subscribeToAgent();
 		}
 
-		await this.bindCurrentSessionExtensions();
+		try {
+			await this.bindCurrentSessionExtensions();
+		} finally {
+			// MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1 (decision §9) commit point: runs whether
+			// the bind succeeded (a new custom footer was registered → no-op) or failed/
+			// cancelled (→ atomic fallback to the native footer, single 1→2/3 frame).
+			this.commitFooterAfterRebind();
+		}
 
 		if (this.session !== session) {
 			return;
@@ -2209,7 +2221,17 @@ export class InteractiveMode {
 		}
 		this.ui.hideOverlay();
 		this.clearExtensionTerminalInputListeners();
-		this.setExtensionFooter(undefined);
+		// MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1 (decision §9): during a rebind/reload keep
+		// the current custom footer mounted instead of restoring the native multi-line footer
+		// — never render a native 2/3-line intermediate frame. Mark the native restore as
+		// pending; it commits atomically at the rebind/reload commit point when no new
+		// custom footer was registered. When no custom footer is mounted there is nothing to
+		// keep and the native footer simply stays.
+		if (this.customFooter) {
+			this.footerReplacePending = true;
+		} else {
+			this.footerReplacePending = false;
+		}
 		this.setExtensionHeader(undefined);
 		this.clearExtensionWidgets();
 		this.footerDataProvider.clearExtensionStatuses();
@@ -2274,6 +2296,11 @@ export class InteractiveMode {
 			| ((tui: TUI, thm: Theme, footerData: ReadonlyFooterDataProvider) => Component & { dispose?(): void })
 			| undefined,
 	): void {
+		// Any explicit footer replacement resolves the pending-native flag: either a new
+		// custom footer (custom→custom, 1→1) or an explicit native restore (custom→native,
+		// atomic 1→2/3). Both are single visible frames.
+		this.footerReplacePending = false;
+
 		// Dispose existing custom footer
 		if (this.customFooter?.dispose) {
 			this.customFooter.dispose();
@@ -2291,6 +2318,20 @@ export class InteractiveMode {
 		}
 
 		this.ui.requestRender();
+	}
+
+	/**
+	 * MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1 (decision §9): commit point after a rebind or
+	 * reload. If resetExtensionUI deferred the native footer restore and no extension
+	 * re-registered a custom footer, restore the native footer as a single atomic visible
+	 * frame (1→2/3). Also clears the pending flag so no stale state lingers.
+	 */
+	private commitFooterAfterRebind(): void {
+		if (!this.footerReplacePending) {
+			return;
+		}
+		this.footerReplacePending = false;
+		this.setExtensionFooter(undefined);
 	}
 
 	/**
@@ -5818,13 +5859,6 @@ export class InteractiveMode {
 		this.ui.requestRender(true);
 		await new Promise((resolve) => process.nextTick(resolve));
 
-		const dismissReloadBox = (editor: Component) => {
-			this.editorContainer.clear();
-			this.editorContainer.addChild(editor);
-			this.ui.setFocus(editor);
-			this.ui.requestRender();
-		};
-
 		let chatRestoredBeforeSessionStart = false;
 		let reloadBoxDismissed = false;
 		const restoreChatBeforeSessionStart = () => {
@@ -5839,6 +5873,10 @@ export class InteractiveMode {
 
 		try {
 			await this.session.reload({ beforeSessionStart: restoreChatBeforeSessionStart });
+			// MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1 (decision §9) commit point for the reload
+			// path: extension had its session_start chance to re-register a custom footer; if
+			// none did, atomically fall back to the native footer (1→2/3).
+			this.commitFooterAfterRebind();
 			restoreChatBeforeSessionStart();
 			this.keybindings.reload();
 			const activeHeader = this.customHeader ?? this.builtInHeader;
@@ -5865,14 +5903,33 @@ export class InteractiveMode {
 					? "Reloaded keybindings, extensions, skills, prompts, themes, and context files; saved project trust"
 					: "Reloaded keybindings, extensions, skills, prompts, themes, and context files",
 			);
-			dismissReloadBox(this.editor as Component);
+			this.dismissReloadBox(this.editor as Component);
 			reloadBoxDismissed = true;
 		} catch (error) {
 			if (!reloadBoxDismissed) {
-				dismissReloadBox(previousEditor as Component);
+				// A reload failure before session_start must still resolve the deferred native
+				// fallback; dismissReloadBox then commits that topology in one forced frame.
+				this.commitFooterAfterRebind();
+				this.dismissReloadBox(previousEditor as Component);
 			}
 			this.showError(`Reload failed: ${error instanceof Error ? error.message : String(error)}`);
 		}
+	}
+
+	/**
+	 * Commit the reload editor and footer together. The reload progress box is rendered with a
+	 * forced frame, which clears the renderer's differential baseline. A non-forced request here
+	 * can compare the unchanged footer line against that baseline and skip writing it even though
+	 * the terminal row was cleared during reload; keyboard input would then be the first forced
+	 * redraw. Invalidate the mounted tree and force one final full frame so the footer is committed
+	 * without relying on another input event.
+	 */
+	private dismissReloadBox(editor: Component): void {
+		this.editorContainer.clear();
+		this.editorContainer.addChild(editor);
+		this.ui.setFocus(editor);
+		this.ui.invalidate();
+		this.ui.requestRender(true);
 	}
 
 	private async handleExportCommand(text: string): Promise<void> {

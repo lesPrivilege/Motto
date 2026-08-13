@@ -79,6 +79,7 @@ function mockCtx(overrides = {}) {
 const footerData = {
 	getGitBranch: () => "main",
 	getAvailableProviderCount: () => 2,
+	getExtensionStatuses: () => new Map(),
 };
 
 test("footer 渲染恒 ≤ 目标宽度(40/60/66/80/200),不抛错", () => {

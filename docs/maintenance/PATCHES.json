@@ -187,6 +187,15 @@
    "fixture": "无——TUI-4 不改变基线 scenario(现有 scenario 无卡片 marker,render-baseline.mjs --check 通过);cards.test.mjs 端到端用例更新为右上嵌框 + 新增 markdown.test.ts 右上嵌框原语用例(含 40/60/80/120/200 零超宽、CJK 截断不破框) R2:新增 markdown.test.ts 全宽严格相等(40/60/80/120/200 visibleWidth===availableWidth)+ 短内容 a 拉伸至 200 + cardBorder 可区分主题槽位断言 + 行距断言;cards.test.mjs 新增全宽/轻框/行距端到端;render-baseline 无卡片 scenario 不受影响。mutation proof×2:恢复自然宽算法与移除 cardBorder 消费均使对应用例失败。 R3:cards.test.mjs 新增机械证明(Motto cardBorder 输出 === borderMuted RGB 92;97;102, !== dim RGB 168;173;178,label 仍 accent,正文不染色,自然表格不消费);mutation proof:临时改回 dim 使对应用例失败,恢复 borderMuted 通过。",
    "removalCondition": "上游吸收等价「表格头行可配置为 top border 右上内嵌标签」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check、coding-agent 全量测试与 motto 扩展 cards.test.mjs。叠改注:与 tui-4-s2-card-tag-label / tui-4-s2-card-tag-width-guard 同触 markdown.ts renderTable 标签分支;删除须后置先退或处理冲突。",
    "status": "applied"
+  },
+  {
+   "id": "tui-3-atomic-footer-replacement",
+   "title": "TUI-3 P1 — custom footer 原子替换与 reload 最终帧提交",
+   "scope": "coding-agent interactive 集成层薄接缝(packages/coding-agent/src/modes/interactive/interactive-mode.ts) + Motto extension 单行 status 投影(packages/motto/extensions/motto/core.ts)",
+   "description": "MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT=1:reset/rebind 期间保留现有 custom footer,新 custom footer 注册后原子替换;若无 custom footer、bind 失败或取消,在 commit 点一次原子回落原生 footer,不显示 1→2/3→1 中间帧且不假定 Motto 恒安装。reload 收尾统一经 dismissReloadBox invalidate + requestRender(true) 提交 editor/footer 最终全帧,避免未变 footer 被差分基线跳过而需下一次输入才出现。Motto 单行 footer 同时消费 getExtensionStatuses():按 key 排序、单行净化、有界截断;普通 status 与 TPS 同为 priority 3 且位于其后,窄宽先弃 status,不让状态吞掉 TPS。canonical/session/tool payload、布局原语、agent loop/provider/内置工具语义均不变。",
+   "fixture": "packages/coding-agent/test/tui3-p0-rebind-frame.test.ts:custom→custom/custom→native/native→custom/bind-fallback/reload-final-frame + mutation proof;packages/motto/extensions/motto/test/{tps,footer-degrade,motto}.test.mjs:single/multi status × 40/60/80/120/200、TPS 优先级与零超宽。Ghostty:/private/tmp/motto-tui3-p1-evidence(60/80 reload 连拍、120 status、200 TPS+status;用户验收 ACCEPTED WITH LIMITATIONS)。",
+   "removalCondition": "上游提供等价的 custom footer 原子 rebind/reload 最终帧提交合同后删除 interactive-mode 接缝;删除前确认原生或公开 footer API 能在无 custom/bind 失败时一次回落且无中间帧。Motto status 同行投影仅在上游 custom footer 可原生消费 extension statuses 且保持单行退化顺序时删除。删除后跑 tui3-p0-rebind-frame、interactive-tui、Motto footer/TPS 定向测试、npm run check 与 governance。叠改注:与 motto-rebrand-1/tui-2-t1/t2-t3 同触 interactive-mode.ts,删除须后置先退或处理冲突。",
+   "status": "applied"
   }
  ],
  "supportCommits": {

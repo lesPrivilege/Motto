@@ -88,11 +88,15 @@ function mockCtx() {
 	};
 }
 
-function line(width, providerCount = 2) {
+function line(width, providerCount = 2, statuses = new Map()) {
 	return buildFooterLine(
 		plainColor,
 		mockCtx(),
-		{ getGitBranch: () => null, getAvailableProviderCount: () => providerCount },
+		{
+			getGitBranch: () => null,
+			getAvailableProviderCount: () => providerCount,
+			getExtensionStatuses: () => statuses,
+		},
 		width,
 	);
 }
@@ -133,4 +137,48 @@ test("极窄宽度:先折 thinking,最后才截模型名;行宽恒 ≤ width", (
 	const l25 = line(25);
 	assert.ok(l25.endsWith("…"), `w=25 模型名应截断: ${l25}`);
 	assert.ok(l25.includes("(deepseek)"), l25);
+});
+
+// ============================================================================
+// MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1 (decision §9):extension statuses 投影进单行。
+
+test("extension statuses 投影:按 key 稳定排序、值清理、单行 bounded truncate", () => {
+	// 乱序 key + 含换行/制表/连续空格的值,应稳定排序(alpha < beta)且值被清理。
+	const statuses = new Map([
+		["z-status", "zebra"],
+		["a-status", "alpha\n\ttab  spaced"],
+		["m-status", "mid"],
+	]);
+	const l = line(120, 2, statuses);
+	assert.ok(l.includes("alpha tab spaced"), `值应清理换行/制表/连续空格: ${l}`);
+	const aIdx = l.indexOf("alpha tab spaced");
+	const mIdx = l.indexOf("mid");
+	const zIdx = l.indexOf("zebra");
+	assert.ok(aIdx !== -1 && mIdx !== -1 && zIdx !== -1, `状态全部投影进单行: ${l}`);
+	assert.ok(aIdx < mIdx && mIdx < zIdx, `按 key 稳定排序(a<m<z): ${l}`);
+	// 宽 120 不超宽。
+	assert.ok(width(l) <= 120, `w=120 时宽 ${width(l)}: ${l}`);
+});
+
+test("extension statuses 投影:任意宽度下恒 ≤ width 且状态段有界", () => {
+	const statuses = new Map([
+		["s1", "state-one"],
+		["s2", "state-two-with-a-very-long-value-".repeat(4)],
+	]);
+	for (let w = 8; w <= 120; w++) {
+		const l = line(w, 2, statuses);
+		assert.ok(width(l) <= w, `w=${w} 时宽 ${width(l)} > ${w}: ${l}`);
+	}
+	// 宽裕时状态可见。
+	const wide = line(120, 2, statuses);
+	assert.ok(wide.includes("state-one"), `宽裕时应可见状态: ${wide}`);
+	assert.ok(wide.includes("state-one · state-two-with"), `截断前缀应保留排序与状态语义: ${wide}`);
+	assert.ok(wide.includes("…"), `超长状态段应以省略号 bounded truncate: ${wide}`);
+	assert.ok(!wide.includes("state-two-with-a-very-long-value-".repeat(4)), `不得生吞超长状态段: ${wide}`);
+});
+
+test("extension statuses 投影:无状态时行为与旧版一致", () => {
+	const l = line(120);
+	assert.ok(l.includes("(deepseek) deepseek-v4-pro · max"), l);
+	assert.ok(!l.includes("undefined"), l);
 });

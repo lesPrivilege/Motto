@@ -2,11 +2,12 @@
 
 - 日期：2026-08-11
 - 类型：工单登记（TUI 续行；调研前置，不急于实现）
-- 状态：REGISTERED → 调研完成 → 结构验证完成 → **REOPENED / P0 FRAME TRACE**（2026-08-13）
+- 状态：REGISTERED → 调研完成 → 结构验证完成 → REOPENED / P0 FRAME TRACE →
+  **P1 ACCEPTED WITH LIMITATIONS**（2026-08-13）
 - 原定调（2026-08-11）：**不实现**——composer 固定底栏结构已由上游实现并入 fork 基线；
   2026-08-13 因真实使用回报 composer 仍会上下跳跃、闪烁，原定调前提只对“分栏结构”成立，
   不足以证明“屏幕坐标稳定”，本单据此重开（见 §8）。
-- 执行者认领：（未认领；写者与验收者分离，同仓同时至多一个写者）
+- 执行与验收：Motto 施工；Luna 视觉复验；独立定向测试复核
 - 依据：用户指令（2026-08-11，TUI 增加一笔：composer 行固定在下方）；旧 session 提点
   `~/Projects/pi/tui-plan.md`（Alternate-Screen Layout System Plan，实现交接稿）；
   `docs/architecture/TUI-SURFACE-MATRIX.md` S15（input composer 现属 EXTENSION_NATIVE，零需求）
@@ -163,8 +164,8 @@ NOT_TESTED，见 §8.5）；本段保留作重开历史脉络。**
 P0 只有在 trace 指向明确机制后才授权最小修复。优先候选是把 extension UI reset、footer
 替换与最终 requestRender 合为一次可见 frame；不复制 Codex/OpenCode 框架，不建第二套
 composer/session pipeline，不用 timer debounce 掩盖中间态。
-**P0 后该候选已授权**（IMPLEMENTATION_AUTHORIZED，授权范围见 §8.5）；授权不代表施工——
-最小修复单仍为文末 DRAFT 草案，未开工。
+**P0 后该候选已授权**（IMPLEMENTATION_AUTHORIZED，授权范围见 §8.5）。本段记录授权时点；
+P1 后续已实施并验收，现状见 §9/§10。
 
 ### 8.4 重开验收态（2026-08-13 P0 trace 后更新；更新前中间态见下方注）
 
@@ -275,11 +276,10 @@ requestRender 合为一次可见 frame；或延后原生 footer 可见化至 Mot
 flush 计数）仍为 80×24 RecordingTerminal 报告记录，临时 harness 已删不可重放。Ghostty
 实机 60/80/120 列连续捕获未在本轮覆盖，留待最小修复施工后的 USER_ACCEPTANCE 阶段。
 
-## 9. 下一张最小修复单草案（DRAFT — 未开工，仅文档草案）
+## 9. P1 最小修复单（IMPLEMENTED — ACCEPTED WITH LIMITATIONS）
 
-> 本草案只作施工范围与门禁的预登记；**不实施任何产品代码**。开工须：用户显式放行 + 单独立单
-> （写者认领、写者与验收分离）+ PATCHES.json 登记（removalCondition = 上游提供等价 footer
-> rebind 原子化后删除）。
+> 本节原为施工范围预登记。2026-08-13 已按合同实现并完成自动与 Ghostty 复验；现状由本节
+> 与 §10 共同落账。Core patch 登记为 `tui-3-atomic-footer-replacement`。
 
 ### 修复合同（MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1，用户 2026-08-13 裁定）
 
@@ -299,8 +299,7 @@ MOTTO_CUSTOM_FOOTER_HEIGHT_CONTRACT = 1
   rebind 全程 1→1、无 native 中间帧；但 custom→native（bind 结束后）与 native→custom
   （新会话接上 custom）是**合法拓扑转换**，允许一次原子 1→2/3 / 2/3→1——「custom 高度恒
   1」与「无 custom 时回落原生」因此不再矛盾。
-- **Motto custom footer 投影**：自行消费 `footerData.getExtensionStatuses()`（现状：
-  `buildFooterLine` 不消费状态，状态仅原生多行 footer 展示——需在 extension 侧补投影），
+- **Motto custom footer 投影**：自行消费 `footerData.getExtensionStatuses()`（已实现），
   多状态**稳定排序** + **单行内 bounded truncate**；不新增 placeholder row。
 - **core 只提供原子 footer replacement 接缝**：任何转换（1→1 / 1→2/3 / 2/3→1 /
   fallback）都是**一次可见提交**，无中间帧、无 1→2→1 抖动。
@@ -359,20 +358,18 @@ native→custom / bind 失败回落均为**一次原子拓扑转换**，composer
 
 ### 测试 / 门禁
 
-- 定向测试：`packages/coding-agent/test/tui3-p0-rebind-frame.test.ts`（返工新增）为
-  **custom→custom 验收测试**（真实 footer replacement seam）——修复落地后把其断言翻转：
-  custom→custom rebind 全程 footer 1→1、composer rect 不变、无原生中间帧（现测试断言
-  中间帧存在，修复后必须翻转）；mutation proof 保留（改回「custom→custom 落回原生多行
-  footer」旧链必须失败）。
-- **拓扑转换测试矩阵**（合同四类，施工时补齐）：
+- 定向测试：`packages/coding-agent/test/tui3-p0-rebind-frame.test.ts` 已翻转为修复后合同：
+  custom→custom 全程 footer 1→1、composer rect 不变、无原生中间帧；mutation proof 保留
+  （改回 custom→custom 立即落回原生多行 footer 的旧链必须失败）。
+- **拓扑转换测试矩阵**（合同四类，已补齐）：
   - custom→custom：全程 1→1，composer rect 不变；
   - custom→native：bind 结束后一次原子 1→2/3，composer 一次有定义位移；
   - native→custom：一次原子 2/3→1，composer 一次有定义位移；
   - bind 失败/取消：一次原子 fallback，不得先 1→2→1。
 - 新增 extension 投影测试：`getExtensionStatuses()` 多状态稳定排序 + 单行 bounded truncate
   （40/60/80/120/200 列零超宽），状态不因宽度丢失语义。
-- END_TO_END_RUNTIME_REBIND（当前 NOT_TESTED）：施工时补真实 runtimeHost + Motto extension
-  bind 的端到端复现（或另立 e2e 单）；未测前不得写「完整生产链已机械复现」。
+- END_TO_END_RUNTIME_REBIND 仍为 NOT_TESTED：本轮未驱动真实 runtimeHost + Motto extension
+  bind 的完整端到端链；不得写「完整生产链已机械复现」。
 - 另复用 RecordingTerminal + `mountInteractiveTui` + `renderLayoutFrame` 逐帧记录样板
   （`interactive-tui.test.ts` T3-1 段 + 已证报告）。
 - `npm run check`；`git diff --check`；`bash scripts/maint/ci-checks.sh governance`；不运行
@@ -386,4 +383,52 @@ native→custom / bind 失败回落均为**一次原子拓扑转换**，composer
 - Ghostty 实机 60/80/120 列连续捕获复核（USER_ACCEPTANCE）：快速 streaming、footer/status
   切换、多行 composer、stream 中 resize 均无 composer 非预期跳跃/闪烁；custom→native /
   native→custom 转换各复跑一次；
-- 用户视觉 ACCEPT 后才显式暂存、单一 commit、push。
+- 用户视觉终态为 ACCEPTED WITH LIMITATIONS；具体覆盖与限制见 §10。
+
+## 10. P1 实现与验收收口（2026-08-13）
+
+### 实现
+
+- `interactive-mode.ts`：`resetExtensionUI()` 在 custom footer 在位时只标记 pending，不显示
+  原生中间帧；`setExtensionFooter()` 原子解析替换；`commitFooterAfterRebind()` 在无新 custom
+  footer、bind 失败或取消时一次回落原生 footer。`rebindCurrentSession()` 与 `/reload` 均有
+  commit 点，core 不假定 Motto 恒安装。
+- `/reload` 收尾统一经 `dismissReloadBox()` 对 editor/footer tree `invalidate()` 并
+  `requestRender(true)`，保证清屏后无额外输入也提交最终 footer 行。
+- Motto `buildFooterLine()` 同行投影 `getExtensionStatuses()`：按 key 排序、净化、有界截断；
+  status 与 TPS 同为 priority 3 且放在其后，同级退化先弃 status，120 列不再吞 TPS。
+- canonical/session/tool payload、layout/stack/tui-alt-screen、agent loop/provider/内置工具语义
+  均未改变。
+
+### 自动证据
+
+```text
+packages/coding-agent:
+  tui3-p0-rebind-frame.test.ts + interactive-tui.test.ts  18/18 PASS
+packages/motto/extensions/motto:
+  tps + footer-degrade + motto                         22/22 PASS
+```
+
+`tui3-p0-rebind-frame` 覆盖 custom→custom、custom→native、native→custom、bind fallback、
+reload 最终帧与旧链 mutation。Motto 组合矩阵覆盖 single/multi status × 40/60/80/120/200，
+断言零超宽、稳定排序、120 保 TPS、200 TPS/status/model 同见。
+
+### Ghostty 证据与终态
+
+证据位于 `/private/tmp/motto-tui3-p1-evidence/`：60/80 列 `/reload` 各 6/6 帧 footer 可见且
+组内 PNG hash 一致；120 列两项 status 同行可见；200 列 settled TPS、两项 status 与模型信息
+同时可见；streaming 连拍 footer 未消失、未闪烁。启动门禁确认 Motto 牌记、单行 footer、
+`deepseek-v4-flash · max`，排除了先前错误 dogfood 环境中的原生 Pi/no-models 画面。
+
+```text
+MOTTO-TUI-3-P1                 ACCEPTED WITH LIMITATIONS
+ATOMIC_FOOTER_REPLACEMENT      PASS
+RELOAD_FINAL_FRAME_FLUSH       PASS
+MOTTO_CUSTOM_FOOTER_HEIGHT_1   PASS
+TPS_STATUS_PRIORITY            PASS
+CANONICAL                      UNCHANGED BY IMPLEMENTATION
+```
+
+限制：完整 runtimeHost 端到端 rebind、native→custom/custom→native Ghostty、40 列 Ghostty、
+fresh→reload→resume 全宽矩阵与 canonical JSONL 逐字对照未测；composer rect 的 Ghostty 像素坐标
+未机械读取。以上均不得补写为 PASS。

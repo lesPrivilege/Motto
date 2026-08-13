@@ -41,7 +41,7 @@
 五、间隔符唯 ` · `;显示宽度按 CJK 双列计。
 六、theme 只管色(五槽 bg/text/accent/dim/dimmer,另 mid 双宗同值),extension 只管版式;代码内无 hex。
 七、题名疏排;倍高行为默认关闭的实验位。
-八、footer 单行,地脚层级,数据取自原生同源,不增删指标;唯一例外:TPS(输出 token 吞吐)为会话事件派生指标,见 Footer 节。
+八、footer 单行,地脚层级,数据取自原生同源,不增删指标;唯一例外:TPS(输出 token 吞吐)为会话事件派生指标;extension status 只作原生同源的同行投影,见 Footer 节。
 九、终端侧配置不入本工程;双宗 auto 依赖终端自声明外观与底色一致(ghostty:window-theme)。
 十、朱记三用:钤印(牌记题名)、改笔(路径与 diff)、校记(失败)。Motto 新增投影层与主题无第四种红,无绿,无 ✓/× 与 success/warning/error 语义色(上游 legacy 选中/成功标记为未改动原码,在 Motto 主题下渲染为 mid 灰,不构成语义色)。
 
@@ -152,6 +152,7 @@ TUI 模式下固定以 `Motto` 替换原生终端/标签页标题(不再附加 s
 ```
 
 - 左簇:`cwd`(沿用原生缩略,含 ` (branch)` 与 ` · session`)后用 ` · ` 接统计;统计项与原生 footer 完全同源、同指标、同显隐条件:`↑in ↓out RcacheRead WcacheWrite CH{命中率}% $cost {percent}%/{window}(auto)`,另加派生指标 `TPS`(见下)。数据取自会话 `entries` 累计 + `getContextUsage()`,`formatTokens`/`formatCwdForFooter` 与原生逐字一致;auto-compact 读 settings.json `compaction.enabled`(缺省 true)。
+- extension status:消费原生 `footerData.getExtensionStatuses()`,按 key 稳定排序,清理换行/制表与连续空格后以 ` · ` 合并为左簇中的一个有界段;不新增第二行或占位行。它与 TPS 同为 priority 3 且位于 TPS 之后,同级退化时先弃更靠右的 status,避免普通状态在 120 列吞掉 TPS;宽裕时与 TPS/模型同行显示。
 - 右簇:`(provider) <model> · <thinking-level>`(多 provider 时加 provider 括号,同原生 footer 规则;仅 reasoning 模型显示 thinking;`•` 一律替换为 `·`)。
 - 右对齐:填充 = 终端宽度 − 左簇宽 − 右簇宽,最小间距 2。折叠优先级(2026-08-13 厘清):**优先折叠模型信息以外的**——左簇统计段按显式优先级降级(低者先弃):`$cost`(记账,价值最低)→ `CH`/`W`(缓存细节)→ `TPS`/`R`(TPS 为瞬态,同优先级最右先弃)→ `↑`/`↓`(吞吐)→ `context%/window`(操作最关键,最后保),`cwd` 永不主动弃,仅剩 `cwd` 仍超宽时以省略号(…)截断兜底;左簇降无可降后才折模型信息(先去 thinking,再截模型名);任何情况下渲染行宽 ≤ 终端宽,不折行。
 - TPS(输出 token 吞吐,tokens/sec):窗口 = 一次 assistant 回答(message_start → message_end)。流式期显示滚动速率,`~` 前缀标注估算(`~1.2k t/s`);结算转均值(`1.2k t/s`,以 message_end 的 `usage.output` 为精确分子)。分母锚定最近一次产出 token 的时刻:工具执行期无产出 → 分母冻结、速率恒定(「工具期分母不涨」)。结算均值展示 TTL 60s 后自然隐藏;除零/非有限值一律不显示(无 NaN/∞)。
@@ -166,7 +167,7 @@ TUI 模式下固定以 `Motto` 替换原生终端/标签页标题(不再附加 s
 
 ## Not in scope
 
-居中、96 列版心、格言下居中短横线、方括号标签、frame、竖线、阴影、spinner、success marks、占位符、消息/tool/diff 渲染器、host 输出改写、extension statuses 行均不得实现或恢复。对话流渲染不挂任何 hook。唯一例外:transcript user 消息左上方短横衬线 `─────────`(TUI-1 S1 + tui-1-s1-r1/r2/r3 叠改,依据 I6-4 就地界定;衬线非装饰框,会随拖选进入剪贴板,侧车落地前不宣称保真)。
+居中、96 列版心、格言下居中短横线、方括号标签、frame、竖线、阴影、spinner、success marks、占位符、消息/tool/diff 渲染器、host 输出改写、独立 extension statuses 行均不得实现或恢复；Footer 节所定同行 status 投影不属新增行。对话流渲染不挂任何 hook。唯一例外:transcript user 消息左上方短横衬线 `─────────`(TUI-1 S1 + tui-1-s1-r1/r2/r3 叠改,依据 I6-4 就地界定;衬线非装饰框,会随拖选进入剪贴板,侧车落地前不宣称保真)。
 
 ## Acceptance
 
