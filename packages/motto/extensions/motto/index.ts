@@ -1,6 +1,6 @@
 // motto —— TUI 品牌层(index.ts 薄:pi 集成接线;纯逻辑见 core.ts)。
 // splash / footer(含 TPS)/ 终端标题守护 / 提示词品牌化。
-import type { ExtensionAPI, MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext, MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
 import { visibleWidth } from "@earendil-works/pi-tui";
 import { projectDunhaoCards } from "./cards.ts";
 import { projectDeepHeadings } from "./headings.ts";
@@ -68,7 +68,33 @@ export default function motto(pi: ExtensionAPI): void {
 		tps.onMessageEnd(usage);
 	});
 
-	pi.on("session_start", (_event, ctx) => {
+	/**
+ * 注册单行 footer。幂等:pi 的 setFooter 每次 dispose 旧组件后重建。
+ * session rebind / rename 会触发上游 resetExtensionUI 清掉扩展 footer(恢复原生两行),
+ * 故 session_start 与 session_info_changed 均调用(重新注册)。
+ */
+function registerFooter(ctx: ExtensionContext): void {
+	if (typeof ctx.ui.setFooter !== "function") return;
+	ctx.ui.setFooter((_tui, theme, footerData) => {
+		const color = makeColor(theme);
+		return {
+			invalidate() {},
+			dispose() {},
+			render(width: number): string[] {
+				try {
+					const tpsText = tps.snapshot()?.text;
+					const line = buildFooterLine(color, ctx, footerData, width, tpsText);
+					// 宽度兜底:构造已保证 ≤ width,此处仅为防未来回归;异常则空行,不抛错不崩 TUI。
+					return [visibleWidth(line) <= width ? line : ""];
+				} catch {
+					return [""];
+				}
+			},
+		};
+	});
+}
+
+pi.on("session_start", (_event, ctx) => {
 		if (ctx.mode !== "tui") return;
 		// 新会话:重置项目本地正文截断提醒(每会话一次)。
 		projectDocTruncationNotified = false;
@@ -88,25 +114,7 @@ export default function motto(pi: ExtensionAPI): void {
 				},
 			};
 		});
-		if (typeof ctx.ui.setFooter === "function") {
-			ctx.ui.setFooter((_tui, theme, footerData) => {
-				const color = makeColor(theme);
-				return {
-					invalidate() {},
-					dispose() {},
-					render(width: number): string[] {
-						try {
-							const tpsText = tps.snapshot()?.text;
-							const line = buildFooterLine(color, ctx, footerData, width, tpsText);
-							// 宽度兜底:构造已保证 ≤ width,此处仅为防未来回归;异常则空行,不抛错不崩 TUI。
-							return [visibleWidth(line) <= width ? line : ""];
-						} catch {
-							return [""];
-						}
-					},
-				};
-			});
-		}
+		registerFooter(ctx);
 		// 标题:启动期 pi 会多次写 "π - ...",退避重设覆盖之;随后周期守护兜底。
 		for (const delay of [0, 300, 800, 1500, 3000]) reassertMottoTitle(ctx, delay);
 		stopTitleWatchdog?.();
@@ -114,6 +122,9 @@ export default function motto(pi: ExtensionAPI): void {
 	});
 
 	pi.on("session_info_changed", (_event, ctx) => {
+		// 标题重设 + footer 再注册(self-heal):session 重绑定/改名后 pi 会 resetExtensionUI
+		// 清掉扩展 footer(恢复原生两行);重新注册保持单行。
+		registerFooter(ctx);
 		reassertMottoTitle(ctx);
 	});
 

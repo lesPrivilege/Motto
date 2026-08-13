@@ -150,14 +150,16 @@ test("footer 集成:TPS 文本进入左簇统计且不破宽度上界", async ()
 		thinkingLevel: "max",
 		getContextUsage: () => ({ contextWindow: 1000000, percent: 0.5 }),
 	};
-	const footerData = { getGitBranch: () => undefined };
+	const footerData = { getGitBranch: () => undefined, getAvailableProviderCount: () => 1 };
 	for (const width of [40, 60, 66, 80, 200]) {
 		const line = buildFooterLine(color, ctx, footerData, width, "~42 t/s");
 		assert.ok(visibleWidth(line) <= width, `w=${width} 超宽 ${visibleWidth(line)}`);
 	}
-	// 宽列下 TPS 段在左簇可见;窄列按序被弃(由上一用例覆盖)。
-	for (const width of [80, 200]) {
-		const line = buildFooterLine(color, ctx, footerData, width, "~42 t/s");
-		assert.ok(line.includes("t/s"), `w=${width} 缺 TPS 段`);
-	}
+	// 宽列下 TPS 段在左簇可见;中等宽度按新折叠优先级(模型信息最后折)先弃统计段(含 TPS),
+	// 模型信息保持完整。
+	const l200 = buildFooterLine(color, ctx, footerData, 200, "~42 t/s");
+	assert.ok(l200.includes("t/s"), `w=200 缺 TPS 段`);
+	assert.ok(l200.includes("deepseek-v4-flash · max"), `w=200 模型信息应完整: ${l200}`);
+	const l80 = buildFooterLine(color, ctx, footerData, 80, "~42 t/s");
+	assert.ok(l80.includes("deepseek-v4-flash · max"), `w=80 模型信息应完整: ${l80}`);
 });

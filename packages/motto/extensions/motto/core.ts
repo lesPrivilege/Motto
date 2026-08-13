@@ -748,32 +748,40 @@ export function buildFooterLine(
 	width: number,
 	tpsText?: string,
 ): string {
-	// 左簇:cwd(含 branch / session,•→·)+ " · " + stats;完整串用于右簇对齐判断。
+	// 左簇:cwd(含 branch / session,•→·)+ " · " + stats。
 	const { pwd, stats } = buildFooterStats(ctx, footerData, tpsText);
-	let left = degradeLeft(pwd, stats, width);
-	let leftWidth = visibleWidth(left);
 
-	// 右簇:model · thinking(thinking 仅 reasoning 模型显示)
+	// 右簇:(provider) model · thinking(多 provider 时加 provider 括号,同原生 footer 规则;
+	// thinking 仅 reasoning 模型显示)。
 	const modelName = ctx.model?.id || "no-model";
 	const thinking = ctx.model?.reasoning ? ctx.thinkingLevel || "off" : undefined;
-	const right = thinking ? `${modelName} · ${thinking}` : modelName;
+	const providerPrefix =
+		footerData.getAvailableProviderCount() > 1 && ctx.model ? `(${ctx.model.provider}) ` : "";
 
-	// 右对齐,最小间距 2;两级退化:先缩为仅 model,仍不足则整体省略右簇。
+	// 折叠优先级(2026-08-13 厘清):优先折叠模型信息以外的——左簇统计段按显式
+	// 优先级降级(degradeLeft)→ pwd 截断;最后才折模型信息(去 thinking → 截模型名)。
 	const minGap = 2;
-	let rightText = right;
+	let rightText = providerPrefix + (thinking ? `${modelName} · ${thinking}` : modelName);
 	let rightWidth = visibleWidth(rightText);
+	let left = degradeLeft(pwd, stats, Math.max(1, width - minGap - rightWidth));
+	let leftWidth = visibleWidth(left);
 	if (leftWidth + minGap + rightWidth > width) {
-		rightText = modelName;
-		rightWidth = visibleWidth(modelName);
-	}
-	if (leftWidth + minGap + rightWidth > width) {
-		rightText = "";
-		rightWidth = 0;
-	}
-	// 右簇整体省略后左簇仍超宽才降级左簇(右簇优先两级退化,左簇降级在后)。
-	if (rightText === "" && leftWidth > width) {
-		left = degradeLeft(pwd, stats, width);
+		// 左簇降无可降仍放不下 → 折模型信息:去 thinking。
+		rightText = providerPrefix + modelName;
+		rightWidth = visibleWidth(rightText);
+		left = degradeLeft(pwd, stats, Math.max(1, width - minGap - rightWidth));
 		leftWidth = visibleWidth(left);
+	}
+	if (leftWidth + minGap + rightWidth > width) {
+		// 最后防线:截模型名(… 收尾);预算为负则右簇整体省略。
+		const rightBudget = width - minGap - leftWidth;
+		if (rightBudget <= 0) {
+			rightText = "";
+			rightWidth = 0;
+		} else {
+			rightText = truncateToWidth(rightText, rightBudget);
+			rightWidth = visibleWidth(rightText);
+		}
 	}
 	const gap = rightText ? Math.max(minGap, width - leftWidth - rightWidth) : 0;
 

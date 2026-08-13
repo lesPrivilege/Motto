@@ -78,6 +78,7 @@ function mockCtx(overrides = {}) {
 
 const footerData = {
 	getGitBranch: () => "main",
+	getAvailableProviderCount: () => 2,
 };
 
 test("footer 渲染恒 ≤ 目标宽度(40/60/66/80/200),不抛错", () => {
@@ -88,12 +89,19 @@ test("footer 渲染恒 ≤ 目标宽度(40/60/66/80/200),不抛错", () => {
 	}
 });
 
-test("footer 右簇两级退化 + 左簇降级(内置主题缺 mid 时降级不炸)", () => {
+test("footer 折叠优先级:模型信息最后折(内置主题缺 mid 时降级不炸)", () => {
 	const color = makeColor(stockTheme);
-	// 窄到仅剩左簇也能渲染。
+	// 窄到左簇已降无可降(仅 pwd 截断)仍能渲染;模型信息保持到最后。
 	const line = buildFooterLine(color, mockCtx(), footerData, 30);
 	assert.ok(plainWidth(line) <= 30, `w=30 超宽: ${plainWidth(line)}`);
 	assert.ok(line.length > 0);
+	// w=34:thinking 已折、模型名完整;w=25:模型名开始截断(… 收尾)。
+	const l34 = buildFooterLine(color, mockCtx(), footerData, 34);
+	assert.ok(!l34.includes(" · max"), `w=34 应折 thinking: ${l34}`);
+	assert.ok(l34.includes("deepseek-v4-flash"), `w=34 模型名应完整: ${l34}`);
+	const l25 = buildFooterLine(color, mockCtx(), footerData, 25);
+	assert.ok(plainWidth(l25) <= 25, `w=25 模型名应截断: ${l25}`);
+	assert.ok(l25.includes("(deepseek)"), l25);
 });
 
 // ============================================================================
