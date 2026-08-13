@@ -15,7 +15,7 @@ Motto 的 TUI 品牌扩展:启动牌记(splash)、单行 footer(含 TPS)、终�
 | 标题守护 | TUI 下固定终端标题为 `Motto`;启动退避覆盖 + 周期守护(5s 自停) |
 | 提示词品牌化 | `before_agent_start` 只注入 identity 段(纯加法,上游提示词原文零改写;曾用全文正则把 `pi`→`Motto` 越界改写路径导致 ENOENT,已废弃替换路径) |
 | 多级标题视觉投影 | display-only:把 H3–H6(`###`~`######`)投影为 H2 文本 `## › 原标题`,TUI 呈现收敛为三层视觉(H1 bold+underline / H2 bold / H3–H6 统一 `› 标题`,无标题井号);仅 assistant 完成态;fenced 代码块内与缩进代码原样;canonical/session/模型上下文/print·json 零改动 |
-| 顿号卡片投影 | display-only:把 `、、、` 三顿号围栏卡片投影为单列 Markdown 表格,TUI 原生渲染出 box-drawing 卡片(带标注:标注=盒顶上方 accent 小标签如 `[bash]`,盒内仅内容;裸卡:首行=盒内粗体标题头;内容逐行保真:每行一个表格行、行首缩进保留、内部空行保留);仅 assistant 完成态;fenced 代码块内 `、、、` 原样;canonical/session/模型上下文/print·json 零改动(见下) |
+| 顿号卡片投影 | display-only:把 `、、、` 三顿号围栏卡片投影为单列 Markdown 表格,TUI 原生渲染出 box-drawing 卡片(带标注:标注=盒顶上方 accent 小标签如 `[bash]`,盒内仅内容;标注为 text 时(`、、、text` 紧凑别名或 `、、、 text`)标签嵌 top border 右上角 `┌─…─[text]─┐` 且卡片**始终占满 transcript 可用宽度**,框线用 cardBorder(borderMuted)轻于自然表格;裸卡:首行=盒内粗体标题头;内容逐行保真:每行一个表格行、行首缩进保留、内部空行保留);仅 assistant 完成态;fenced 代码块内 `、、、` 原样;canonical/session/模型上下文/print·json 零改动(见下) |
 | 项目本地正文 | cwd `.motto/agent.md` 存在时,作为独立段追加在身份段之后(纯加法,项目原文逐字节保留,段标明来源);缺失/为空静默跳过,不建目录不写文件;超 32KB 截断+截断点标注+每会话 notify 一次;牌记 `context` 行与 AGENTS.md 并列列出。体例见 docs/MOTTO.md「六、项目本地正文」 |
 | ~~fenced 块牌记~~（**已回退**，见下） | 完成态、顶层、带 allowlist 语言标记(text/txt/plaintext → 文本块,log → 日志,bash/sh/shell/zsh → 命令片段)的 fenced block,在 opening fence 上方投影一行轻量 caption(如 `文本块 · 2 行`)+ 空行;display-only(只改 TUI 渲染输入),原始正文/session/模型上下文/print·json 输出零改动;未闭合/嵌套/非 allowlist/无 language/流式中一律原样 |
 
@@ -69,6 +69,24 @@ cd ~/Projects/Motto
 └───────────────────┘
 ```
 
+标注恰为 `text` 时(`、、、text` 紧凑别名或 `、、、 text`),标签嵌进 top border 右上角,
+且卡片**始终占满 transcript 可用宽度**(R2)——框线用 cardBorder(borderMuted)轻框、轻于自然表格,
+标签仍 accent,正文不染色,与相邻正文恰一空白行:
+
+```text
+、、、text
+第一行正文
+第二行正文
+、、、
+```
+
+```text
+┌────────────────────────────────────────────[text]─┐
+│ 第一行正文                                        │
+│ 第二行正文                                        │
+└───────────────────────────────────────────────────┘
+```
+
 裸卡(无标注):首个非空行 = 盒内粗体标题头,其后为内容:
 
 ```text
@@ -91,8 +109,12 @@ cd ~/Projects/Motto
 带标注开栏可直接投影代码块内容,行首缩进逐行保真(见上 `、、、 bash` 示例)。
 
 - 格式:`、、、` 独占一行(前导空格 ≤3)为围栏;开栏可裸 `、、、` 或带标注 `、、、 标注`
-  (标注须空白分隔),闭栏必须裸 `、、、`。带标注开栏:标注 = 盒顶上方 accent 小标签
-  (`[bash]`,盒内无头行),首个非空内容行是正文;裸开栏:首个非空行 = 盒内粗体标题头,
+  (标注须空白分隔),闭栏必须裸 `、、、`。另接受紧凑 text 别名 `、、、text`(顿号后无空格直接接
+  `text`,仅此一个 token,投影与 `、、、 text` 逐字一致)——仅作为模型常见 plain-text 紧凑别名,
+ 其他 `、、、标题` 不因此变成围栏。带标注开栏:标注 = 盒顶上方 accent 小标签
+  (`[bash]`,盒内无头行),首个非空内容行是正文;标注恰为 `text` 时小标签改嵌 top border
+  右上角(`┌─…─[text]─┐`,右锚,不占独立行;R2 起 text 卡始终占满 transcript 可用宽度,短内容
+  拉伸至全宽,长标签按显示宽度截断不破框;框线用 cardBorder(borderMuted)轻框,轻于自然表格);裸开栏:首个非空行 = 盒内粗体标题头,
   其后为内容。内容逐行保真:每个非空行 = 一个表格行,行首缩进保留(前导空白包进内联代码
   以过 marked 单元格 trim,渲染时列宽按最宽行自适应),内部空行保留为空表格行,首尾空行
   去除;内容为空则仅小标签(带标注)或仅标题头(裸卡)。
@@ -100,13 +122,18 @@ cd ~/Projects/Motto
   session、模型上下文、resume/fork 数据、print/json 等非交互输出均不经过、零改动
   (见 `docs/MOTTO.md` 总纲五「功能语不可侵」)。user / thinking / 流式期一律原样。
 - 解析纪律:小逐行 scanner(不用跨全文宽泛正则);fenced 代码块(``` / ~~~)内一律跳过;
-  `、、、` 行须独占(顿号后无空白直接接文本不是围栏);闭栏必须裸 `、、、`(带标注的顿号行
+  `、、、` 行须独占(顿号后无空白直接接文本不是围栏;唯一例外是紧凑别名 `、、、text`,
+  其 `text` 后亦须行尾,`、、、textx` / `、、、text extra` 等非围栏);闭栏必须裸 `、、、`(带标注的顿号行
   在卡内是内容,不闭卡);内容/标题/标注中的 `|` 转义为 `\|`;未闭合 / 空卡片 / 缺标题
   fail-open 原样;CRLF 不破坏正文;幂等;fail-open。
 - 目标构造选表格:TUI `Markdown` 组件中表格是唯一能原生渲染出完整边框盒的构造
   (blockquote 仅左 rail、code fence 仅 ``` 行),与仓库文档表格(如 `.motto/agent.md` 验收表)
   视觉同源。小标签机制:`<!--motto-card:tag-->` 标记 → 表格头行渲染为盒上 accent 标签,
-  盒内无头行/分隔线;标注入头行不入标记(标注可含任意字符安全)。调研见
+  盒内无头行/分隔线;`<!--motto-card:tag-top-right-->` 标记(标注为 text 时)→ 标签嵌进
+  top border 右上角(`┌─…─[text]─┐`),top/body/bottom 逐列同宽且恒等于 renderer 的
+  availableWidth(全宽);text 卡框线消费 cardBorder 槽(Motto 映射 borderMuted/#5c6166,轻于自然表格与 dim),
+  标签仍 accent,正文不染色;块行距复用 Markdown 既有 spacing(与相邻正文恰一空白行,
+  不双倍);标注入头行不入标记(标注可含任意字符安全)。调研见
   `docs/decisions/2026-08-12-motto-tui-4-dunhao-cards.md`(opencode / grok-build / Codex CLI
   三家卡片渲染结论)。
 - 无用户配置:加载本扩展即生效。

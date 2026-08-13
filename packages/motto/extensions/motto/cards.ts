@@ -27,7 +27,7 @@
 // 解析纪律(与 headings.ts 同纪律):小逐行 scanner,不用跨全文宽泛正则;fenced 代码块
 // (``` / ~~~,含 blockquote 前缀形式)内一律跳过,卡片体内嵌代码块时块内 `、、、` 不闭卡;
 // 顿号围栏须独占一行(前导空格 ≤3);开栏可裸 `、、、` 或带标注 `、、、 标注`(须空白分隔),
-// 闭栏必须裸 `、、、`;
+// 或紧凑别名 `、、、text`(无空白,仅此一个 ASCII token,投影等同 `、、、 text`);闭栏必须裸 `、、、`;
 // 带标注开栏:标注 = 表格头行(卡片帧标记带 :tag 后缀 → TUI 渲染为盒顶上方小标签,
 // 盒内不再渲染头行/分隔线),首个非空内容行是正文(不再是标题);
 // 裸开栏:首个非空行 = 标题(卡片帧标记不带 :tag → 标题仍为盒内粗体头),其后为内容;
@@ -41,9 +41,10 @@
 // 卡片帧标记:每个卡片表格**之前**输出独立一行 HTML 注释(行尾用开栏行尾)。TUI 核心
 // (pi-tui markdown.ts)识别该标记:裸卡 `<!--motto-card-->` → 置「卡片帧模式」→ 表格去行间
 // 分隔线(仅外框 + 粗体表头行 + 表头分隔线);带标注卡 `<!--motto-card:tag-->` → 另置「卡片
-// 标签模式」→ 标注(表格头行)渲染为盒顶上方 accent 小标签,盒内无头行/分隔线。自然 markdown
-// 表格无标记不受影响(逐行分隔线保留)。标记为纯注释,对幂等(输出无 `、、、` 行,重跑不变)与
-// 守卫/fail-open/CRLF/行尾逻辑无影响。
+// 标签模式」→ 标注(表格头行)渲染为盒顶上方 accent 小标签,盒内无头行/分隔线;标注为 text 的
+// 卡(`、、、text` / `、、、 text`)发 `<!--motto-card:tag-top-right-->` → 标注嵌进 top border
+// 右上角(`┌─…─[text]─┐`),不占独立行。自然 markdown 表格无标记不受影响(逐行分隔线保留)。
+// 标记为纯注释,对幂等(输出无 `、、、` 行,重跑不变)与守卫/fail-open/CRLF/行尾逻辑无影响。
 // 标注入表格头行(而非入标记):标注可含任意字符(`--`/`>`/`:` 等)均安全,标记只承载裸/带标注
 // 二态;TUI 从紧随表格的头行读标签文本。盒宽以内容为准(标签在盒外,不参与列宽)。
 import type { MarkdownTransformContext } from "@earendil-works/pi-coding-agent";
@@ -55,6 +56,9 @@ const DUNHAO_BARE_RE = /^ {0,3}、、、[ \t]*$/;
 /** 顿号带标注开栏:前导空格 ≤3,`、、、` 后须至少一个空白再跟标注。 */
 const DUNHAO_ANNOT_RE = /^ {0,3}、、、[ \t]+(.*)$/;
 
+/** 顿号紧凑 text 开栏:`、、、` 后无空白直接接 `text`(模型常见 plain-text 紧凑别名,等同 `、、、 text`)。 */
+const DUNHAO_COMPACT_TEXT_RE = /^ {0,3}、、、text[ \t]*$/;
+
 /** 表格单元格安全化:转义 `|`,防破坏表格列。 */
 function escapeCell(text: string): string {
 	return text.includes("|") ? text.replace(/\|/g, "\\|") : text;
@@ -62,11 +66,14 @@ function escapeCell(text: string): string {
 
 /**
  * 解析顿号围栏行:返回标注(trim 后;裸围栏为 "")。非围栏行返回 undefined——
- * 含 `、、、` 后无空白直接接文本的行(`、、、标题`)不是围栏。
+ * 含 `、、、` 后无空白直接接文本的行(`、、、标题`)不是围栏;唯一例外是紧凑
+ * text 别名 `、、、text`(标注恒为 text,投影等同 `、、、 text`)。
  */
 function dunhaoAnnotation(content: string): string | undefined {
 	const m = DUNHAO_ANNOT_RE.exec(content);
 	if (m) return m[1].trim();
+	// 紧凑 text 别名(`、、、text` 无空白):标注恒为 text,投影等同 `、、、 text`。
+	if (DUNHAO_COMPACT_TEXT_RE.test(content)) return "text";
 	return DUNHAO_BARE_RE.test(content) ? "" : undefined;
 }
 
@@ -84,7 +91,8 @@ function preserveIndent(text: string): string {
  *
  * - 只作用于 assistant 完成态消息(interactive final);user / thinking / 流式中完全不变。
  * - fenced 代码块内(顶层或带 blockquote 前缀)逐字不动。
- * - 开栏可裸 `、、、` 或带标注 `、、、 标注`(须空白分隔);带标注时标注为表格头行
+ * - 开栏可裸 `、、、` 或带标注 `、、、 标注`(须空白分隔),另接受紧凑 text 别名
+ *   `、、、text`(标注恒为 text,投影等同 `、、、 text`);带标注时标注为表格头行
  *   (卡片帧标记带 `:tag` → TUI 渲染为盒顶上方 accent 小标签,盒内无头行/分隔线);
  *   裸开栏时首个非空行 = 标题(盒内粗体头),其后为内容。
  * - 闭栏必须裸 `、、、`;带标注的顿号行在卡内是内容,不闭卡。
@@ -203,9 +211,16 @@ export function projectDunhaoCards(markdown: string, context: MarkdownTransformC
 			}
 
 			// 卡片帧标记:独立一行,位于表格之前,行尾用开栏行尾(与表格行一致)。
-			// 带标注(annot !== "")发 `<!--motto-card:tag-->`(TUI 渲染为盒上小标签);
+			// 标注为 `text`(`、、、text` 紧凑别名或 `、、、 text` 带标注)发
+			// `<!--motto-card:tag-top-right-->`(TUI 把标注嵌进 top border 右上角);
+			// 其他带标注(annot !== "")发 `<!--motto-card:tag-->`(盒上小标签);
 			// 裸卡发 `<!--motto-card-->`(标题仍为盒内粗体头)。
-			const marker = annot !== "" ? "<!--motto-card:tag-->" : "<!--motto-card-->";
+			const marker =
+				annot === "text"
+					? "<!--motto-card:tag-top-right-->"
+					: annot !== ""
+						? "<!--motto-card:tag-->"
+						: "<!--motto-card-->";
 			out.push({ content: marker, ending: lines[i].ending });
 			out.push({ content: `| ${title} |`, ending: lines[i].ending });
 			out.push({ content: `|---|`, ending: lines[i].ending });
@@ -213,6 +228,11 @@ export function projectDunhaoCards(markdown: string, context: MarkdownTransformC
 				for (const r of rows) out.push(r);
 			} else {
 				out[out.length - 1].ending = lines[j].ending;
+			}
+			// R2 行距:闭栏后若紧邻非空行(源无空行),补一个空行终止表格,防后续正文被
+			// 吞进表格;源已有空行时不补(避免双倍),marked 会把连续空行折叠为单空行。
+			if (j + 1 < lines.length && lines[j + 1].content.trim() !== "") {
+				out.push({ content: "", ending: lines[j].ending });
 			}
 			changed = true;
 			i = j + 1;

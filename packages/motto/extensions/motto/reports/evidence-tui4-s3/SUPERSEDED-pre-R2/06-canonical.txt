@@ -1,0 +1,13 @@
+=== canonical (fresh deterministic run, byte-identical) ===
+、、、text
+alpha
+beta
+
+gamma
+、、、
+=== repr ===
+'、、、text\nalpha\nbeta\n\ngamma\n、、、'
+
+fresh session: ~/.pi/agent/sessions/--private-tmp-motto-tui4-s3-compact--/2026-08-13T07-17-27-220Z_019ff9fb-a834-7efd-8bed-98b928ae04e8.jsonl
+resume session: ~/.pi/agent/sessions/--private-tmp-motto-tui4-s3-compact--/2026-08-13T06-42-35-259Z_019ff9db-bc7b-71b0-b6bb-e7742241e9b5.jsonl
+NOTE: canonical retains the ORIGINAL compact 、、、text fence. The top-right [text] card is display-only.

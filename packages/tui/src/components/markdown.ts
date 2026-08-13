@@ -214,6 +214,12 @@ export interface MarkdownTheme {
 	underline: (text: string) => string;
 	/** 卡片标签(、、、 带标注投影):标注渲染为盒顶上方的小标签(如 `[bash]`)。 */
 	cardLabel: (text: string) => string;
+	/**
+	 * 卡片框线(、、、text 右上嵌框投影):text 卡框线比自然 Markdown 表格更轻
+	 * (Motto interactive 映射 borderMuted)。可选槽——缺失时回落当前默认边框输出,不迫使
+	 * 上游生态主题同步迁移;仅 cardTagTopRight 模式消费,自然表格/其他顿号卡不受影响。
+	 */
+	cardBorder?: (text: string) => string;
 	highlightCode?: (code: string, lang?: string) => string[];
 	/** Prefix applied to each rendered code block line (default: "  ") */
 	codeBlockIndent?: string;
@@ -256,6 +262,9 @@ export class Markdown implements Component {
 	// 卡片标签模式:`<!--motto-card:tag-->` 置位(带标注的 、、、 投影卡片)。为真时标注
 	// (表格头行)渲染为盒顶上方 accent 小标签 `[bash]`,盒内不再渲染头行与表头分隔线。
 	private cardTag = false;
+	// 右上嵌框标签模式:`<!--motto-card:tag-top-right-->` 置位(标注为 text 的 、、、 投影
+	// 卡片)。为真时标注(表格头行)嵌进 top border 右上角(`┌─…─[text]─┐`),不占独立行。
+	private cardTagTopRight = false;
 
 	constructor(
 		text: string,
@@ -628,6 +637,7 @@ export class Markdown implements Component {
 				// Motto 卡片帧标记(`<!--motto-card-->`,、、、 投影卡片表格的前导注释):
 				// 不输出任何字符,仅置卡片帧模式,交由紧随的表格 token 消费。
 				// 带标注卡用 `<!--motto-card:tag-->`:另置卡片标签模式(标注→盒顶小标签)。
+				// 标注为 text 的卡用 `<!--motto-card:tag-top-right-->`:标注嵌进 top border 右上角。
 				if ("raw" in token && typeof token.raw === "string") {
 					const raw = token.raw.trim();
 					if (raw === "<!--motto-card-->") {
@@ -637,6 +647,11 @@ export class Markdown implements Component {
 					if (raw === "<!--motto-card:tag-->") {
 						this.cardFrameMode = true;
 						this.cardTag = true;
+						break;
+					}
+					if (raw === "<!--motto-card:tag-top-right-->") {
+						this.cardFrameMode = true;
+						this.cardTagTopRight = true;
 						break;
 					}
 				}
@@ -861,6 +876,59 @@ export class Markdown implements Component {
 	}
 
 	/**
+	 * 右上嵌框标签 top border(、、、text 投影):把标注(表格头行)嵌进 top border 右上角,
+	 * `┌─…─[text]─┐`,不占独立行。标签用 cardLabel(accent)槽,框线用 cardBorder 槽(可选,轻色)。
+	 *
+	 * R2 全宽算法(全部按显示宽度计算,ANSI 不计列宽):
+	 * - boxWidth 恒等于 renderer 收到的 availableWidth(transcript/Markdown 实际可用宽,
+	 *   非物理终端总宽),与内容自然宽无关;columnWidth = availableWidth - 4;
+	 * - 标签右锚于上框:标签后固定 1 格 `─`,标签前占据全部剩余上框,左右角保留;
+	 * - 长标签先按 visibleWidth 截断为 `[… ]` 安全形式(截断符 …),不破坏 ANSI;
+	 * - 极窄宽下保留左右角与闭合框,标签退化(不外泄 marker);
+	 * - 框线由 renderer 产生(extension 不生成字面 `───[text]───`),不用空格伪宽。
+	 *
+	 * 返回最终卡片外宽 boxWidth(=availableWidth);调用方须把列宽同步为 boxWidth-4,
+	 * 使 body/bottom 与 top 逐列同宽。非单列(不应出现)退化为既有盒外标签 + 普通 top border。
+	 */
+	private renderCardTagTopRightBorder(
+		columnWidths: number[],
+		availableWidth: number,
+		headerText: string,
+		lines: string[],
+	): number {
+		const cardBorder = this.theme.cardBorder ?? ((t: string) => t);
+
+		if (columnWidths.length !== 1) {
+			const tag = truncateToWidth(headerText, Math.max(1, availableWidth - 2), "…");
+			lines.push(this.theme.cardLabel(`[${tag}]`));
+			lines.push(cardBorder(`┌─${columnWidths.map((w) => "─".repeat(w)).join("─┬─")}─┐`));
+			return columnWidths[0] + 4;
+		}
+
+		// R2 全宽:卡片外宽恒等于 availableWidth(transcript/Markdown 实际可用宽),与内容自然宽无关。
+		const boxWidth = availableWidth;
+
+		// 标签内容可用宽:boxWidth - 2 角 - 2 框线 - 2 括号。
+		const maxTagContentWidth = boxWidth - 6;
+		if (maxTagContentWidth < 1) {
+			// 极窄:保留角与闭合框,标签退化为纯 top border(不外泄 marker)。
+			lines.push(cardBorder(`┌${"─".repeat(Math.max(0, boxWidth - 2))}┐`));
+			return boxWidth;
+		}
+
+		let tagContent = headerText;
+		if (visibleWidth(`[${headerText}]`) > boxWidth - 4) {
+			tagContent = truncateToWidth(headerText, maxTagContentWidth, "…");
+		}
+		const tag = this.theme.cardLabel(`[${tagContent}]`);
+		const tagWidth = visibleWidth(tag);
+		// 右锚:标签后固定 1 格框线,剩余全部放标签前(至少 1 格);角与框线用 cardBorder。
+		const leftDashes = boxWidth - 2 - tagWidth - 1;
+		lines.push(cardBorder(`┌${"─".repeat(Math.max(1, leftDashes))}`) + tag + cardBorder(`─┐`));
+		return boxWidth;
+	}
+
+	/**
 	 * Render a table with width-aware cell wrapping.
 	 * Cells that don't fit are wrapped to multiple lines.
 	 */
@@ -876,8 +944,14 @@ export class Markdown implements Component {
 		// 盒内不再渲染头行与表头分隔线。
 		const cardFrame = this.cardFrameMode;
 		const cardTag = this.cardTag;
+		const cardTagTopRight = this.cardTagTopRight;
 		this.cardFrameMode = false;
 		this.cardTag = false;
+		this.cardTagTopRight = false;
+
+		// R2 轻框:仅 cardTagTopRight(text 卡)消费 cardBorder 槽(可选,缺失回落默认边框);
+		// 普通带标注卡/裸卡/自然表格不消费,逐字不变。
+		const cardBorder = this.theme.cardBorder ?? ((t: string) => t);
 
 		const lines: string[] = [];
 		const numCols = token.header.length;
@@ -904,8 +978,8 @@ export class Markdown implements Component {
 		// Calculate natural column widths (what each column needs without constraints)
 		const naturalWidths: number[] = [];
 		const minWordWidths: number[] = [];
-		// 卡片标签模式:标注(头行)在盒外渲染,不参与盒内列宽计算。
-		if (!cardTag) {
+		// 卡片标签模式(含右上嵌框):标注(头行)在盒外/框上渲染,不参与盒内列宽计算。
+		if (!cardTag && !cardTagTopRight) {
 			for (let i = 0; i < numCols; i++) {
 				const headerText = this.renderInlineTokens(token.header[i].tokens || [], styleContext);
 				naturalWidths[i] = visibleWidth(headerText);
@@ -1002,15 +1076,24 @@ export class Markdown implements Component {
 			lines.push(this.theme.cardLabel(`[${tag}]`));
 		}
 
-		// Render top border
-		const topBorderCells = columnWidths.map((w) => "─".repeat(w));
-		lines.push(`┌─${topBorderCells.join("─┬─")}─┐`);
+		// 右上嵌框标签模式:标注嵌进 top border 右上角(`┌─…─[text]─┐`),不占独立行。
+		// 返回最终卡片外宽,并把列宽同步为 boxWidth-4 使 body/bottom 与 top 逐列一致。
+		let boxWidth = columnWidths[0] + 4;
+		if (cardTagTopRight) {
+			const headerText = this.renderInlineTokens(token.header[0].tokens || [], styleContext);
+			boxWidth = this.renderCardTagTopRightBorder(columnWidths, availableWidth, headerText, lines);
+			columnWidths[0] = boxWidth - 4;
+		} else {
+			// Render top border
+			const topBorderCells = columnWidths.map((w) => "─".repeat(w));
+			lines.push(`┌─${topBorderCells.join("─┬─")}─┐`);
+		}
 
 		// Render separator(表头分隔线;自然表格逐行分隔线也复用同一条)
 		const separatorCells = columnWidths.map((w) => "─".repeat(w));
 		const separatorLine = `├─${separatorCells.join("─┼─")}─┤`;
 
-		if (!cardTag) {
+		if (!cardTag && !cardTagTopRight) {
 			// Render header with wrapping
 			const headerCellLines: string[][] = token.header.map((cell, i) => {
 				const text = this.renderInlineTokens(cell.tokens || [], styleContext);
@@ -1044,7 +1127,12 @@ export class Markdown implements Component {
 					const text = cellLines[lineIdx] || "";
 					return text + " ".repeat(Math.max(0, columnWidths[colIdx] - visibleWidth(text)));
 				});
-				lines.push(`│ ${rowParts.join(" │ ")} │`);
+				// text 卡(cardTagTopRight):左右 `│` 用 cardBorder(轻框),正文不染色。
+				lines.push(
+					cardTagTopRight
+						? cardBorder(`│ `) + rowParts.join(cardBorder(` │ `)) + cardBorder(` │`)
+						: `│ ${rowParts.join(" │ ")} │`,
+				);
 			}
 
 			// 卡片帧模式(裸卡/带标注卡):去行间分隔线(裸卡仅保留表头分隔线 separatorLine,
@@ -1054,9 +1142,10 @@ export class Markdown implements Component {
 			}
 		}
 
-		// Render bottom border
+		// Render bottom border(cardTagTopRight 用 cardBorder 轻框)
 		const bottomBorderCells = columnWidths.map((w) => "─".repeat(w));
-		lines.push(`└─${bottomBorderCells.join("─┴─")}─┘`);
+		const bottomBorder = `└─${bottomBorderCells.join("─┴─")}─┘`;
+		lines.push(cardTagTopRight ? cardBorder(bottomBorder) : bottomBorder);
 
 		if (nextTokenType && nextTokenType !== "space") {
 			lines.push(""); // Add spacing after table

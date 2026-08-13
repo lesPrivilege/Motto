@@ -177,6 +177,16 @@
    "fixture": "fixtures/tui/baseline/theme-*.txt/.ansi.txt user-gutter (S1) 块重生成(--write),--check 逐字节 PASS + 零超宽",
    "removalCondition": "叠改注:叠于 tui-1-s1-r2-rule-lengthen(同触 motto-layout.ts/基线文件)。删除时先退本 patch 再退 r2 再退 r1 再退 tui-1-s1(后置先退),或接受冲突手工合并;删除后跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
    "status": "applied"
+  },
+  {
+   "id": "tui-4-s3-compact-text-tag-top-right",
+   "title": "TUI-4 S3 — 、、、text 右上嵌框标签:紧凑 text 开栏投影为 top border 右上角 [text](R2 全宽+轻框+行距)",
+   "scope": "pi-tui 薄接缝(packages/tui/src/components/markdown.ts renderTable cardTagTopRight 分支 + html case 标记) + motto extensions/motto/cards.ts 投影标记(标注 text → <!--motto-card:tag-top-right-->)",
+   "description": "MOTTO-TUI-4-S3-COMPACT-TEXT 增量裁定(text 签改为右上嵌框):、、、text(紧凑)与 、、、 text(带标注)两种写法的投影从「盒外独立 [text] 标签」改为「top border 右上角嵌入 [text]」——┌─…─[text]─┐,不占独立行。cards.ts:标注恰为 text 时发 <!--motto-card:tag-top-right--> 标记(其他带标注仍 <!--motto-card:tag--> 盒外标签、裸卡仍 <!--motto-card-->,逐字不变);markdown.ts:新增 cardTagTopRight 类字段 + renderCardTagTopRightBorder 薄原语——标签右锚、标签前后各至少 1 格 ─、左右角保留、内容短时卡片扩宽到可容纳角+框线+标签(不超过 availableWidth)、长标签按 visibleWidth 截断为 [… ] 安全形式(不破坏 ANSI)、极窄下保留角与闭合框不外泄 marker、boxWidth 同步列宽使 top/body/bottom 逐列同宽;标签用既有 cardLabel(accent)槽,框线维持既有低对比色,无背景/阴影/额外色槽。 R2(视觉返工):(1)全宽——text 卡外宽恒等于 renderer 的 availableWidth(transcript/Markdown 实际可用宽),columnWidth=availableWidth-4,短内容拉伸至全宽,body 按全宽列宽折行;(2)轻框——新增 MarkdownTheme.cardBorder 可选槽(Motto interactive 映射 theme.fg(\"dim\")),text 卡 top/bottom/左右边框消费该槽轻于自然表格,标签仍 cardLabel(accent),正文不染色,自然表格/其他顿号卡不消费,无 cardBorder 主题回落默认边框;(3)行距——复用 Markdown 既有 block spacing(段落尾随空行/space token),投影在闭栏后紧邻非空行时补空行终止表格,与相邻正文恰一空白行、不双倍、卡开头/结尾无多余空行。 R3(框线降权):用户目验裁定当前框线明度/线重略重,仅降取色不改几何——Motto interactive theme 的 cardBorder 由 theme.fg(\"dim\") 改为 theme.fg(\"borderMuted\")(#5c6166,已有 subtle-borders 语义槽,比 dim #a8adb2 更退后);[text] 仍 accent、正文不染色、自然表格不消费;package-manager-cli 与 TUI 测试主题 cardBorder 由 red 改 chalk.dim;无 cardBorder 生态主题继续 identity fallback;线形 ┌─┐│└┘ 与全宽/行距逐字保持。",
+   "reason": "MOTTO-TUI-4-S3-COMPACT-TEXT 增量裁定(2026-08-13):取消盒外独立 [text] 与左上嵌框候选,定稿右上嵌框;模型文本语法消费只补 text 目签,不建 IDE 视觉层。",
+   "fixture": "无——TUI-4 不改变基线 scenario(现有 scenario 无卡片 marker,render-baseline.mjs --check 通过);cards.test.mjs 端到端用例更新为右上嵌框 + 新增 markdown.test.ts 右上嵌框原语用例(含 40/60/80/120/200 零超宽、CJK 截断不破框) R2:新增 markdown.test.ts 全宽严格相等(40/60/80/120/200 visibleWidth===availableWidth)+ 短内容 a 拉伸至 200 + cardBorder 可区分主题槽位断言 + 行距断言;cards.test.mjs 新增全宽/轻框/行距端到端;render-baseline 无卡片 scenario 不受影响。mutation proof×2:恢复自然宽算法与移除 cardBorder 消费均使对应用例失败。 R3:cards.test.mjs 新增机械证明(Motto cardBorder 输出 === borderMuted RGB 92;97;102, !== dim RGB 168;173;178,label 仍 accent,正文不染色,自然表格不消费);mutation proof:临时改回 dim 使对应用例失败,恢复 borderMuted 通过。",
+   "removalCondition": "上游吸收等价「表格头行可配置为 top border 右上内嵌标签」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check、coding-agent 全量测试与 motto 扩展 cards.test.mjs。叠改注:与 tui-4-s2-card-tag-label / tui-4-s2-card-tag-width-guard 同触 markdown.ts renderTable 标签分支;删除须后置先退或处理冲突。",
+   "status": "applied"
   }
  ],
  "supportCommits": {

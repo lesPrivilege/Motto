@@ -1,0 +1,10 @@
+y=0.946 x=0.145 w=0.050  Motto
+y=0.891 x=0.828 w=0.064  -[text]
+y=0.788 x=0.831 w=0.060  •[text]
+y=0.757 x=0.848 w=0.043  bdy
+y=0.504 x=0.177 w=0.008  1
+y=0.449 x=0.107 w=0.018  Z
+y=0.451 x=0.174 w=0.013  2
+y=0.373 x=0.829 w=0.062  -[text]
+y=0.268 x=0.826 w=0.066  -[text]
+y=0.086 x=0.067 w=0.865  /private/tmp/motto-tui4-s3-compact • 0.8%/1.OM (auto) (deepseek) deepseek-v4-pro • max

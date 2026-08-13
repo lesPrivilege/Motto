@@ -31,6 +31,7 @@ export const defaultMarkdownTheme: MarkdownTheme = {
 	strikethrough: (text: string) => chalk.strikethrough(text),
 	underline: (text: string) => chalk.underline(text),
 	cardLabel: (text: string) => chalk.red(text),
+	cardBorder: (text: string) => chalk.dim(text),
 };
 
 export const defaultEditorTheme: EditorTheme = {

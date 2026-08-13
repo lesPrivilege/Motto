@@ -6,6 +6,7 @@ import { Markdown } from "../src/components/markdown.ts";
 import { resetCapabilitiesCache, setCapabilities } from "../src/terminal-image.ts";
 import type { Component, TUI } from "../src/tui.ts";
 import { TuiMainScreen } from "../src/tui-main-screen.ts";
+import { visibleWidth } from "../src/utils.ts";
 import { defaultMarkdownTheme } from "./test-themes.ts";
 import { VirtualTerminal } from "./virtual-terminal.ts";
 
@@ -659,6 +660,268 @@ describe("Markdown component", () => {
 				"",
 				`Expected table to end without a blank line: ${JSON.stringify(plainLines)}`,
 			);
+		});
+	});
+
+	describe("Card top-right embedded tag (motto-card:tag-top-right)", () => {
+		// 渲染工具:marker + 单列表格 → 行数组(剥 ANSI 与去尾空白)。
+		function renderCard(header: string, rows: string[], width: number): string[] {
+			const table =
+				`<!--motto-card:tag-top-right-->\n| ${header} |\n|---|` +
+				rows.map((r) => (r === "" ? "\n|  |" : `\n| ${r} |`)).join("");
+			return new Markdown(table, 0, 0, defaultMarkdownTheme).render(width).map((l) => l.trimEnd());
+		}
+		const strip = (l: string) => l.replace(/\x1b\[[0-9;]*m/g, "");
+		const cardLines = (width: number) => renderCard("text", ["alpha", "beta", "", "gamma"], width).map(strip);
+
+		it("renders exactly one top border with [text] embedded (no standalone [text] line)", () => {
+			const lines = cardLines(80);
+			const topBorders = lines.filter((l) => l.startsWith("┌") && l.endsWith("┐"));
+			assert.strictEqual(topBorders.length, 1, `exactly one top border: ${JSON.stringify(lines)}`);
+			assert.ok(topBorders[0].includes("[text]"), "top border embeds [text]");
+			assert.ok(!lines.some((l) => l.trim() === "[text]"), "no standalone [text] line");
+			// 只有一条 top border,body 行用 │,bottom 用 └
+			assert.ok(
+				lines.some((l) => l.startsWith("└") && l.endsWith("┘")),
+				"bottom border",
+			);
+		});
+
+		it("places [text] right-anchored with >=1 dash on each side and keeps corners", () => {
+			// 长内容 → 标签右锚:标签后恰 1 格 ─,左侧多余框线
+			const long = renderCard("text", ["this is a longer content line"], 60).map(strip);
+			const top = long[0];
+			const tagIdx = top.indexOf("[text]");
+			assert.ok(top.startsWith("┌") && top.endsWith("┐"), "corners kept");
+			assert.ok(tagIdx > 1, `at least 1 dash before tag: ${top}`);
+			assert.strictEqual(top.length - 1 - (tagIdx + 6), 1, `exactly 1 dash after tag: ${top}`);
+		});
+
+		it("styles the tag with cardLabel and borders with cardBorder (fallback identity when absent)", () => {
+			const raw = renderCard("text", ["alpha"], 40);
+			const topRaw = raw.find((l) => l.includes("┌"))!;
+			// defaultMarkdownTheme:cardBorder=red,cardLabel=red → 标签与边框均红(槽位由独立测试用可区分主题验证)
+			assert.ok(topRaw.includes("\x1b[31m[text]\x1b[39m"), `tag uses cardLabel: ${JSON.stringify(topRaw)}`);
+			assert.ok(topRaw.includes("\x1b[2m┌"), "border uses cardBorder slot (dim)");
+			// 无 cardBorder 的主题回落默认边框(identity),不崩溃
+			const noBorderTheme = { ...defaultMarkdownTheme, cardBorder: undefined };
+			const fallback = new Markdown(
+				"<!--motto-card:tag-top-right-->\n| text |\n|---|\n| alpha |",
+				0,
+				0,
+				noBorderTheme,
+			).render(40);
+			const fallbackTop = fallback.find((l) => l.includes("┌"))!;
+			assert.ok(fallbackTop.includes("┌") && fallbackTop.includes("[text]"), "fallback still renders");
+			assert.strictEqual(visibleWidth(fallbackTop), 40, "fallback still full width");
+		});
+
+		it("keeps top/body/bottom visible width identical", () => {
+			for (const width of [40, 60, 80]) {
+				const lines = cardLines(width);
+				const widths = [...new Set(lines.map((l) => visibleWidth(l)))];
+				assert.strictEqual(widths.length, 1, `width ${width} identical: ${widths}`);
+			}
+		});
+
+		it("R2 full-width: every frame line visibleWidth === availableWidth at 40/60/80/120/200", () => {
+			for (const width of [40, 60, 80, 120, 200]) {
+				const lines = cardLines(width);
+				const frame = lines.filter((l) => /^[┌│└]/.test(l));
+				assert.ok(frame.length > 0, `width ${width}: card present`);
+				for (const l of frame) {
+					// 严格相等(非 ≤):top/body/bottom 逐列 = availableWidth
+					assert.strictEqual(visibleWidth(l), width, `width ${width}: ${JSON.stringify(l)}`);
+				}
+				// [text] 右锚:标签后恰 1 格 ─,左右角保留
+				const top = frame[0];
+				const tagIdx = top.indexOf("[text]");
+				assert.ok(top.startsWith("┌") && top.endsWith("┐"), "corners kept");
+				assert.strictEqual(visibleWidth(top) - 1 - (tagIdx + 6), 1, `exactly 1 dash after tag: ${top}`);
+			}
+		});
+
+		it("R2 full-width: short content 'a' stretches to 200 (not a natural-width small box)", () => {
+			const lines = renderCard("text", ["a"], 200).map(strip);
+			const top = lines[0];
+			assert.strictEqual([...top].length, 200, `short content stretches to 200: ${top}`);
+			assert.notStrictEqual(top, "┌─[text]─┐", "not the natural-width small box");
+			assert.ok(top.startsWith("┌") && top.endsWith("─┐"), "right-anchored tag kept");
+			// 内容按全宽 body 列宽正常折行
+			const long = renderCard("text", ["this line is definitely longer than forty columns for sure"], 40).map(strip);
+			const bodyRows = long.filter((l) => l.startsWith("│"));
+			assert.ok(bodyRows.length >= 2, `long content wraps to multiple body rows: ${bodyRows.length}`);
+			for (const l of bodyRows) {
+				assert.strictEqual([...l].length, 40, "wrapped body rows still full width");
+			}
+		});
+
+		it("R2 cardBorder: distinguishable theme — borders BORDER, tag LABEL, body plain, natural table untouched", () => {
+			// cardLabel=red(\x1b[31m),cardBorder=dim(\x1b[2m),正文不包装 → 可区分槽位
+			const theme = {
+				...defaultMarkdownTheme,
+				cardLabel: (t: string) => chalk.red(t),
+				cardBorder: (t: string) => chalk.dim(t),
+			};
+			const raw = new Markdown("<!--motto-card:tag-top-right-->\n| text |\n|---|\n| alpha |", 0, 0, theme).render(
+				40,
+			);
+			const top = raw[0];
+			const body = raw[1];
+			const bottom = raw[2];
+			// top border:角与 ─ 为 BORDER(dim),标签为 LABEL(red)
+			assert.ok(top.includes("\x1b[2m┌"), "top 角为 BORDER");
+			assert.ok(top.includes("\x1b[2m─┐"), "top 右角为 BORDER");
+			assert.ok(top.includes("\x1b[31m[text]\x1b[39m"), "标签为 LABEL");
+			// body:左右 │ 为 BORDER,正文(alpha)不染色
+			assert.ok(body.includes("\x1b[2m│ \x1b[22m"), "body 左 │ 为 BORDER");
+			assert.ok(body.includes("\x1b[2m │\x1b[22m"), "body 右 │ 为 BORDER");
+			const alphaSegment = body.split("\x1b[2m │")[0].split("\x1b[22m").at(-1) ?? "";
+			assert.ok(alphaSegment.includes("alpha"), "body 文本存在");
+			assert.ok(!body.includes("\x1b[31m"), "body 无 LABEL 染色");
+			// bottom 为 BORDER
+			assert.ok(bottom.includes("\x1b[2m└"), "bottom 为 BORDER");
+			// ANSI 包装后 visibleWidth 仍等于 availableWidth
+			assert.strictEqual(visibleWidth(top), 40);
+			assert.strictEqual(visibleWidth(body), 40);
+			assert.strictEqual(visibleWidth(bottom), 40);
+			// 自然表格完全不消费 cardBorder
+			const natRaw = new Markdown("| a | b |\n|---|---|\n| 1 | 2 |", 0, 0, theme).render(40);
+			for (const l of natRaw) {
+				assert.ok(!l.includes("\x1b[2m"), `natural table no cardBorder: ${JSON.stringify(l)}`);
+			}
+		});
+
+		it("truncates long/CJK labels by visible width without breaking the frame", () => {
+			const longTag = "超长标注".repeat(5); // 20 字 → 显示宽 40
+			const lines = renderCard(longTag, ["a"], 40).map(strip);
+			const top = lines[0];
+			assert.ok(top.startsWith("┌") && top.endsWith("┐"), "corners kept after truncation");
+			assert.ok(top.includes("…]"), "truncated with ellipsis before closing bracket");
+			assert.ok(visibleWidth(top) <= 40, `no overflow: ${top} (${visibleWidth(top)})`);
+			// 截断后 top/body/bottom 仍同宽
+			const widths = [...new Set(lines.map((l) => visibleWidth(l)))];
+			assert.strictEqual(widths.length, 1, `identical width after truncation: ${widths}`);
+		});
+
+		it("does not leak the marker comment into rendered output", () => {
+			const lines = cardLines(80);
+			assert.ok(!lines.some((l) => l.includes("motto-card")), "marker not rendered");
+		});
+
+		it("R2 block spacing: exactly one blank visual line around the card (paragraph/start/end/consecutive)", () => {
+			const blankCount = (ls: string[], from: number, to: number) =>
+				ls.slice(from, to).filter((l) => l.trimEnd() === "").length;
+			// 1. paragraph → card → paragraph(带源空行):前后各恰一空行
+			let lines = new Markdown(
+				"正文段落\n\n<!--motto-card:tag-top-right-->\n| text |\n|---|\n| 内容 |\n\n后续正文",
+				0,
+				0,
+				defaultMarkdownTheme,
+			)
+				.render(60)
+				.map(strip)
+				.map((l) => l.trimEnd());
+			let topIdx = lines.findIndex((l) => l.startsWith("┌"));
+			assert.strictEqual(blankCount(lines, 0, topIdx), 1, "card leading blank");
+			assert.strictEqual(blankCount(lines, topIdx + 3, lines.length), 1, "card trailing blank");
+			// 2. 无显式空行邻接:渲染层(段落尾随空行)仍提供恰一空行
+			lines = new Markdown(
+				"正文段落\n<!--motto-card:tag-top-right-->\n| text |\n|---|\n| 内容 |\n后续正文",
+				0,
+				0,
+				defaultMarkdownTheme,
+			)
+				.render(60)
+				.map(strip)
+				.map((l) => l.trimEnd());
+			topIdx = lines.findIndex((l) => l.startsWith("┌"));
+			assert.strictEqual(blankCount(lines, 0, topIdx), 1, "no-blank leading");
+			// 3. 多个源空行:marked 折叠为单空行,无 double gap
+			lines = new Markdown(
+				"正文段落\n\n\n<!--motto-card:tag-top-right-->\n| text |\n|---|\n| 内容 |\n\n\n后续正文",
+				0,
+				0,
+				defaultMarkdownTheme,
+			)
+				.render(60)
+				.map(strip)
+				.map((l) => l.trimEnd());
+			topIdx = lines.findIndex((l) => l.startsWith("┌"));
+			assert.strictEqual(blankCount(lines, 0, topIdx), 1, "multi source blank: leading single");
+			assert.strictEqual(blankCount(lines, topIdx + 3, lines.length), 1, "multi source blank: trailing single");
+			// 4. 卡在消息开头/结尾:无 leading/trailing blank
+			lines = new Markdown(
+				"<!--motto-card:tag-top-right-->\n| text |\n|---|\n| 内容 |\n\n后续正文",
+				0,
+				0,
+				defaultMarkdownTheme,
+			)
+				.render(60)
+				.map(strip);
+			assert.notStrictEqual(lines[0].trimEnd(), "", "no leading blank at message start");
+			lines = new Markdown(
+				"正文段落\n\n<!--motto-card:tag-top-right-->\n| text |\n|---|\n| 内容 |",
+				0,
+				0,
+				defaultMarkdownTheme,
+			)
+				.render(60)
+				.map(strip);
+			assert.notStrictEqual(lines.at(-1)?.trimEnd(), "", "no trailing blank at message end");
+			// 5. 连续双卡(0/1 个源空行):块间恰一空行
+			for (const sep of ["\n", "\n\n"]) {
+				lines = new Markdown(
+					`<!--motto-card:tag-top-right-->\n| text |\n|---|\n| 甲 |${sep}<!--motto-card:tag-top-right-->\n| text |\n|---|\n| 乙 |`,
+					0,
+					0,
+					defaultMarkdownTheme,
+				)
+					.render(60)
+					.map(strip)
+					.map((l) => l.trimEnd());
+				topIdx = lines.findIndex((l) => l.startsWith("┌"));
+				const secondTop = lines.findIndex((l, i) => i > topIdx && l.startsWith("┌"));
+				assert.strictEqual(
+					blankCount(lines, topIdx + 3, secondTop),
+					1,
+					`consecutive cards single gap (sep=${JSON.stringify(sep)})`,
+				);
+			}
+		});
+
+		it("keeps box-outside tag mode for motto-card:tag (bash) unchanged", () => {
+			const src = "<!--motto-card:tag-->\n| bash |\n|---|\n| cd ~ |";
+			const lines = new Markdown(src, 0, 0, defaultMarkdownTheme).render(80).map((l) => l.trimEnd());
+			const plain = lines.map(strip);
+			// 盒外独立 [bash] 行 + 上边框
+			assert.ok(
+				plain.some((l) => l.trim() === "[bash]"),
+				"box-outside [bash] label kept",
+			);
+			assert.ok(
+				plain.some((l) => l.startsWith("┌─") && l.endsWith("─┐")),
+				"top border separate",
+			);
+		});
+
+		it("keeps bare-card and natural-table rendering unchanged", () => {
+			const bare = new Markdown("<!--motto-card-->\n| 标题 |\n|---|\n| 内容 |", 0, 0, defaultMarkdownTheme)
+				.render(80)
+				.map((l) => l.trimEnd())
+				.map(strip);
+			assert.ok(
+				bare.some((l) => l.includes("│ 标题")),
+				"bare card header inside box",
+			);
+			assert.ok(!bare.some((l) => l.trim() === "[标题]"), "bare card has no box-outside label");
+
+			const natural = new Markdown("| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |", 0, 0, defaultMarkdownTheme)
+				.render(80)
+				.map((l) => l.trimEnd())
+				.map(strip);
+			const separators = natural.filter((l) => l.includes("├─"));
+			assert.ok(separators.length >= 2, `natural table keeps separators: ${separators.length}`);
 		});
 	});
 
