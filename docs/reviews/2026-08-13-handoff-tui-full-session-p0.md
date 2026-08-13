@@ -3,7 +3,7 @@
 > 施工方：Motto（agent）。验收方：用户（独立验收，写者与验收者分离）。
 > 工单：MOTTO-TUI-FULL-SESSION-P0（消费校准 + 真实 dogfood + 参考系列；本轮不执行下一张施工单）。
 > 研究记录：`docs/research/2026-08-13-tui-full-session-composition-dogfood.md`（R0–R6 逐面证据）。
-> 范围：仅新增本文件 + 上列研究记录；**零产品代码改动、零基线改动**。
+> 范围：docs 三文件（本文件 + 研究记录新增，`docs/INDEX.md` 登记修改）；**零产品代码改动、零基线改动**。
 
 ## 一、现状（本轮实测确认）
 
@@ -64,10 +64,38 @@ REAL_TUI_DOGFOODED             ✅ (Ghostty 1.3.1 alt-screen 实机, 后台按�
 COMPOSER_DOCK_VERIFIED         ✅
 REFERENCE_SERIES_PREPARED      ✅ (R0–R6)
 SEMANTIC_BOUNDARIES_PRESERVED  ✅
-PRODUCT_CODE_UNCHANGED         ✅ (仅新增 docs 两文件)
+PRODUCT_CODE_UNCHANGED         ✅ (docs 三文件: 两新增 + INDEX 登记)
 NEXT_TICKET_DRAFTED            ✅ (TUI-1-S3-LIVE, DRAFT)
 USER_VISUAL_ACCEPTANCE         ⏳
 ```
 
 局限（如实）：computer-use 门禁关闭 → 鼠标拖选与滚轮路由未实机驱动；80/100/120/200 列
 以自动门覆盖；diff 配色沿用既有基线。证据链与研究记录同文件。
+
+---
+
+## 八、独立验收结论（2026-08-13 用户裁定，落账）
+
+```text
+MOTTO-TUI-FULL-SESSION-P0 — ACCEPTED WITH LIMITATIONS
+
+USER_ACCEPTANCE                ✅
+D1_NEXT_TICKET_AUTHORIZED      ✅
+DUNHAO_LIVE_CHECK              DEFERRED_TO_GHOSTTY_BASELINE
+GHOSTTY_BASELINE_BACKFILL      DEFERRED_UNTIL_D1_ACCEPTANCE
+```
+
+- 验收锚：远端 `1ff3e776a`（docs 三文件，无产品代码/fixture/基线改动）已核对。
+- 保留限制：鼠标拖选与滚轮路由未实机覆盖；顿号卡片实机 NOT TESTED；原始截图在本地临时目录；
+  `GHOSTTY-BASELINE.md` 仍 DRAFT。以上不阻断 P0（未否定 R0–R6 结论）。
+- 非阻断勘误：本 handoff 原写「仅新增 docs 两文件」，实为两新增 + INDEX 修改共三文件；
+  已在本文件就地勘误（不改写历史）。
+- 三项裁决：① D1 正式立单（TUI-1-S3-LIVE）；② 顿号卡片实机目验不另立单，并入
+  GHOSTTY-BASELINE 收口（确定性样本：裸卡 / `、、、 bash` / 超长标注窄宽截断）；
+  ③ GHOSTTY-BASELINE 回填待 D1 验收后独立 docs-only 收口，未覆盖项一律写 NOT TESTED，
+  不强行写满。
+
+**后续事实（落账时补记）**：D1 已由并行写者施工并落账——code `b27911c9c`
+（`fix(tui): restore live builtin success index-line wiring`）+ 工单登记
+`docs/decisions/2026-08-13-motto-tui-1-s3-live.md` + PATCHES `tui-1-s3-live-wiring`
+（`dbf42c18d`），状态 READY_FOR_USER_REVIEW；本 P0 handoff 写作时其尚未落地。

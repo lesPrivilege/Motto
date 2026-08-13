@@ -7,8 +7,8 @@
 > - 工单：Motto 唤醒工单「全会话 TUI 文字体例消费与真实 dogfood」（MOTTO-TUI-FULL-SESSION-P0）
 > - 范围：消费仓内正典 + 网页 session 增量 → 真实 Ghostty alternate-screen dogfood →
 >   全会话参考面 R0–R6 → 对照正典 → 草拟下一张施工单（本轮不执行）
-> - 状态：**READY_FOR_USER_REVIEW**（证据链见 §9；颜色目验经 motto_vision 抽样确认，其余为
->   机械证据）
+> - 状态：**ACCEPTED WITH LIMITATIONS**（2026-08-13 用户独立验收裁定；落账与三项裁决见
+>   `docs/reviews/2026-08-13-handoff-tui-full-session-p0.md` §八）
 > - 关联：`docs/reviews/2026-08-13-handoff-tui-full-session-p0.md`（本轮 handoff）
 
 ---
