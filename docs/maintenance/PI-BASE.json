@@ -27,7 +27,7 @@
 	"commitRange": {
 		"upstreamBase": "534bcbffb7e1e7551d9ee3572dfeb278e203e493",
 		"mottoMain": "20d6909d924393db32cba047a7c629a5689265ef",
-		"patchset": "motto.single-repo (7 patches / 8 commits: tui-1-s1-user-gutter[9a3080101,81dbec74f], tui-1-s2-assistant-body[505171d5b], tui-1-s3-tool-index-line[bbbe6238c], tui-2-t1-thinking-identity[ccab45ede], tui-2-t2-thinking-three-state[92c5818d0], tui-2-t3-thinking-keys[bc19c7f31], motto-rebrand-1[055c43962]); MOTTO-UPGRADE-1 全部重放于新 base 534bcbffb(merge 20d6909d9; 3 support: 74b4a2068/140fd6783/59eeaba89)",
+		"patchset": "motto.single-repo (11 patches: tui-1-s1-user-gutter, tui-1-s2-assistant-body, tui-1-s3-tool-index-line, tui-2-t1-thinking-identity, tui-2-t2-thinking-three-state, tui-2-t3-thinking-keys, motto-rebrand-1, tui-4-s1-card-light-frame, review-flow-a1-tool-index-all, tui-4-s2-card-tag-label, tui-4-s2-card-tag-width-guard); MOTTO-UPGRADE-1 全部重放于新 base 534bcbffb(merge 20d6909d9); 哈希明细以 PATCHES.json 为准",
 		"range": "motto/main 领先上游 base 534bcbffb 至单仓终局 HEAD(见 RELEASES 2026-08-12.1); 单仓自足 fork, 上游/生态不入仓仅清单记录"
 	},
 	"terminal": {

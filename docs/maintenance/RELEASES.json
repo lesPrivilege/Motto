@@ -115,6 +115,54 @@
     "launch smoke: motto identity (base 0.84.1/upstream 534bcbffb, patchset 8 commits, release 2026-08-12.1)"
    ],
    "note": "MOTTO-UPGRADE-1 受控升级: v0.84.1→534bcbffb, 109 commits 吸收(含 4 alt-screen 增量 T3-2), 8 patch + 3 support 重放; merge 20d6909d9; 上游未发版(无 tag/tarball), base 以 git commit 为真源"
+  },
+  {
+   "id": "2026-08-12.2",
+   "name": "motto.tui-4-review-flow-a1",
+   "status": "single-repo upgraded + TUI-4/review-flow A1 (10 core patches)",
+   "piBase": {
+    "packageVersion": "0.84.1",
+    "tag": "v0.84.1 (109 commits 未发版无新 tag; base 以 commit 534bcbffb 为准)",
+    "commit": "534bcbffb7e1e7551d9ee3572dfeb278e203e493"
+   },
+   "corePatchset": [
+    "tui-1-s1-user-gutter",
+    "tui-1-s2-assistant-body",
+    "tui-1-s3-tool-index-line",
+    "tui-2-t1-thinking-identity",
+    "tui-2-t2-thinking-three-state",
+    "tui-2-t3-thinking-keys",
+    "motto-rebrand-1",
+    "tui-4-s1-card-light-frame",
+    "review-flow-a1-tool-index-all",
+    "tui-4-s2-card-tag-label"
+   ],
+   "supportCommits": [
+    "74b4a2068",
+    "140fd6783",
+    "59eeaba89",
+    "9e94f75e5",
+    "089f3c37f",
+    "30042d846"
+   ],
+   "mottoCommit": "34b30ba80013202b20bbe1ad8bd0900f90e29cd9",
+   "extensionLock": "EXTENSIONS.lock.json sha256 a71d448bc22b98c98b09ccea151b0d8525182002856ef135ba91d43440a80426 (verifiedAt 2026-08-11; 单仓后随 fork 同仓)",
+   "themes": {
+    "motto.json": "66d673e8a5fc49b4baa8cd2c85b1a674be74efda87592cef870e5ac3e2b05888",
+    "motto-dark.json": "94eadde19067ea5b78242f3a433bb2cff61b7439e76c9ec41eecc162b0329ec3",
+    "motto-light.json": "51951908a491e726b5d10016cd97906fc7be5e70c36c824b79dfe0c5518a9f32"
+   },
+   "tuiFixture": "fixtures/tui/sessions/motto-tui-baseline.jsonl (26 entries, MOTTO-TUI-0) sha256 df27e0d7f39cade5d80b5f71838353fbb83be8a371c9cfc9bd84f6da8c475a3e; baseline 8×theme-*.txt/ansi + review-flow.txt(review-flow.txt sha256 62145a790445ce5a20eaa667cc1cae5d58a8f42e55ebc9c61de36a51a7c3fc8a) 逐字节 --check PASS",
+   "acceptanceEvidence": [
+    "docs/decisions/2026-08-12-motto-tui-4-dunhao-cards.md (MOTTO-TUI-4 卡片投影工单: 调研+实现逻辑 diff+最小实现)",
+    "docs/architecture/TUI-CARD-FRAME-RESEARCH.md + docs/architecture/TUI-REVIEW-FLOW-RESEARCH.md (7 家开源核实 + 方案 A 裁定依据)",
+    "docs/HANDOFF-2026-08-12.md + docs/HANDOFF-DECLARATION-2026-08-12.md (session handoff 与四层验收自评)",
+    "docs/reviews/2026-08-12-acceptance-handoff-declaration.md (L1 独立验收, 含 tui-4-s1/s2 与 review-flow-a1 叠改复核)",
+    "feature 落地独立验收: merge 311fa3b5b(tui-4-s1) / merge 984808339(review-flow-a1) / 34b30ba80(tui-4-s2)",
+    "pack 验收基线: packages/motto/extensions/motto/reports/PACK-MOTTO-1/2/3-acceptance.md + motto-review-flow/reports/PACK-REVIEW-FLOW-1-acceptance.md",
+    "baseline --check PASS(逐字节, 零超宽) + cards.test.mjs 32/32 + tui 909/909"
+   ],
+   "note": "TUI-4/review-flow A1 发行: 、、、卡片投影产品层(089f3c37f/30042d846, 零 core)+ 轻帧 tui-4-s1-card-light-frame(8f1e90d61)+ 小标签 tui-4-s2-card-tag-label(34b30ba80)+ review-flow-a1-tool-index-all(自定义工具成功目行推广 + `!!` bash 有界尾部预览 5 行)。mottoCommit 对照 12.1 惯例(取功能落地收口 commit 20d6909d9, 非其后文档提交)取 tui-4-s2 落账 34b30ba80; corePatchset 按 releaseManifestFormat 引 PATCHES.json 的 patch id(12.1 曾以重放后 commit SHA 表达, 12.2 起用 id, 含 12.1 既有 7 条继承); supportCommits 仅列 34b30ba80 状态内者(8b5f903d7/e4ca111b2 为收口后维护提交, 已登记 PATCHES.json 随后续发行)"
   }
  ]
 }
