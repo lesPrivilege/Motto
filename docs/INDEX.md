@@ -44,6 +44,7 @@
 - peer 调研：`PEER-OPENCLAW-PEEKABOO-3.10.0.md`、`pi-peer-pi-rlm-survey-2026-08-08.md`、`pi-agent-community-research-2026-07-14.md`
 - 上游提案：`UPSTREAM-PROPOSAL.md`、`UPSTREAM-SELECTION-PROJECTION.md`、`SUBMISSION-7721.md`
 - 补充：`TUI-GPT-SESSION-SUPPLEMENT-2026-08-11.md`、`MOTTO-MARKDOWN-HEADING-2026-08-08.md`
+- 全会话体例 dogfood（2026-08-13）：`2026-08-13-tui-full-session-composition-dogfood.md`（真实 Ghostty R0–R6 逐面证据 + 消费矩阵 + 下一张工单草案；发现 S3 目行实机失效）
 
 ## 维护登记册（`docs/maintenance/`）
 
@@ -59,6 +60,7 @@
 ## 验收记录
 
 - 省视：`docs/reviews/`（`2026-08-08-省并记录.md`、`2026-08-08-closing.md`、`2026-08-08-remote-ci.md`）
+- 全会话体例 P0 handoff（2026-08-13）：`2026-08-13-handoff-tui-full-session-p0.md`（现状/新增意图/冲突/目验裁决项；READY_FOR_USER_REVIEW）
 - 独立验收（2026-08-11~12 夺舍终局）：`docs/archive/reports/`
   - `acceptance-consolidation.md` — 单仓合并独立验收
   - `acceptance-report.md` — WO-1/3/4 独立验收
