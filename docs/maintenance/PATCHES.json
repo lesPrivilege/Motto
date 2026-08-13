@@ -122,10 +122,21 @@
    "fixture": "无——TUI-4 不改变基线 scenario(现有 scenario 无卡片 marker,render-baseline.mjs --check 通过);cards.test.mjs 端到端断言更新",
    "removalCondition": "上游吸收等价「带标注内容卡片标签渲染 / 表格头行可配置为盒外标签」后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。",
    "status": "applied"
+  },
+  {
+   "id": "tui-4-s2-card-tag-width-guard",
+   "title": "TUI-4 S2 补充 — 卡片小标签按显示宽度截断(超长标注不超宽 I9-1)",
+   "scope": "pi-tui 薄接缝(packages/tui/src/components/markdown.ts renderTable cardTag 分支) + cardLabel 槽默认值色相收敛(packages/coding-agent/src/package-manager-cli.ts:52 / packages/tui/test/test-themes.ts:33 magenta→red)",
+   "description": "带标注卡小标签 `[标注]` 若标注超长会整段透传、超出终端宽(I9-1 违例)。cardTag 分支现将标注经 truncateToWidth(packages/tui/src/utils.ts,visibleWidth CJK 双列计,截断符 …)按 availableWidth-2 截断再包方括号;盒宽/折行/列宽布局零改动,仅小标签行被限宽。新增 cards.test.mjs 端到端用例(60 字标注 × 40 列宽):逐行显示宽度 ≤ 终端宽、标签以 …] 结尾、宽终端不截断。 同批收敛:cardLabel 槽在非主 TUI 主题中的默认值由 chalk.magenta 改为 chalk.red(朱),消除朱墨之外第 4 色相(主 TUI theme.ts:1286 已正确映射 accent)。",
+   "commit": "dab2db1ee",
+   "reason": "tui-4-s2-card-tag-label(34b30ba80)落账后补充的宽度守卫;commit dab2db1ee 落账。",
+   "fixture": "无——TUI-4 不改变基线 scenario(render-baseline.mjs --check 逐字节通过);cards.test.mjs 新增超长标注端到端用例",
+   "removalCondition": "随 tui-4-s2-card-tag-label 一并删除(同触 markdown.ts cardTag 分支);删除时 git revert 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 tui-4-s1-card-light-frame / tui-4-s2-card-tag-label 同触 markdown.ts;删除须后置先退或处理冲突。",
+   "status": "applied"
   }
  ],
  "supportCommits": {
-  "purpose": "非产品 patch 但升级重放必须一并携带的支持提交(测试对账/测试/文档);随受控升级 cherry-pick",
+  "purpose": "非 Core 但曾动代码的提交(测试对账/测试/文档/注释清理/维护脚本/产品层 extensions);随受控升级 cherry-pick。产品层 extensions 与 Core 薄接缝同登记,消除「未登记」疑义",
   "commits": [
    {
     "commit": "74b4a2068",
@@ -138,6 +149,26 @@
    {
     "commit": "59eeaba89",
     "reason": "motto-layout 注释随 S1 细化对齐(docs-only)"
+   },
+   {
+    "commit": "8b5f903d7",
+    "reason": "I11-3 代码注释谱系词清理为现代 CS 用语(splash/gutter/recap/error tail/diff/index,含测试注释与 package description)——chore,非 Core 逻辑改动"
+   },
+   {
+    "commit": "9e94f75e5",
+    "reason": "T3-1 dock 结构集成断言测试(composer/editor/footer 固定底栏,transcript 滚动)——test-only"
+   },
+   {
+    "commit": "089f3c37f",
+    "reason": "MOTTO-TUI-4 顿号卡片投影产品层落地(extensions/motto/cards.ts + index.ts 接线 + 文档,display-only)——非 Core,零 core patch"
+   },
+   {
+    "commit": "30042d846",
+    "reason": "、、、卡片保真演进(方案A)产品层(extensions/motto/cards.ts 带标注围栏接住/保缩进保空行 + 测试)——非 Core"
+   },
+   {
+    "commit": "e4ca111b2",
+    "reason": "check-pinned-deps 强化(禁浮动 branch/tag,钉 commit SHA)+ 6 单测 + motto-ci/governance 接线——maint 脚本与 CI,非 Core"
    }
   ]
  }
