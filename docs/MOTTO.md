@@ -152,8 +152,8 @@ TUI 模式下固定以 `Motto` 替换原生终端/标签页标题(不再附加 s
 ```
 
 - 左簇:`cwd`(沿用原生缩略,含 ` (branch)` 与 ` · session`)后用 ` · ` 接统计;统计项与原生 footer 完全同源、同指标、同显隐条件:`↑in ↓out RcacheRead WcacheWrite CH{命中率}% $cost {percent}%/{window}(auto)`,另加派生指标 `TPS`(见下)。数据取自会话 `entries` 累计 + `getContextUsage()`,`formatTokens`/`formatCwdForFooter` 与原生逐字一致;auto-compact 读 settings.json `compaction.enabled`(缺省 true)。
-- 右簇:`<model> · <thinking-level>`(仅 reasoning 模型显示 thinking;`•` 一律替换为 `·`)。
-- 右对齐:填充 = 终端宽度 − 左簇宽 − 右簇宽,最小间距 2。两级退化:先缩为仅 model 名,仍不足则右簇整体省略;右簇整体省略后左簇仍超宽,则左簇统计段按显式优先级降级(低者先弃):`$cost`(记账,价值最低)→ `CH`/`W`(缓存细节)→ `TPS`/`R`(TPS 为瞬态,同优先级最右先弃)→ `↑`/`↓`(吞吐)→ `context%/window`(操作最关键,最后保),`cwd` 永不主动弃,最终仅剩 `cwd` 仍超宽时以省略号(…)截断兜底;任何情况下渲染行宽 ≤ 终端宽,不折行。
+- 右簇:`(provider) <model> · <thinking-level>`(多 provider 时加 provider 括号,同原生 footer 规则;仅 reasoning 模型显示 thinking;`•` 一律替换为 `·`)。
+- 右对齐:填充 = 终端宽度 − 左簇宽 − 右簇宽,最小间距 2。折叠优先级(2026-08-13 厘清):**优先折叠模型信息以外的**——左簇统计段按显式优先级降级(低者先弃):`$cost`(记账,价值最低)→ `CH`/`W`(缓存细节)→ `TPS`/`R`(TPS 为瞬态,同优先级最右先弃)→ `↑`/`↓`(吞吐)→ `context%/window`(操作最关键,最后保),`cwd` 永不主动弃,仅剩 `cwd` 仍超宽时以省略号(…)截断兜底;左簇降无可降后才折模型信息(先去 thinking,再截模型名);任何情况下渲染行宽 ≤ 终端宽,不折行。
 - TPS(输出 token 吞吐,tokens/sec):窗口 = 一次 assistant 回答(message_start → message_end)。流式期显示滚动速率,`~` 前缀标注估算(`~1.2k t/s`);结算转均值(`1.2k t/s`,以 message_end 的 `usage.output` 为精确分子)。分母锚定最近一次产出 token 的时刻:工具执行期无产出 → 分母冻结、速率恒定(「工具期分母不涨」)。结算均值展示 TTL 60s 后自然隐藏;除零/非有限值一律不显示(无 NaN/∞)。
 - 色值:整行 dim;右簇 model 名 mid 稍突出,其余 dim;不得使用 text / accent。
 - footer 上方不新增任何线;composer 既有边界原样。数据刷新沿用原生 footer 的刷新时机(渲染时实时计算),不新增定时器。
@@ -174,4 +174,4 @@ TUI 模式下固定以 `Motto` 替换原生终端/标签页标题(不再附加 s
 2. 终端从 200 列缩到 40 列:牌记始终左锚、无居中跳动、折行悬挂正确、CJK 不错列;格言疏排生效,bold 与色值不变。
 3. motto.ts 中无 `#` 开头的 hex;全屏间隔符无 `•`;`MOTTO_DOUBLE_HEIGHT` 为 false 时输出无 `ESC#3`/`ESC#4`。
 4. 全屏视觉:一处红、零装饰线、三级灰阶(text bold / dim / dimmer)、块间空行;无框、无竖线、无阴影(transcript 首行短横衬线 `───` 为 I6-4 裁定例外)。
-5. footer 单行,左右簇对齐,窗口宽度连续变化时右簇对齐无抖动、按两级退化;数值与原生 footer 逐项一致;composer 与 context 显示与重构前一致。
+5. footer 单行,左右簇对齐,窗口宽度连续变化时右簇对齐无抖动、按「模型信息最后折」退化;数值与原生 footer 逐项一致;composer 与 context 显示与重构前一致。
