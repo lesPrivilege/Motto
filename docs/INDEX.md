@@ -30,6 +30,7 @@
 - `2026-08-12-motto-upgrade-1-absorb-upstream.md` — 工单：MOTTO-UPGRADE-1 受控上游升级（v0.84.1→534bcbffb 109 commits，ACCEPTED 落地）
 - `2026-08-12-motto-tui-4-dunhao-cards.md` — 工单：MOTTO-TUI-4 顿号卡片投影（、、、围栏 → box-drawing 卡片，调研+实现逻辑 diff+最小实现）
 - `2026-08-13-motto-thin-harness.md` — 裁定：薄而自足 harness（core 权限开放/折旧原则/coding is cheaper/版式学三不）
+- `2026-08-13-motto-tui-1-s3-live.md` — 工单：TUI-1-S3-LIVE（S3 成功内置工具实机接线修复；sourceInfo 判定恢复目行收敛）
 - `review-flow-eval.md` — review-flow 评估结论（API 核实 + 逐项裁决）
 
 ## 架构（`docs/architecture/`）

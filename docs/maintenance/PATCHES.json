@@ -114,6 +114,17 @@
    "status": "applied"
   },
   {
+   "id": "tui-1-s3-live-wiring",
+   "title": "TUI-1 S3 实机接线 — 成功内置工具按 sourceInfo 判定收敛目行(live wiring)",
+   "scope": "coding-agent interactive 接线(tool-definition.ts + interactive-mode.ts getToolDefinitionForComponent)",
+   "description": "S3(tui-1-s3-tool-index-line)的实机接线修复(P0 D1):interactive-mode 旧接线 getRegisteredToolDefinition 直通 session.getToolDefinition(name),而 _toolDefinitions 收容全部工具(含 source=builtin),使组件误判真实内置工具遭自定义覆盖,toolDefinition 恒非 undefined,isSuccessIndexLine 恒假——实机成功内置工具不收敛目行,与 recap 双份呈现 tool+target;无头基线(以 toolDefinition=undefined 构造组件)记录的是组件语义,无法发现接线失效。新接线:新增纯函数 resolveToolDefinitionForComponent(tool-definition.ts),以 canonical sourceInfo.source===\"builtin\" 判定——内置无覆盖→undefined(收敛目行),sdk/extension/package/project→返回定义(自定义工具走 A1 收敛,内置覆盖保留 renderer 完整卡),未知→undefined(generic fallback fail-open)。组件 isSuccessIndexLine 零改动。",
+   "commit": "b27911c9c",
+   "reason": "P0 D1 立单(用户裁定 TUI-1-S3-LIVE);MOTTO-TUI-FULL-SESSION-P0 真实 Ghostty 发现成功内置工具实机不收敛目行。",
+   "fixture": "无——S3 组件语义不变,render-baseline.mjs --check 逐字节 PASS(40/60/80/120/200 零超宽);新行为由 wiring regression(tool-definition-wiring.test.ts)+组件矩阵测试锁定",
+   "removalCondition": "上游吸收等价内置工具卡 projector / source-aware renderer 接线后删除;删除时 git revert 本 commit 并跑 render-baseline.mjs --check 与 coding-agent 全量测试。叠改注:与 S3(tui-1-s3-tool-index-line)同触 interactive-mode.ts 接线、与 A1(review-flow-a1-tool-index-all)同触 tool-execution.ts 消费面(本 patch 不直接改组件,但删除顺序须后置先退:先退本 patch 再退 S3/A1,或处理冲突)。",
+   "status": "applied"
+  },
+  {
    "id": "tui-4-s2-card-tag-label",
    "title": "TUI-4 S2 — 、、、卡片小标签:带标注卡标注=盒顶 accent 标签,盒内仅内容",
    "scope": "pi-tui 薄接缝(packages/tui/src/components/markdown.ts renderTable + MarkdownTheme.cardLabel + motto extensions/motto/cards.ts 投影标记)",
