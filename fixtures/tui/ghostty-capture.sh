@@ -65,7 +65,7 @@ cat > "$OUT" <<EOF
 | motto | | | | |
 | motto-dark | | | | |
 | motto-light | | | | |
-- 双宗切换后版式逐字符一致、仅颜色不同: 
+- 双宗切换后版式逐字符一致、仅颜色不同:
 
 ## 2. streaming
 在 fixture 会话内追加一条真实提问(如「再简述 TUI 层级」),观察:

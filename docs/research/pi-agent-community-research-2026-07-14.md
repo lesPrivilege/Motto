@@ -1,16 +1,16 @@
 # Pi Coding Agent：社区用法与 Extension 生态调研
 
-> 调研日期：2026-07-14  
-> 范围：官方文档 / monorepo 源码架构 / package catalog / X 社区分享 / 代表性 extension 实现逻辑  
+> 调研日期：2026-07-14
+> 范围：官方文档 / monorepo 源码架构 / package catalog / X 社区分享 / 代表性 extension 实现逻辑
 > 定位对象：Pi coding agent（最小 agent harness），非其它同名项目
 
 ---
 
 ## 0. 一句话结论
 
-**Pi 是 Mario Zechner（@badlogicgames）主导、现归属 Earendil Works 的「最小核心 + 激进可扩展」终端 coding agent。**  
-核心只有极短 system prompt 与少量内置工具（默认 `read` / `write` / `edit` / `bash`），**故意不内置** MCP、sub-agent、plan mode、permission popup、todo、background bash。  
-社区与官方的共识是：**需要的能力用 TypeScript extension / skill / package 补，或直接让 Pi 写一个给自己用。**  
+**Pi 是 Mario Zechner（@badlogicgames）主导、现归属 Earendil Works 的「最小核心 + 激进可扩展」终端 coding agent。**
+核心只有极短 system prompt 与少量内置工具（默认 `read` / `write` / `edit` / `bash`），**故意不内置** MCP、sub-agent、plan mode、permission popup、todo、background bash。
+社区与官方的共识是：**需要的能力用 TypeScript extension / skill / package 补，或直接让 Pi 写一个给自己用。**
 官方分发：`pi.dev` + npm `@earendil-works/pi-coding-agent`；包市场：`https://pi.dev/packages`；Discord：`https://discord.com/invite/nKXTsAcmbT`；非官方 Reddit：`r/PiCodingAgent`。
 
 ---
@@ -44,19 +44,19 @@
 
 来源：Mario 长文 *What I learned building an opinionated and minimal coding agent*（2025-11-30）、Armin Ronacher *Pi: The Minimal Agent Within OpenClaw*（2026-01-31）、官网与 README。
 
-1. **Context engineering 优先**  
+1. **Context engineering 优先**
    默认 system prompt 极短（连工具定义合计约 <1000 tokens 量级），避免 harness 在背后注入不可见上下文。
 
-2. **Primitives, not features**  
+2. **Primitives, not features**
    不把 sub-agent / plan / MCP 写死进 core；用 extension 做「插件式 DAW/VST」式扩展。
 
-3. **YOLO by default**  
+3. **YOLO by default**
    默认无权限弹窗；安全边界建议用 container / sandbox extension（Gondolin、Docker、OpenShell、landstrip 等），而不是虚假的命令审核。
 
-4. **Agent builds agent**  
+4. **Agent builds agent**
    鼓励把官方/他人 extension 指给 Pi：「照这个写，但改成我的 workflow」；热重载 `/reload` 支持边写边试。
 
-5. **可观测性**  
+5. **可观测性**
    Session 是 JSONL 树结构，可 `/tree` 分支、`/export`、`/share`；对比 Claude Code sub-agent 黑盒，Pi 社区更强调可见。
 
 ---
@@ -135,8 +135,8 @@ pi --exclude-tools ask_question
 
 ### 2.6 Project Trust
 
-交互启动时，若项目有 `.pi` 或 project skills 且无信任记录，会询问是否信任。  
-**信任前只加载全局 extension / CLI `-e`**；项目 extension 与 settings 在信任后才加载。  
+交互启动时，若项目有 `.pi` 或 project skills 且无信任记录，会询问是否信任。
+**信任前只加载全局 extension / CLI `-e`**；项目 extension 与 settings 在信任后才加载。
 Extension 可用 `project_trust` 事件接管决策。
 
 ---
@@ -173,7 +173,7 @@ export default function (pi: ExtensionAPI) { ... }
 | `settings.json` 的 `packages` / `extensions` | npm/git/本地路径 |
 | `pi -e ./path.ts` | 临时试跑（不适合 /reload 常态） |
 
-**安全模型（重要）**：  
+**安全模型（重要）**：
 官方明确：**extension 以用户权限执行任意代码**。安装第三方包前应审源码。Core 不提供细粒度 sandbox；沙箱是 extension 或 container 的事。
 
 ### 3.3 生命周期事件（理解社区 extension 的钥匙）
@@ -338,8 +338,8 @@ Armin 路线则更「少下载、多自建」：自写 `/answer`、`/todos`、`/
 
 ### 5.1 `pi-web-access`（Nico）— 能力补全型
 
-**安装**：`pi install npm:pi-web-access`  
-**Repo**：https://github.com/nicobailon/pi-web-access  
+**安装**：`pi install npm:pi-web-access`
+**Repo**：https://github.com/nicobailon/pi-web-access
 
 **解决什么**：Core 故意不提供 web search/fetch；该扩展补上搜索、抓取、GitHub 克隆、PDF、YouTube/本地视频理解。
 
@@ -358,8 +358,8 @@ Armin 路线则更「少下载、多自建」：自写 `/answer`、`/todos`、`/
 
 ### 5.2 `pi-mcp-adapter`（Nico）— 哲学妥协型
 
-**安装**：`pi install npm:pi-mcp-adapter`  
-**Repo**：https://github.com/nicobailon/pi-mcp-adapter  
+**安装**：`pi install npm:pi-mcp-adapter`
+**Repo**：https://github.com/nicobailon/pi-mcp-adapter
 
 **解决什么**：Mario 反对把 MCP 工具 schema 全塞 system prompt；adapter 用 **单个 `mcp` 代理工具（~200 tokens）** + 懒连接 + 磁盘 metadata 缓存。
 
@@ -376,8 +376,8 @@ Armin 路线则更「少下载、多自建」：自写 `/answer`、`/todos`、`/
 
 ### 5.3 `pi-subagents`（Nico）— 编排型
 
-**安装**：`pi install npm:pi-subagents`  
-**Repo**：https://github.com/nicobailon/pi-subagents  
+**安装**：`pi install npm:pi-subagents`
+**Repo**：https://github.com/nicobailon/pi-subagents
 
 **解决什么**：Core 不内置 sub-agent；该包用 **子进程 Pi session** 做委托。
 
@@ -403,7 +403,7 @@ Armin 路线则更「少下载、多自建」：自写 `/answer`、`/todos`、`/
 
 ### 5.4 `pi-messenger`（Nico）— 多终端协作型
 
-**安装**：`pi install npm:pi-messenger`  
+**安装**：`pi install npm:pi-messenger`
 
 **实现逻辑（README 明确点出 hook）**：
 
@@ -416,22 +416,22 @@ Armin 路线则更「少下载、多自建」：自写 `/answer`、`/todos`、`/
 | `pi.sendMessage({ deliverAs: "steer", triggerTurn: true })` | 唤醒收信 agent |
 | `ctx.ui.custom` + `setStatus` | chat overlay / 状态栏 |
 
-**状态存储**：无 daemon，纯文件  
-- 全局 mesh：`~/.pi/agent/messenger/`  
+**状态存储**：无 daemon，纯文件
+- 全局 mesh：`~/.pi/agent/messenger/`
 - 项目：`.pi/messenger/`（crew 计划与任务）
 
 **Crew**：PRD → 依赖图 → 并行 wave；worker 是 `pi --mode json` 子进程，流式 JSONL 更新 progress。
 
 ### 5.5 官方 `permission-gate` — 最小可抄模板
 
-路径：`packages/coding-agent/examples/extensions/permission-gate.ts`  
+路径：`packages/coding-agent/examples/extensions/permission-gate.ts`
 
-约 40 行：regex 匹配危险 bash → UI confirm / 无 UI 则 block。  
+约 40 行：regex 匹配危险 bash → UI confirm / 无 UI 则 block。
 社区权限系统（gotgenes）是这一模式的「策略引擎化」升级版。
 
 ### 5.6 Armin 自用扩展集（设计参考，非 npm 热门）
 
-Repo：https://github.com/mitsuhiko/agent-stuff  
+Repo：https://github.com/mitsuhiko/agent-stuff
 
 | Extension | 思路 |
 |---|---|
@@ -483,12 +483,12 @@ pi-ai：provider 适配 + stream + tool schema(TypeBox)
 
 ### 6.3 明确不在 core 的东西（官方 README 列表）
 
-- No MCP  
-- No sub-agents  
-- No permission popups  
-- No plan mode  
-- No built-in todos  
-- No background bash（用 tmux）  
+- No MCP
+- No sub-agents
+- No permission popups
+- No plan mode
+- No built-in todos
+- No background bash（用 tmux）
 
 社区用 package 把这些「全部补回来」——这是生态繁荣的结构性原因，也是学习成本来源。
 
@@ -498,10 +498,10 @@ pi-ai：provider 适配 + stream + tool schema(TypeBox)
 
 ### 7.1 「最小 Pi」党
 
-- 只装 0–2 个 extension  
-- 大量 skill + AGENTS.md  
-- 需要时让 Pi 当场写 extension  
-- 代表：Armin 文中实践  
+- 只装 0–2 个 extension
+- 大量 skill + AGENTS.md
+- 需要时让 Pi 当场写 extension
+- 代表：Armin 文中实践
 
 ### 7.2 「Claude Code 能力补齐」党
 
@@ -514,27 +514,27 @@ pi install npm:@juicesharp/rpiv-todo
 pi install npm:@juicesharp/rpiv-ask-user-question
 ```
 
-然后自然语言：  
+然后自然语言：
 *“Use reviewer to review this diff”* / *“Run parallel reviewers for correctness, tests, complexity”*。
 
 ### 7.3 「多 agent 工厂」党
 
-- `pi-subagents` chain + worktree  
-- 或 `pi-messenger` crew（PRD → waves）  
-- 或 `pi-dynamic-workflows` 一类大编排包  
-- 注意：token 成本高，社区建议 worker 用小模型  
+- `pi-subagents` chain + worktree
+- 或 `pi-messenger` crew（PRD → waves）
+- 或 `pi-dynamic-workflows` 一类大编排包
+- 注意：token 成本高，社区建议 worker 用小模型
 
 ### 7.4 「Context 抠门」党
 
-- `pi-hypa` / `lean-ctx` / `context-mode`  
-- MCP 坚持 proxy 模式，避免 directTools 爆炸  
-- 自定义 compaction extension  
+- `pi-hypa` / `lean-ctx` / `context-mode`
+- MCP 坚持 proxy 模式，避免 directTools 爆炸
+- 自定义 compaction extension
 
 ### 7.5 Session 开源数据
 
-- Mario 推动用 `pi-share-hf` 把 OSS coding session 发到 HuggingFace  
-- 数据集示例：`badlogicgames/pi-mono`  
-- 目的：真实轨迹训练/评估 agent，而非 toy benchmark  
+- Mario 推动用 `pi-share-hf` 把 OSS coding session 发到 HuggingFace
+- 数据集示例：`badlogicgames/pi-mono`
+- 目的：真实轨迹训练/评估 agent，而非 toy benchmark
 
 ---
 
@@ -577,19 +577,19 @@ pi -e ~/.pi/agent/extensions/hello.ts
 # npm publish → pi install npm:your-pkg
 ```
 
-进阶：直接对 Pi 说  
+进阶：直接对 Pi 说
 「读 `packages/coding-agent/docs/extensions.md` 和 `examples/extensions/permission-gate.ts`，写一个拦截 `git push --force` 的 extension」——这是社区最推荐的扩展方式。
 
 ---
 
 ## 9. 风险与注意点
 
-1. **第三方 extension = 任意代码执行**。先读源码再 `pi install`。  
-2. **`pi-share-hf` 的 PII 扫描会烧 token**，且无法 100% 防泄漏。  
-3. **Subagent / Crew 成本**：并行 worker 可快速消耗配额；务必设模型分层。  
-4. **项目 trust**：不要对不信任仓库开 `always`。  
-5. **package 生命周期**：生产依赖必须在 `dependencies`，否则 install 后运行缺模块。  
-6. **命名/迁移**：旧 scope `@mariozechner/*` / `badlogic/pi-mono` 文档仍可能残留；以 `earendil-works` 与 `pi.dev` 为准。  
+1. **第三方 extension = 任意代码执行**。先读源码再 `pi install`。
+2. **`pi-share-hf` 的 PII 扫描会烧 token**，且无法 100% 防泄漏。
+3. **Subagent / Crew 成本**：并行 worker 可快速消耗配额；务必设模型分层。
+4. **项目 trust**：不要对不信任仓库开 `always`。
+5. **package 生命周期**：生产依赖必须在 `dependencies`，否则 install 后运行缺模块。
+6. **命名/迁移**：旧 scope `@mariozechner/*` / `badlogic/pi-mono` 文档仍可能残留；以 `earendil-works` 与 `pi.dev` 为准。
 7. **awesome-pi-agent 已过时**；以 gallery + Discord 为准。
 
 ---
@@ -691,19 +691,19 @@ pi-telegram-manager
 
 **方法**：
 
-- 官网 / docs / monorepo README / packages.md / extensions.md  
-- Package Catalog 下载量排序  
-- X semantic/keyword 搜索（Mario、Nico 等）  
-- Armin / Mario 长文  
-- 代表性 extension README 与实现描述（web-access / mcp-adapter / subagents / messenger）  
-- 官方 example 源码（permission-gate）  
+- 官网 / docs / monorepo README / packages.md / extensions.md
+- Package Catalog 下载量排序
+- X semantic/keyword 搜索（Mario、Nico 等）
+- Armin / Mario 长文
+- 代表性 extension README 与实现描述（web-access / mcp-adapter / subagents / messenger）
+- 官方 example 源码（permission-gate）
 
 **局限**：
 
-- Discord 频道正文未完整爬取（gallery 与 X 已覆盖主流分享）  
-- Gallery 下载量非安装用户数，仅相对热度  
-- 源码级行级分析以文档与公开 README 结构为主；完整 monorepo 未本地 clone  
-- 生态更新极快（每周大量新包），本报告以 2026-07-14 为切片  
+- Discord 频道正文未完整爬取（gallery 与 X 已覆盖主流分享）
+- Gallery 下载量非安装用户数，仅相对热度
+- 源码级行级分析以文档与公开 README 结构为主；完整 monorepo 未本地 clone
+- 生态更新极快（每周大量新包），本报告以 2026-07-14 为切片
 
 ---
 
@@ -725,9 +725,9 @@ pi install npm:pi-subagents
 
 读完：
 
-1. https://pi.dev/docs/latest/extensions  
-2. https://github.com/nicobailon/pi-subagents（README 即百科）  
-3. 官方 `examples/extensions/permission-gate.ts`  
+1. https://pi.dev/docs/latest/extensions
+2. https://github.com/nicobailon/pi-subagents（README 即百科）
+3. 官方 `examples/extensions/permission-gate.ts`
 
 即可同时理解 **用法** 与 **实现范式**。
 
