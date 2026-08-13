@@ -570,6 +570,70 @@ describe("ToolExecutionComponent success index line (TUI-1 S3)", () => {
 		expect(lines).toEqual(["  bash ls -la"]);
 	});
 
+	test("successful builtin read collapses to a single index line with no output preview", () => {
+		const component = new ToolExecutionComponent(
+			"read",
+			"tool-read-index",
+			{ path: "notes.txt" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{ content: [{ type: "text", text: "file content line 1\nline 2" }], details: undefined, isError: false },
+			false,
+		);
+
+		const lines = component.render(80).map((line) => stripAnsi(line).trimEnd());
+		expect(lines).toEqual(["  read notes.txt"]);
+		// 无输出预览、无 shell header、无耗时尾记(S3 目行不含三者)。
+		expect(lines.join("\n")).not.toContain("file content line 1");
+		expect(lines.join("\n")).not.toContain("$");
+		expect(lines.join("\n")).not.toContain("Took");
+	});
+
+	test("successful builtin write collapses to a single index line", () => {
+		const component = new ToolExecutionComponent(
+			"write",
+			"tool-write-index",
+			{ path: "out.txt", content: "one\ntwo" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{ content: [{ type: "text", text: "Wrote out.txt" }], details: {}, isError: false },
+			false,
+		);
+
+		const lines = component.render(80).map((line) => stripAnsi(line).trimEnd());
+		expect(lines).toEqual(["  write out.txt"]);
+		expect(lines.join("\n")).not.toContain("one");
+	});
+
+	test("unknown tool without any definition keeps the generic fallback card (fail-open)", () => {
+		const component = new ToolExecutionComponent(
+			"no_such_tool",
+			"tool-unknown",
+			{ query: "x" },
+			{},
+			undefined,
+			createFakeTui(),
+			process.cwd(),
+		);
+		component.updateResult(
+			{ content: [{ type: "text", text: "generic output" }], details: undefined, isError: false },
+			false,
+		);
+
+		const rendered = stripAnsi(component.render(80).join("\n"));
+		// 未知工具不代建目行:保留 generic fallback 完整卡。
+		expect(rendered).toContain("no_such_tool");
+		expect(rendered).toContain("generic output");
+	});
+
 	test("failed builtin tool keeps the full card with error styling", () => {
 		const component = new ToolExecutionComponent(
 			"bash",

@@ -178,6 +178,7 @@ import {
 	theme,
 } from "./theme/theme.ts";
 import { InteractiveThemeController } from "./theme/theme-controller.ts";
+import { resolveToolDefinitionForComponent } from "./tool-definition.ts";
 
 /** Interface for components that can be expanded/collapsed */
 interface Expandable {
@@ -1995,10 +1996,17 @@ export class InteractiveMode {
 	}
 
 	/**
-	 * Get a registered tool definition by name (for custom rendering).
+	 * Resolve the definition handed to ToolExecutionComponent for a tool name.
+	 *
+	 * Real-session wiring for TUI-1 S3 (tui-1-s3-live): built-in tools always
+	 * resolve to `undefined` so the component's success index line converges;
+	 * only extension/SDK definitions (custom tools, or custom overrides of a
+	 * built-in tool) are passed through, keeping their full card + renderers.
 	 */
-	private getRegisteredToolDefinition(toolName: string) {
-		return this.session.getToolDefinition(toolName);
+	private getToolDefinitionForComponent(toolName: string) {
+		return resolveToolDefinitionForComponent(this.session.getAllTools(), toolName, (name) =>
+			this.session.getToolDefinition(name),
+		);
 	}
 
 	private getMarkdownTransformers(): MarkdownTransformer[] {
@@ -3199,7 +3207,7 @@ export class InteractiveMode {
 										showImages: this.settingsManager.getShowImages(),
 										imageWidthCells: this.settingsManager.getImageWidthCells(),
 									},
-									this.getRegisteredToolDefinition(content.name),
+									this.getToolDefinitionForComponent(content.name),
 									this.ui,
 									this.sessionManager.getCwd(),
 								);
@@ -3273,7 +3281,7 @@ export class InteractiveMode {
 							showImages: this.settingsManager.getShowImages(),
 							imageWidthCells: this.settingsManager.getImageWidthCells(),
 						},
-						this.getRegisteredToolDefinition(event.toolName),
+						this.getToolDefinitionForComponent(event.toolName),
 						this.ui,
 						this.sessionManager.getCwd(),
 					);
@@ -3667,7 +3675,7 @@ export class InteractiveMode {
 								showImages: this.settingsManager.getShowImages(),
 								imageWidthCells: this.settingsManager.getImageWidthCells(),
 							},
-							this.getRegisteredToolDefinition(content.name),
+							this.getToolDefinitionForComponent(content.name),
 							this.ui,
 							this.sessionManager.getCwd(),
 						);
